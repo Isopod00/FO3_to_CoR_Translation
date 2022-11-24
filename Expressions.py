@@ -96,6 +96,32 @@ class Equals:
         return f'{self.argument1} = {self.argument2}'
 
 
+class tt:
+    """ This class represents the literal boolean value True. """
+
+    def _negate(self):
+        return ff()
+
+    def _negation_normal_form(self):
+        return self
+
+    def __str__(self):
+        return "True"
+
+
+class ff:
+    """ This class represents the literal boolean value False. """
+
+    def _negate(self):
+        return tt()
+
+    def _negation_normal_form(self):
+        return self
+
+    def __str__(self):
+        return "False"
+
+
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
     expression = Negation(ForAll("x", AND(Equals("x", "x"), Equals("x", "x"))))
