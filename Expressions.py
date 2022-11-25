@@ -54,7 +54,7 @@ class ThereExists:
 
 
 class AND:
-    """ This class describes a logical AND statement with two arguments, the arguments can be any logical expression """
+    """This class describes a logical AND statement with two arguments, the arguments can be any logical expressions"""
 
     def __init__(self, arg1, arg2):
         self.argument1 = arg1
@@ -68,7 +68,7 @@ class AND:
 
 
 class OR:
-    """ This class describes a logical OR statement with two arguments, the arguments can be any logical expression """
+    """This class describes a logical OR statement with two arguments, the arguments can be any logical expressions"""
 
     def __init__(self, arg1, arg2):
         self.argument1 = arg1
@@ -124,7 +124,7 @@ class ff:
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    expression = Negation(ForAll("x", AND(Equals("x", "x"), Equals("x", "x"))))
+    expression = Negation(ForAll("x", ThereExists("y", OR(Equals("x", "-y"), Equals("x", "0")))))
 
     print("Original Expression:", expression)  # Original expression
     print("Negated Expression:", expression._negate())  # Negated expression
