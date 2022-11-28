@@ -1,6 +1,19 @@
 from FO3_Expressions import *
 
 
+def _translate_arguments(argument1, argument2):
+    """ This is a helper method for checking if two arguments are Strings and translating them if they are not """
+    if isinstance(argument1, str):
+        left_hand_side = argument1
+    else:
+        left_hand_side = argument1._translate()
+    if isinstance(argument2, str):
+        right_hand_side = argument2
+    else:
+        right_hand_side = argument2._translate()
+    return left_hand_side, right_hand_side
+
+
 class UniversalRelation:
     """ This class describes the COR mathematical symbol T (universal relation) """
 
@@ -58,14 +71,8 @@ class Union:
         return f'({self.argument1}) ∪ ({self.argument2})'
 
     def _translate(self):
-        if isinstance(self.argument1, str) and isinstance(self.argument2, str):
-            return OR(self.argument1, self.argument2)
-        elif isinstance(self.argument1, str):
-            return OR(self.argument1, self.argument2._translate())
-        elif isinstance(self.argument2, str):
-            return OR(self.argument1._translate(), self.argument2)
-        else:
-            return OR(self.argument1._translate(), self.argument2._translate())
+        left_argument, right_hand_argument = _translate_arguments(self.argument1, self.argument2)
+        return OR(left_argument, right_hand_argument)
 
 
 class Intersection:
@@ -79,14 +86,8 @@ class Intersection:
         return f'({self.argument1}) ∩ ({self.argument2})'
 
     def _translate(self):
-        if isinstance(self.argument1, str) and isinstance(self.argument2, str):
-            return AND(self.argument1, self.argument2)
-        elif isinstance(self.argument1, str):
-            return AND(self.argument1, self.argument2._translate())
-        elif isinstance(self.argument2, str):
-            return AND(self.argument1._translate(), self.argument2)
-        else:
-            return AND(self.argument1._translate(), self.argument2._translate())
+        left_argument, right_hand_argument = _translate_arguments(self.argument1, self.argument2)
+        return AND(left_argument, right_hand_argument)
 
 
 class Composition:
@@ -101,14 +102,8 @@ class Composition:
 
     # This is assuming that argument1 contains pairs (x, z) and argument2 contains pairs (z, y)
     def _translate(self):
-        if isinstance(self.argument1, str) and isinstance(self.argument2, str):
-            return ThereExists("z", AND(self.argument1, self.argument2))
-        elif isinstance(self.argument1, str):
-            return ThereExists("z", AND(self.argument1, self.argument2._translate()))
-        elif isinstance(self.argument2, str):
-            return ThereExists("z", AND(self.argument1._translate(), self.argument2))
-        else:
-            return ThereExists("z", AND(self.argument1._translate(), self.argument2._translate()))
+        left_argument, right_argument = _translate_arguments(self.argument1, self.argument2)
+        return ThereExists("z", AND(left_argument, right_argument))
 
 
 class Dagger:
@@ -123,14 +118,8 @@ class Dagger:
 
     # This is assuming that argument1 contains pairs (x, z) and argument2 contains pairs (z, y)
     def _translate(self):
-        if isinstance(self.argument1, str) and isinstance(self.argument2, str):
-            return ForAll("z", OR(self.argument1, self.argument2))
-        elif isinstance(self.argument1, str):
-            return ForAll("z", OR(self.argument1, self.argument2._translate()))
-        elif isinstance(self.argument2, str):
-            return ForAll("z", OR(self.argument1._translate(), self.argument2))
-        else:
-            return ForAll("z", OR(self.argument1._translate(), self.argument2._translate()))
+        left_argument, right_argument = _translate_arguments(self.argument1, self.argument2)
+        return ForAll("z", OR(left_argument, right_argument))
 
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
