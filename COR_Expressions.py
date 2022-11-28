@@ -28,7 +28,7 @@ class IdentityRelation:
         return '𝟏'
 
     def _translate(self):
-        return Equals("x", "y")  # TODO is this right???
+        return Equals("x", "y")  # This is assuming the relations we are discussing contain pairs (x, y)
 
 
 class Converse:
@@ -99,7 +99,7 @@ class Composition:
     def __str__(self):
         return f'{self.argument1} ∘ {self.argument2}'
 
-    # TODO is this right???
+    # This is assuming that argument1 contains pairs (x, z) and argument2 contains pairs (z, y)
     def _translate(self):
         if isinstance(self.argument1, str) and isinstance(self.argument2, str):
             return ThereExists("z", AND(self.argument1, self.argument2))
@@ -121,7 +121,7 @@ class Dagger:
     def __str__(self):
         return f'{self.argument1} † {self.argument2}'
 
-    # TODO is this right???
+    # This is assuming that argument1 contains pairs (x, z) and argument2 contains pairs (z, y)
     def _translate(self):
         if isinstance(self.argument1, str) and isinstance(self.argument2, str):
             return ForAll("z", OR(self.argument1, self.argument2))
