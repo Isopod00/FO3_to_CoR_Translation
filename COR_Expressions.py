@@ -1,19 +1,6 @@
 from FO3_Expressions import *
 
 
-def _translate_arguments(argument1, argument2):
-    """ This is a helper method for checking if two arguments are Strings and translating them if they are not """
-    if isinstance(argument1, str):
-        left_hand_side = argument1
-    else:
-        left_hand_side = argument1._translate()
-    if isinstance(argument2, str):
-        right_hand_side = argument2
-    else:
-        right_hand_side = argument2._translate()
-    return left_hand_side, right_hand_side
-
-
 class UniversalRelation:
     """ This class describes the COR mathematical symbol T (universal relation) """
 
@@ -50,14 +37,11 @@ class Converse:
     def __init__(self, rel):
         self.relation = rel
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'({self.relation})⁻¹'
 
     def _translate(self):
-        if isinstance(self.relation, str):
-            return Negation(self.relation)
-        else:
-            return Negation(self.relation._translate())
+        return Negation(self.relation._translate())
 
 
 class Union:
@@ -67,12 +51,11 @@ class Union:
         self.argument1 = arg1
         self.argument2 = arg2
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'({self.argument1}) ∪ ({self.argument2})'
 
     def _translate(self):
-        left_argument, right_hand_argument = _translate_arguments(self.argument1, self.argument2)
-        return OR(left_argument, right_hand_argument)
+        return OR(self.argument1._translate(), self.argument2._translate())
 
 
 class Intersection:
@@ -82,12 +65,11 @@ class Intersection:
         self.argument1 = arg1
         self.argument2 = arg2
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'({self.argument1}) ∩ ({self.argument2})'
 
     def _translate(self):
-        left_argument, right_hand_argument = _translate_arguments(self.argument1, self.argument2)
-        return AND(left_argument, right_hand_argument)
+        return AND(self.argument1._translate(), self.argument2._translate())
 
 
 class Composition:
@@ -97,13 +79,13 @@ class Composition:
         self.argument1 = arg1
         self.argument2 = arg2
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.argument1} ∘ {self.argument2}'
 
     # This is assuming that argument1 contains pairs (x, z) and argument2 contains pairs (z, y)
     def _translate(self):
-        left_argument, right_argument = _translate_arguments(self.argument1, self.argument2)
-        return ThereExists("z", AND(left_argument, right_argument))
+        return ThereExists(f'{self.argument2.second_number}',
+                           AND(self.argument1._translate(), self.argument2._translate()))
 
 
 class Dagger:
@@ -113,18 +95,33 @@ class Dagger:
         self.argument1 = arg1
         self.argument2 = arg2
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.argument1} † {self.argument2}'
 
     # This is assuming that argument1 contains pairs (x, z) and argument2 contains pairs (z, y)
     def _translate(self):
-        left_argument, right_argument = _translate_arguments(self.argument1, self.argument2)
-        return ForAll("z", OR(left_argument, right_argument))
+        return ForAll(f'{self.argument2.second_number}', OR(self.argument1._translate(), self.argument2._translate()))
+
+
+class Relation:
+    """ This class represents a single relation with ordered pairs (arg1, arg2) and denoted by the letter argument"""
+
+    def __init__(self, letter, arg1, arg2):
+        self.first_number = arg1
+        self.second_number = arg2
+        self.letter = letter
+
+    def __str__(self) -> str:
+        return self.letter
+
+    def _translate(self) -> str:
+        return f'{self.letter}({self.first_number},{self.second_number})'
 
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    expression = Union(Converse(Composition("A", "B")), Intersection(Converse("B"), IdentityRelation()))
+    expression = Union(Converse(Composition(Relation("A", "x", "y"), Relation("B", "y", "z"))),
+                       Intersection(Converse(Relation("B", "y", "z")), IdentityRelation()))
 
     print("Original Expression:", expression)  # Original expression
     print("Translated Expression:", expression._translate())  # Translated expression
