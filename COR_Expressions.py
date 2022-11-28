@@ -1,8 +1,14 @@
+from FO3_Expressions import *
+
+
 class UniversalRelation:
     """ This class describes the COR mathematical symbol T (universal relation) """
 
     def __str__(self) -> str:
         return 'T'
+
+    def _translate(self):
+        return tt()
 
 
 class EmptyRelation:
@@ -11,12 +17,18 @@ class EmptyRelation:
     def __str__(self) -> str:
         return '𝟎'
 
+    def _translate(self):
+        return ff()
+
 
 class IdentityRelation:
     """ This class describes the COR mathematical symbol 𝟏 (identity relation) """
 
     def __str__(self) -> str:
         return '𝟏'
+
+    def _translate(self):
+        return Equals("x", "y") # TODO is this right?
 
 
 class Converse:
@@ -27,6 +39,12 @@ class Converse:
 
     def __str__(self):
         return f'{self.relation}⁻¹'
+
+    def _translate(self):
+        if isinstance(self.relation, str):
+            return Negation(self.relation)
+        else:
+            return Negation(self.relation._translate())
 
 
 class Union:
@@ -39,6 +57,9 @@ class Union:
     def __str__(self):
         return f'({self.argument1} ∪ {self.argument2})'
 
+    def _translate(self):
+        return OR(self.argument1._translate(), self.argument2._translate())
+
 
 class Intersection:
     """This class describes the intersection between two relations arg1 and arg2, which can be any relations"""
@@ -49,6 +70,9 @@ class Intersection:
 
     def __str__(self):
         return f'({self.argument1} ∩ {self.argument2})'
+
+    def _translate(self):
+        return AND(self.argument1._translate(), self.argument2._translate())
 
 
 class Composition:
@@ -61,6 +85,9 @@ class Composition:
     def __str__(self):
         return f'{self.argument1} ∘ {self.argument2}'
 
+    def _translate(self):
+        return ThereExists("z", AND(self.argument1._translate(), self.argument2._translate()))
+
 
 class Dagger:
     """ This class describes the dagger operation arg1 † arg2 = {(x, y) | (x, z) ∈ arg1 ∨ (z, y) ∈ arg2} """
@@ -72,9 +99,13 @@ class Dagger:
     def __str__(self):
         return f'{self.argument1} † {self.argument2}'
 
+    def _translate(self):
+        return ForAll("z", OR(self.argument1._translate(), self.argument2._translate()))
+
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    expression = Intersection("A", Union(Converse("A"), UniversalRelation()))
+    expression = Intersection(EmptyRelation(), Union(Converse("A"), UniversalRelation()))
 
-    print("Expression:", expression)  # Original expression
+    print("Original Expression:", expression)  # Original expression
+    print("Translated Expression:", expression._translate())  # Translated expression
