@@ -12,7 +12,10 @@ class Negation:
         return self.argument
 
     def _negation_normal_form(self):
-        return self.argument._negate()
+        if isinstance(self.argument, str):
+            return self
+        else:
+            return self.argument._negate()
 
     def __str__(self) -> str:
         return f'¬({self.argument})'
@@ -64,7 +67,17 @@ class AND:
         self.argument2 = arg2
 
     def _negate(self):
-        return OR(self.argument1._negate(), self.argument2._negate())
+        if isinstance(self.argument1, str) and isinstance(self.argument2, str):
+            return OR(Negation(self.argument1), Negation(self.argument2))
+        elif isinstance(self.argument1, str):
+            return OR(Negation(self.argument1), self.argument2._negate())
+        elif isinstance(self.argument2, str):
+            return OR(self.argument1._negate(), Negation(self.argument2))
+        else:
+            return OR(self.argument1._negate(), self.argument2._negate())
+
+    def _negation_normal_form(self):
+        return AND(self.argument1._negation_normal_form(), self.argument2._negation_normal_form())
 
     def __str__(self) -> str:
         return f'({self.argument1}) ∧ ({self.argument2})'
@@ -78,7 +91,17 @@ class OR:
         self.argument2 = arg2
 
     def _negate(self):
-        return AND(self.argument1._negate(), self.argument2._negate())
+        if isinstance(self.argument1, str) and isinstance(self.argument2, str):
+            return AND(Negation(self.argument1), Negation(self.argument2))
+        elif isinstance(self.argument1, str):
+            return AND(Negation(self.argument1), self.argument2._negate())
+        elif isinstance(self.argument2, str):
+            return AND(self.argument1._negate(), Negation(self.argument2))
+        else:
+            return AND(self.argument1._negate(), self.argument2._negate())
+
+    def _negation_normal_form(self):
+        return OR(self.argument1._negation_normal_form(), self.argument2._negation_normal_form())
 
     def __str__(self) -> str:
         return f'({self.argument1}) ∨ ({self.argument2})'
@@ -94,6 +117,9 @@ class Equals:
 
     def _negate(self):
         return Negation(self)
+
+    def _negation_normal_form(self):
+        return self
 
     def __str__(self) -> str:
         return f'{self.argument1} = {self.argument2}'

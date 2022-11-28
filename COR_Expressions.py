@@ -28,7 +28,7 @@ class IdentityRelation:
         return '𝟏'
 
     def _translate(self):
-        return Equals("x", "y") # TODO is this right?
+        return Equals("x", "y")  # TODO is this right???
 
 
 class Converse:
@@ -38,7 +38,7 @@ class Converse:
         self.relation = rel
 
     def __str__(self):
-        return f'{self.relation}⁻¹'
+        return f'({self.relation})⁻¹'
 
     def _translate(self):
         if isinstance(self.relation, str):
@@ -55,10 +55,17 @@ class Union:
         self.argument2 = arg2
 
     def __str__(self):
-        return f'({self.argument1} ∪ {self.argument2})'
+        return f'({self.argument1}) ∪ ({self.argument2})'
 
     def _translate(self):
-        return OR(self.argument1._translate(), self.argument2._translate())
+        if isinstance(self.argument1, str) and isinstance(self.argument2, str):
+            return OR(self.argument1, self.argument2)
+        elif isinstance(self.argument1, str):
+            return OR(self.argument1, self.argument2._translate())
+        elif isinstance(self.argument2, str):
+            return OR(self.argument1._translate(), self.argument2)
+        else:
+            return OR(self.argument1._translate(), self.argument2._translate())
 
 
 class Intersection:
@@ -69,10 +76,17 @@ class Intersection:
         self.argument2 = arg2
 
     def __str__(self):
-        return f'({self.argument1} ∩ {self.argument2})'
+        return f'({self.argument1}) ∩ ({self.argument2})'
 
     def _translate(self):
-        return AND(self.argument1._translate(), self.argument2._translate())
+        if isinstance(self.argument1, str) and isinstance(self.argument2, str):
+            return AND(self.argument1, self.argument2)
+        elif isinstance(self.argument1, str):
+            return AND(self.argument1, self.argument2._translate())
+        elif isinstance(self.argument2, str):
+            return AND(self.argument1._translate(), self.argument2)
+        else:
+            return AND(self.argument1._translate(), self.argument2._translate())
 
 
 class Composition:
@@ -85,8 +99,16 @@ class Composition:
     def __str__(self):
         return f'{self.argument1} ∘ {self.argument2}'
 
+    # TODO is this right???
     def _translate(self):
-        return ThereExists("z", AND(self.argument1._translate(), self.argument2._translate()))
+        if isinstance(self.argument1, str) and isinstance(self.argument2, str):
+            return ThereExists("z", AND(self.argument1, self.argument2))
+        elif isinstance(self.argument1, str):
+            return ThereExists("z", AND(self.argument1, self.argument2._translate()))
+        elif isinstance(self.argument2, str):
+            return ThereExists("z", AND(self.argument1._translate(), self.argument2))
+        else:
+            return ThereExists("z", AND(self.argument1._translate(), self.argument2._translate()))
 
 
 class Dagger:
@@ -99,13 +121,22 @@ class Dagger:
     def __str__(self):
         return f'{self.argument1} † {self.argument2}'
 
+    # TODO is this right???
     def _translate(self):
-        return ForAll("z", OR(self.argument1._translate(), self.argument2._translate()))
+        if isinstance(self.argument1, str) and isinstance(self.argument2, str):
+            return ForAll("z", OR(self.argument1, self.argument2))
+        elif isinstance(self.argument1, str):
+            return ForAll("z", OR(self.argument1, self.argument2._translate()))
+        elif isinstance(self.argument2, str):
+            return ForAll("z", OR(self.argument1._translate(), self.argument2))
+        else:
+            return ForAll("z", OR(self.argument1._translate(), self.argument2._translate()))
 
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    expression = Intersection(EmptyRelation(), Union(Converse("A"), UniversalRelation()))
+    expression = Union(Converse(Composition("A", "B")), Intersection(Converse("B"), IdentityRelation()))
 
     print("Original Expression:", expression)  # Original expression
     print("Translated Expression:", expression._translate())  # Translated expression
+    print("Negation Normal Form:", expression._translate()._negation_normal_form()) # Negation normal form
