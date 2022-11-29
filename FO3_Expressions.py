@@ -149,27 +149,48 @@ class Predicate:
         return self
 
 
+def _big_AND(ex):
+    terms = _T("∀", ex.argument)
+    answer = ""
+    for term in terms:
+        modified_term = ""
+        for predicate in term:
+            if modified_term == "":
+                modified_term = predicate
+            else:
+                modified_term = OR(modified_term, predicate)
+
+        if answer == "":
+            answer = ForAll(ex.variable, modified_term)
+        else:
+            answer = AND(answer, ForAll(ex.variable, modified_term))
+    return answer
+
+
+def _big_OR(ex):
+    terms = _T("∃", ex.argument)
+    answer = ""
+    for term in terms:
+        modified_term = ""
+        for predicate in term:
+            if modified_term == "":
+                modified_term = predicate
+            else:
+                modified_term = AND(modified_term, predicate)
+
+        if answer == "":
+            answer = ThereExists(ex.variable, modified_term)
+        else:
+            answer = OR(answer, ThereExists(ex.variable, modified_term))
+    return answer
+
+
 def _T(parameter, expression):
     if parameter == "-":
         if isinstance(expression, ForAll):
-            pass  # TODO
+            return _big_AND(expression)
         elif isinstance(expression, ThereExists):
-            terms = _T("∃", expression.argument)
-            print(terms)
-            answer = ""
-            for term in terms:
-                modified_term = ""
-                for predicate in term:
-                    if modified_term == "":
-                        modified_term = predicate
-                    else:
-                        modified_term = AND(modified_term, predicate)
-
-                if answer == "":
-                    answer = ThereExists(expression.variable, modified_term)
-                else:
-                    answer = OR(answer, ThereExists(expression.variable, modified_term))
-            return answer
+            return _big_OR(expression)
         elif isinstance(expression, AND):
             return AND(_T("-", expression.argument1), _T("-", expression.argument2))
         elif isinstance(expression, OR):
@@ -178,9 +199,9 @@ def _T(parameter, expression):
             return expression
     elif parameter == "∃":
         if isinstance(expression, ForAll):
-            pass  # TODO
+            return {frozenset(_big_AND(expression))}
         elif isinstance(expression, ThereExists):
-            pass  # TODO
+            return {frozenset(_big_OR(expression))}
         elif isinstance(expression, AND):
             answer = set()
             for set1 in _T("∃", expression.argument1):
@@ -193,9 +214,9 @@ def _T(parameter, expression):
             return {frozenset([expression])}
     elif parameter == "∀":
         if isinstance(expression, ForAll):
-            pass  # TODO
+            return {frozenset(_big_AND(expression))}
         elif isinstance(expression, ThereExists):
-            pass  # TODO
+            return {frozenset(_big_OR(expression))}
         elif isinstance(expression, AND):
             return _T("∀", expression.argument1).union(_T("∀", expression.argument2))
         elif isinstance(expression, OR):
@@ -219,5 +240,6 @@ if __name__ == "__main__":
     print("Negation Normal Form:", expression._negation_normal_form())  # Negation Normal Form
 
     expression2 = ThereExists("z", AND(OR(Predicate("A", "x", "z"), Predicate("B", "z", "x")), Predicate("C", "x", "y")))
+    print()
     print("Good FO3 Test (Original): ", expression2)
     print("Good FO3 Test (Translated): ", _T("-", expression2))
