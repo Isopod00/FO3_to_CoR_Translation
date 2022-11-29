@@ -152,15 +152,15 @@ class Predicate:
 def _T(parameter, expression):
     if parameter == "-":
         if isinstance(expression, ForAll):
-            return _T("∀", expression.argument)
+            pass
         elif isinstance(expression, ThereExists):
-            return _T("∃", expression.argument)
+            pass
         elif isinstance(expression, AND):
-            return AND(_T("-", expression.argument1), _T("-", expression.argument2))
+            pass
         elif isinstance(expression, OR):
-            return OR(_T("-", expression.argument1), _T("-", expression.argument2))
+            pass
         else:
-            return expression
+            pass
     elif parameter == "∃":
         if isinstance(expression, ForAll):
             pass
@@ -169,7 +169,7 @@ def _T(parameter, expression):
         elif isinstance(expression, AND):
             pass
         elif isinstance(expression, OR):
-            return _T("∃", expression.argument1).Union(_T("∃", expression.argument2))
+            pass
         else:
             pass
     elif parameter == "∀":
@@ -178,7 +178,7 @@ def _T(parameter, expression):
         elif isinstance(expression, ThereExists):
             pass
         elif isinstance(expression, AND):
-            return _T("∀", expression.argument1).Union(_T("∀", expression.argument2))
+            pass
         elif isinstance(expression, OR):
             pass
         else:
@@ -191,7 +191,10 @@ def _T(parameter, expression):
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
     expression = Negation(ForAll("x", ThereExists("y", OR(Equals("x", "-y"), Equals("x", "0")))))
-
     print("Original Expression:", expression)  # Original expression
     print("Negated Expression:", expression._negate())  # Negated expression
     print("Negation Normal Form:", expression._negation_normal_form())  # Negation Normal Form
+
+    expression2 = ThereExists("z", AND(OR(Predicate("A", "x", "z"), Predicate("B", "z", "x")), Predicate("C", "x", "y")))
+    print("Good FO3 Test (Original): ", expression2)
+    print("Good FO3 Test (Translated): ", _T("-", expression2))
