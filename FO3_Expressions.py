@@ -152,37 +152,60 @@ class Predicate:
 def _T(parameter, expression):
     if parameter == "-":
         if isinstance(expression, ForAll):
-            pass
+            pass  # TODO
         elif isinstance(expression, ThereExists):
-            pass
+            terms = _T("∃", expression.argument)
+            print(terms)
+            answer = ""
+            for term in terms:
+                modified_term = ""
+                for predicate in term:
+                    if modified_term == "":
+                        modified_term = predicate
+                    else:
+                        modified_term = AND(modified_term, predicate)
+
+                if answer == "":
+                    answer = ThereExists(expression.variable, modified_term)
+                else:
+                    answer = OR(answer, ThereExists(expression.variable, modified_term))
+            return answer
         elif isinstance(expression, AND):
-            pass
+            return AND(_T("-", expression.argument1), _T("-", expression.argument2))
         elif isinstance(expression, OR):
-            pass
+            return OR(_T("-", expression.argument1), _T("-", expression.argument2))
         else:
-            pass
+            return expression
     elif parameter == "∃":
         if isinstance(expression, ForAll):
-            pass
+            pass  # TODO
         elif isinstance(expression, ThereExists):
-            pass
+            pass  # TODO
         elif isinstance(expression, AND):
-            pass
+            answer = set()
+            for set1 in _T("∃", expression.argument1):
+                for set2 in _T("∃", expression.argument2):
+                    answer.add(set1.union(set2))
+            return answer
         elif isinstance(expression, OR):
-            pass
+            return _T("∃", expression.argument1).union(_T("∃", expression.argument2))
         else:
-            pass
+            return {frozenset([expression])}
     elif parameter == "∀":
         if isinstance(expression, ForAll):
-            pass
+            pass  # TODO
         elif isinstance(expression, ThereExists):
-            pass
+            pass  # TODO
         elif isinstance(expression, AND):
-            pass
+            return _T("∀", expression.argument1).union(_T("∀", expression.argument2))
         elif isinstance(expression, OR):
-            pass
+            answer = set()
+            for set1 in _T("∀", expression.argument1):
+                for set2 in _T("∀", expression.argument2):
+                    answer.add(set1.union(set2))
+            return answer
         else:
-            pass
+            return {frozenset([expression])}
     else:
         print("ERROR: Unsupported Parameter!")
         return
