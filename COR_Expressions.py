@@ -22,17 +22,22 @@ class EmptyRelation:
 
 
 class IdentityRelation:
-    """ This class describes the COR mathematical symbol 𝟏 (identity relation) """
+    """ This class describes the COR mathematical symbol 𝟏 (identity relation) containing pairs (arg1, arg2) """
+
+    def __init__(self, arg1, arg2):
+        self.argument1 = arg1
+        self.argument2 = arg2
 
     def __str__(self) -> str:
         return '𝟏'
 
+    # This is assuming the relations we are discussing contain pairs (argument1, argument2)
     def _translate(self):
-        return Equals("x", "y")  # This is assuming the relations we are discussing contain pairs (x, y)
+        return Equals(self.argument1, self.argument2)
 
 
 class Converse:
-    """ This class describes the converse of a relation (R⁻¹), which is all (b, a) such that (a, b) ∈ R"""
+    """ This class describes the converse of a relation (R⁻¹), which is all (b, a) such that (a, b) ∈ R """
 
     def __init__(self, rel):
         self.relation = rel
@@ -45,7 +50,7 @@ class Converse:
 
 
 class Union:
-    """This class describes the union between two relations arg1 and arg2, which can be any relations"""
+    """This class describes the union between two relations arg1 and arg2, which can be any relations """
 
     def __init__(self, arg1, arg2):
         self.argument1 = arg1
@@ -59,7 +64,7 @@ class Union:
 
 
 class Intersection:
-    """This class describes the intersection between two relations arg1 and arg2, which can be any relations"""
+    """This class describes the intersection between two relations arg1 and arg2, which can be any relations """
 
     def __init__(self, arg1, arg2):
         self.argument1 = arg1
@@ -73,7 +78,7 @@ class Intersection:
 
 
 class Composition:
-    """ This class describes the composition operation arg1 ∘ arg2 = {(x, z) | (x, y) ∈ arg1 ∧ (y, z) ∈ arg2} """
+    """ This class describes the composition operation arg1 ∘ arg2 = {(x, y) | (x, z) ∈ arg1 ∧ (z, y) ∈ arg2} """
 
     def __init__(self, arg1, arg2):
         self.argument1 = arg1
@@ -84,7 +89,7 @@ class Composition:
 
     # This is assuming that argument1 contains pairs (x, z) and argument2 contains pairs (z, y)
     def _translate(self):
-        return ThereExists(f'{self.argument2.second_number}',
+        return ThereExists(f'{self.argument1.second_element}',
                            AND(self.argument1._translate(), self.argument2._translate()))
 
 
@@ -100,28 +105,29 @@ class Dagger:
 
     # This is assuming that argument1 contains pairs (x, z) and argument2 contains pairs (z, y)
     def _translate(self):
-        return ForAll(f'{self.argument2.second_number}', OR(self.argument1._translate(), self.argument2._translate()))
+        return ForAll(f'{self.argument1.second_element}',
+                      OR(self.argument1._translate(), self.argument2._translate()))
 
 
 class Relation:
-    """ This class represents a single relation with ordered pairs (arg1, arg2) and denoted by the letter argument"""
+    """ This class represents a single relation denoted by the letter argument, with ordered pairs (arg1, arg2) """
 
     def __init__(self, letter, arg1, arg2):
-        self.first_number = arg1
-        self.second_number = arg2
+        self.first_element = arg1
+        self.second_element = arg2
         self.letter = letter
 
     def __str__(self) -> str:
         return self.letter
 
-    def _translate(self) -> str:
-        return f'{self.letter}({self.first_number},{self.second_number})'
+    def _translate(self) -> Predicate:
+        return Predicate(self.letter, self.first_element, self.second_element)
 
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    expression = Union(Converse(Composition(Relation("A", "x", "y"), Relation("B", "y", "z"))),
-                       Intersection(Converse(Relation("B", "y", "z")), IdentityRelation()))
+    expression = Union(Converse(Composition(Relation("A", "x", "z"), Relation("B", "z", "y"))),
+                       Intersection(Converse(Relation("B", "z", "y")), IdentityRelation("x", "z")))
 
     print("Original Expression:", expression)  # Original expression
     print("Translated Expression:", expression._translate())  # Translated expression
