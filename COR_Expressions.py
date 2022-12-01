@@ -7,7 +7,7 @@ class UniversalRelation:
     def __str__(self) -> str:
         return 'T'
 
-    def _translate(self) -> tt:
+    def _translate(self, arg1, arg2) -> tt:
         return tt()
 
 
@@ -17,7 +17,7 @@ class EmptyRelation:
     def __str__(self) -> str:
         return '𝟎'
 
-    def _translate(self) -> ff:
+    def _translate(self, arg1, arg2) -> ff:
         return ff()
 
 
@@ -41,11 +41,8 @@ class Converse:
     def __str__(self) -> str:
         return f'({self.argument})⁻¹'
 
-    def _translate(self) -> Negation:
-        if isinstance(self.argument, Relation) or isinstance(self.argument, IdentityRelation):
-            return Negation(self.argument._translate("x", "y"))
-        else:
-            return Negation(self.argument._translate())
+    def _translate(self, arg1, arg2) -> Negation:
+        return Negation(self.argument._translate(arg1, arg2))
 
 
 class Union:
@@ -58,16 +55,8 @@ class Union:
     def __str__(self) -> str:
         return f'({self.argument1}) ∪ ({self.argument2})'
 
-    def _translate(self) -> OR:
-        if isinstance(self.argument1, Relation) or isinstance(self.argument1, IdentityRelation):
-            left = self.argument1._translate("x", "y")
-        else:
-            left = self.argument1._translate()
-        if isinstance(self.argument2, Relation) or isinstance(self.argument2, IdentityRelation):
-            right = self.argument2._translate("x", "y")
-        else:
-            right = self.argument2._translate()
-        return OR(left, right)
+    def _translate(self, arg1, arg2) -> OR:
+        return OR(self.argument1._translate(arg1, arg2), self.argument2._translate(arg1, arg2))
 
 
 class Intersection:
@@ -80,16 +69,8 @@ class Intersection:
     def __str__(self) -> str:
         return f'({self.argument1}) ∩ ({self.argument2})'
 
-    def _translate(self) -> AND:
-        if isinstance(self.argument1, Relation) or isinstance(self.argument1, IdentityRelation):
-            left = self.argument1._translate("x", "y")
-        else:
-            left = self.argument1._translate()
-        if isinstance(self.argument2, Relation) or isinstance(self.argument2, IdentityRelation):
-            right = self.argument2._translate("x", "y")
-        else:
-            right = self.argument2._translate()
-        return AND(left, right)
+    def _translate(self, arg1, arg2) -> AND:
+        return AND(self.argument1._translate(arg1, arg2), self.argument2._translate(arg1, arg2))
 
 
 class Composition:
@@ -103,8 +84,8 @@ class Composition:
         return f'{self.argument1} ∘ {self.argument2}'
 
     # This is assuming that argument1 contains pairs (x, z) and argument2 contains pairs (z, y)
-    def _translate(self) -> ThereExists:
-        return ThereExists('z', AND(self.argument1._translate("x", "z"), self.argument2._translate("z", "y")))
+    def _translate(self, arg1, arg2) -> ThereExists:
+        return ThereExists('z', AND(self.argument1._translate(arg1, "z"), self.argument2._translate("z", arg2)))
 
 
 class Dagger:
@@ -118,8 +99,8 @@ class Dagger:
         return f'{self.argument1} † {self.argument2}'
 
     # This is assuming that argument1 contains pairs (x, z) and argument2 contains pairs (z, y)
-    def _translate(self) -> ForAll:
-        return ForAll('z', OR(self.argument1._translate("x", "z"), self.argument2._translate("z", "y")))
+    def _translate(self, arg1, arg2) -> ForAll:
+        return ForAll('z', OR(self.argument1._translate(arg1, "z"), self.argument2._translate("z", arg2)))
 
 
 class Relation:
@@ -142,5 +123,5 @@ if __name__ == "__main__":
                        Intersection(Converse(Relation("C")), IdentityRelation()))
 
     print("Original Expression:", expression)  # Original expression
-    print("Translated Expression:", expression._translate())  # Translated expression
-    print("Negation Normal Form:", expression._translate()._negation_normal_form())  # Negation normal form
+    print("Translated Expression:", expression._translate("x", "y"))  # Translated expression
+    print("Negation Normal Form:", expression._translate("x", "y")._negation_normal_form())  # Negation normal form
