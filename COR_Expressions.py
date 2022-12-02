@@ -41,6 +41,19 @@ class Converse:
     def __str__(self) -> str:
         return f'({self.argument})⁻¹'
 
+    def _translate(self, arg1, arg2):
+        return self.argument._translate(arg2, arg1)
+
+
+class Complement:
+    """ This class describes the complement of a relation (R⁻ ) which is all (a, b) not in R """
+
+    def __init__(self, arg):
+        self.argument = arg
+
+    def __str__(self) -> str:
+        return f'({self.argument})⁻'
+
     def _translate(self, arg1, arg2) -> Negation:
         return Negation(self.argument._translate(arg1, arg2))
 
@@ -119,7 +132,7 @@ class Relation:
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    expression = Union(Converse(Composition(Relation("A"), Relation("B"))),
+    expression = Union(Complement(Composition(Relation("A"), Relation("B"))),
                        Intersection(Converse(Relation("C")), IdentityRelation()))
 
     print("Original Expression:", expression)  # Original expression
