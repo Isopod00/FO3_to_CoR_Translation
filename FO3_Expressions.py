@@ -1,3 +1,23 @@
+def make_OR(arg1, arg2):
+    """ This method helps improve/simplify the construction of OR objects """
+    if isinstance(arg1, ff):
+        return arg2
+    elif isinstance(arg2, ff):
+        return arg1
+    else:
+        return OR(arg1, arg2)
+
+
+def make_AND(arg1, arg2):
+    """ This method helps improve/simplify the construction of AND objects """
+    if isinstance(arg1, tt):
+        return arg2
+    elif isinstance(arg2, tt):
+        return arg1
+    else:
+        return AND(arg1, arg2)
+
+
 class Negation:
     """ This class describes the mathematical symbol ¬ (not/negation)
     The argument for this class can be any logical expression that the negation should be applied to. """
@@ -149,47 +169,41 @@ class Predicate:
         return self
 
 
-def _big_AND(terms, variable):
+def Implies(a, b) -> OR:
+    """ Create a new OR object using the mathematical definition of implies -> """
+    return OR(Negation(a), b)
+
+
+def big_AND(terms, variable):
+    """ This method computes the n-ary logical AND of n elements """
     answer = tt()
     for term in terms:
         modified_term = ff()
         for predicate in term:
-            if isinstance(modified_term, ff):
-                modified_term = predicate
-            else:
-                modified_term = OR(modified_term, predicate)
-
-        if isinstance(answer, tt):
-            answer = ForAll(variable, modified_term)
-        else:
-            answer = AND(answer, ForAll(variable, modified_term))
+            modified_term = make_OR(modified_term, predicate)
+        answer = make_AND(answer, ForAll(variable, modified_term))
     return answer
 
 
-def _big_OR(terms, variable):
-    answer = tt()
+def big_OR(terms, variable):
+    """ This method computes the n-ary logical OR of n elements """
+    answer = ff()
     for term in terms:
-        modified_term = ff()
+        modified_term = tt()
         for predicate in term:
-            if isinstance(modified_term, ff):
-                modified_term = predicate
-            else:
-                modified_term = AND(modified_term, predicate)
-
-        if isinstance(answer, tt):
-            answer = ThereExists(variable, modified_term)
-        else:
-            answer = OR(answer, ThereExists(variable, modified_term))
+            modified_term = make_AND(modified_term, predicate)
+        answer = make_OR(answer, ThereExists(variable, modified_term))
     return answer
 
 
 def T_dash(expression):
+    """ Translation function for translating FO3 terms in negation normal form into "good" FO3 terms """
     if isinstance(expression, ForAll):
         terms = T_ForAll(expression.argument)
-        return _big_AND(terms, expression.variable)
+        return big_AND(terms, expression.variable)
     elif isinstance(expression, ThereExists):
         terms = T_ThereExists(expression.argument)
-        return _big_OR(terms, expression.variable)
+        return big_OR(terms, expression.variable)
     elif isinstance(expression, AND):
         return AND(T_dash(expression.argument1), T_dash(expression.argument2))
     elif isinstance(expression, OR):
@@ -199,12 +213,13 @@ def T_dash(expression):
 
 
 def T_ThereExists(expression):
+    """ Translation function for translating FO3 terms in negation normal form into "good" FO3 terms """
     if isinstance(expression, ForAll):
         terms = T_ForAll(expression.argument)
-        return {frozenset([_big_AND(terms, expression.variable)])}
+        return {frozenset([big_AND(terms, expression.variable)])}
     elif isinstance(expression, ThereExists):
         terms = T_ThereExists(expression.argument)
-        return {frozenset([_big_OR(terms, expression.variable)])}
+        return {frozenset([big_OR(terms, expression.variable)])}
     elif isinstance(expression, AND):
         answer = set()
         for set1 in T_ThereExists(expression.argument1):
@@ -218,12 +233,13 @@ def T_ThereExists(expression):
 
 
 def T_ForAll(expression):
+    """ Translation function for translating FO3 terms in negation normal form into "good" FO3 terms """
     if isinstance(expression, ForAll):
         terms = T_ForAll(expression.argument)
-        return {frozenset([_big_AND(terms, expression.variable)])}
+        return {frozenset([big_AND(terms, expression.variable)])}
     elif isinstance(expression, ThereExists):
         terms = T_ThereExists(expression.argument)
-        return {frozenset([_big_OR(terms, expression.variable)])}
+        return {frozenset([big_OR(terms, expression.variable)])}
     elif isinstance(expression, AND):
         return T_ForAll(expression.argument1).union(T_ForAll(expression.argument2))
     elif isinstance(expression, OR):
@@ -236,19 +252,10 @@ def T_ForAll(expression):
         return {frozenset([expression])}
 
 
-def Implies(a, b):
-    return OR(Negation(a), b)
-
-
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    expression = Negation(ForAll("x", ThereExists("y", OR(Equals("x", "-y"), Equals("x", "0")))))
+    expression = ForAll("x", ThereExists("y", ForAll("z", AND(Implies(Equals("y", "z"), Equals("x", "y")),
+                                                              Predicate("R", "x", "y")))))
     print("Original Expression:", expression)  # Original expression
-    print("Negated Expression:", expression._negate())  # Negated expression
-    print("Negation Normal Form:", expression._negation_normal_form())  # Negation Normal Form
-
-    #expression2 = ThereExists("y", ForAll("z", Equals("z", "y")))
-    expression2 = ForAll("x", ThereExists("y", ForAll("z", AND(Implies(Equals("y","z"),Equals("x","y")),Predicate("R","x","y")))))
-    print()
-    print("Good FO3 Test (Original): ", expression2)
-    print("Good FO3 Test (Translated): ", T_dash(expression2))
+    print("\nNegation Normal Form:", expression._negation_normal_form())  # Negation Normal Form
+    print("\nGood FO3 Test (Translated): ", T_dash(expression._negation_normal_form()))
