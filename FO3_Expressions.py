@@ -17,8 +17,13 @@ def make_AND(arg1, arg2):
     else:
         return AND(arg1, arg2)
 
+class Term:
+    def getAsAndList(self):
+        return [self]
+    def getAsOrList(self):
+        return [self]
 
-class Negation:
+class Negation(Term):
     """ This class describes the mathematical symbol ¬ (not/negation)
     The argument for this class can be any logical expression that the negation should be applied to. """
 
@@ -35,7 +40,7 @@ class Negation:
         return f'¬({self.argument})'
 
 
-class ForAll:
+class ForAll(Term):
     """ This class describes the mathematical symbol ∀ (for all)
          The two arguments (var and arg) describe the variable in question and
          the expression that ∀var is being applied to, respectively. """
@@ -54,7 +59,7 @@ class ForAll:
         return f'∀{self.variable}. {self.argument}'
 
 
-class ThereExists:
+class ThereExists(Term):
     """ This class describes the mathematical symbol ∃ (there exists)
      The two arguments (var and arg) describe the variable in question and
      the expression that ∃var is being applied to, respectively. """
@@ -73,7 +78,7 @@ class ThereExists:
         return f'∃{self.variable}. {self.argument}'
 
 
-class AND:
+class AND(Term):
     """This class describes a logical AND statement with two arguments, the arguments can be any logical expressions"""
 
     def __init__(self, arg1, arg2):
@@ -89,8 +94,14 @@ class AND:
     def __str__(self) -> str:
         return f'({self.argument1}) ∧ ({self.argument2})'
 
+    def getAsAndList(self):
+        lhs = self.argument1.getAsAndList()
+        rhs = self.argument2.getAsAndList()
+        return lhs + rhs
 
-class OR:
+
+
+class OR(Term):
     """This class describes a logical OR statement with two arguments, the arguments can be any logical expressions"""
 
     def __init__(self, arg1, arg2):
@@ -105,9 +116,13 @@ class OR:
 
     def __str__(self) -> str:
         return f'({self.argument1}) ∨ ({self.argument2})'
+    def getAsOrList(self):
+        lhs = self.argument1.getAsOrList()
+        rhs = self.argument2.getAsOrList()
+        return lhs + rhs
 
 
-class Equals:
+class Equals(Term):
     """ This class describes two arguments being equal to each other.
     The two arguments (arg1 and arg2) should be strings """
 
@@ -125,7 +140,7 @@ class Equals:
         return f'{self.argument1} = {self.argument2}'
 
 
-class tt:
+class tt(Term):
     """ This class represents the literal boolean value True. """
 
     def _negate(self):
@@ -137,8 +152,11 @@ class tt:
     def __str__(self):
         return "True"
 
+    def getAsAndList(self):
+        return []
 
-class ff:
+
+class ff(Term):
     """ This class represents the literal boolean value False. """
 
     def _negate(self):
@@ -150,8 +168,10 @@ class ff:
     def __str__(self):
         return "False"
 
+    def getAsOrList(self):
+        return []
 
-class Predicate:
+class Predicate(Term):
     """ This class represents a single predicate denoted by the letter argument, with variables arg1 and arg2 """
 
     def __init__(self, letter, arg1, arg2):
@@ -258,10 +278,28 @@ def T_Nice(expression):
         return OR(T_Nice(expression.argument1), T_Nice(expression.argument2))
     elif isinstance(expression, AND):
         return AND(T_Nice(expression.argument1), T_Nice(expression.argument2))
-    #elif ThereExists case:
-        # TODO
-    #elif  ForAll case:
-        # TODO
+    elif isinstance(expression, ThereExists):
+        terms = expression.getAsAndList()
+        var = expression.variable
+
+        lhs_list = #does NOT depend on the variable  #TODO
+        rhs_list = #DOES depend on the variable  #TODO
+
+        lhs = big_AND(#TODO)
+        rhs = ThereExists(big_AND(#TODO), var)
+
+        return AND(lhs, rhs)
+    elif isinstance(expression, ForAll):
+        terms = expression.getAsOrList()
+        var = expression.variable
+
+        lhs_list =  # does NOT depend on the variable  #TODO
+        rhs_list =  # DOES depend on the variable  #TODO
+
+        lhs = big_OR(#TODO)
+        rhs = ForAll(big_OR(#TODO), var)
+
+        return OR(lhs, rhs)
     else:
         return expression
 
