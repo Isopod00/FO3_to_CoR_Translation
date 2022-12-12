@@ -196,56 +196,56 @@ def big_OR(terms, variable):
     return answer
 
 
-def T_dash(expression):
+def T_Good_Dash(expression):
     """ Translation function for translating FO3 terms in negation normal form into "good" FO3 terms """
     if isinstance(expression, ForAll):
-        terms = T_ForAll(expression.argument)
+        terms = T_Good_ForAll(expression.argument)
         return big_AND(terms, expression.variable)
     elif isinstance(expression, ThereExists):
-        terms = T_ThereExists(expression.argument)
+        terms = T_Good_ThereExists(expression.argument)
         return big_OR(terms, expression.variable)
     elif isinstance(expression, AND):
-        return AND(T_dash(expression.argument1), T_dash(expression.argument2))
+        return AND(T_Good_Dash(expression.argument1), T_Good_Dash(expression.argument2))
     elif isinstance(expression, OR):
-        return OR(T_dash(expression.argument1), T_dash(expression.argument2))
+        return OR(T_Good_Dash(expression.argument1), T_Good_Dash(expression.argument2))
     else:
         return expression
 
 
-def T_ThereExists(expression):
+def T_Good_ThereExists(expression):
     """ Translation function for translating FO3 terms in negation normal form into "good" FO3 terms """
     if isinstance(expression, ForAll):
-        terms = T_ForAll(expression.argument)
+        terms = T_Good_ForAll(expression.argument)
         return {frozenset([big_AND(terms, expression.variable)])}
     elif isinstance(expression, ThereExists):
-        terms = T_ThereExists(expression.argument)
+        terms = T_Good_ThereExists(expression.argument)
         return {frozenset([big_OR(terms, expression.variable)])}
     elif isinstance(expression, AND):
         answer = set()
-        for set1 in T_ThereExists(expression.argument1):
-            for set2 in T_ThereExists(expression.argument2):
+        for set1 in T_Good_ThereExists(expression.argument1):
+            for set2 in T_Good_ThereExists(expression.argument2):
                 answer.add(set1.union(set2))
         return answer
     elif isinstance(expression, OR):
-        return T_ThereExists(expression.argument1).union(T_ThereExists(expression.argument2))
+        return T_Good_ThereExists(expression.argument1).union(T_Good_ThereExists(expression.argument2))
     else:
         return {frozenset([expression])}
 
 
-def T_ForAll(expression):
+def T_Good_ForAll(expression):
     """ Translation function for translating FO3 terms in negation normal form into "good" FO3 terms """
     if isinstance(expression, ForAll):
-        terms = T_ForAll(expression.argument)
+        terms = T_Good_ForAll(expression.argument)
         return {frozenset([big_AND(terms, expression.variable)])}
     elif isinstance(expression, ThereExists):
-        terms = T_ThereExists(expression.argument)
+        terms = T_Good_ThereExists(expression.argument)
         return {frozenset([big_OR(terms, expression.variable)])}
     elif isinstance(expression, AND):
-        return T_ForAll(expression.argument1).union(T_ForAll(expression.argument2))
+        return T_Good_ForAll(expression.argument1).union(T_Good_ForAll(expression.argument2))
     elif isinstance(expression, OR):
         answer = set()
-        for set1 in T_ForAll(expression.argument1):
-            for set2 in T_ForAll(expression.argument2):
+        for set1 in T_Good_ForAll(expression.argument1):
+            for set2 in T_Good_ForAll(expression.argument2):
                 answer.add(set1.union(set2))
         return answer
     else:
@@ -258,4 +258,4 @@ if __name__ == "__main__":
                                                               Predicate("R", "x", "y")))))
     print("Original Expression:", expression)  # Original expression
     print("\nNegation Normal Form:", expression._negation_normal_form())  # Negation Normal Form
-    print("\nGood FO3 Test (Translated): ", T_dash(expression._negation_normal_form()))
+    print("\nGood FO3 Test (Translated): ", T_Good_Dash(expression._negation_normal_form()))
