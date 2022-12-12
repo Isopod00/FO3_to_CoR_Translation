@@ -252,10 +252,25 @@ def T_Good_ForAll(expression):
         return {frozenset([expression])}
 
 
+def T_Nice(expression):
+    """ Translation function for translating "good" FO3 terms into "nice" FO3 terms """
+    if isinstance(expression, OR):
+        return OR(T_Nice(expression.argument1), T_Nice(expression.argument2))
+    elif isinstance(expression, AND):
+        return AND(T_Nice(expression.argument1), T_Nice(expression.argument2))
+    #elif ThereExists case:
+        # TODO
+    #elif  ForAll case:
+        # TODO
+    else:
+        return expression
+
+
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
     expression = ForAll("x", ThereExists("y", ForAll("z", AND(Implies(Equals("y", "z"), Equals("x", "y")),
                                                               Predicate("R", "x", "y")))))
     print("Original Expression:", expression)  # Original expression
     print("\nNegation Normal Form:", expression._negation_normal_form())  # Negation Normal Form
-    print("\nGood FO3 Test (Translated): ", T_Good_Dash(expression._negation_normal_form()))
+    print("\nGood FO3 Translation: ", T_Good_Dash(expression._negation_normal_form()))  # Good FO3 Term
+    print("\nNice FO3 Translation: ", T_Nice(T_Good_Dash(expression._negation_normal_form())))  # Nice FO3 Term
