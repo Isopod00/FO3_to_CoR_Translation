@@ -175,12 +175,12 @@ class Predicate(Term):
     """ This class represents a single predicate denoted by the letter argument, with variables arg1 and arg2 """
 
     def __init__(self, letter, arg1, arg2):
-        self.variable1 = arg1
-        self.variabl2 = arg2
+        self.argument1 = arg1
+        self.argument2 = arg2
         self.letter = letter
 
     def __str__(self) -> str:
-        return f'{self.letter}({self.variable1},{self.variabl2})'
+        return f'{self.letter}({self.argument1},{self.argument2})'
 
     def _negate(self):
         return Negation(self)
@@ -279,29 +279,30 @@ def T_Nice(expression):
     elif isinstance(expression, AND):
         return AND(T_Nice(expression.argument1), T_Nice(expression.argument2))
     elif isinstance(expression, ThereExists):
-        terms = expression.getAsAndList()
+        terms = expression.argument.getAsAndList()
         var = expression.variable
 
         lhs_list = [] # does NOT depend on the variable
         rhs_list = [] # DOES depend on the variable
+
         for term in terms:
             if isinstance(term, ForAll) or isinstance(term, ThereExists):
                 if term.variable == var:
-                    rhs_list += term
+                    rhs_list.append(term)
                 else:
-                    lhs_list += term
+                    lhs_list.append(term)
             else:
                 if term.argument1 == var or term.argument2 == var:
-                    rhs_list += term
+                    rhs_list.append(term)
                 else:
-                    lhs_list += term
+                    lhs_list.append(term)
 
         lhs = n_ary_AND(lhs_list)
-        rhs = ThereExists(n_ary_AND(rhs_list), var)
+        rhs = ThereExists(var, n_ary_AND(rhs_list))
 
         return AND(lhs, rhs)
     elif isinstance(expression, ForAll):
-        terms = expression.getAsOrList()
+        terms = expression.argument.getAsOrList()
         var = expression.variable
 
         lhs_list = []  # does NOT depend on the variable
@@ -318,26 +319,37 @@ def T_Nice(expression):
                 else:
                     lhs_list.append(term)
 
-        lhs = n_ary_OR(lhs_list)
-        rhs = ForAll(n_ary_OR(rhs_list), var)
-
-        return OR(lhs, rhs)
+        if len(lhs_list) > 0 and len(rhs_list) > 0:
+            lhs = T_Nice(n_ary_OR(lhs_list))
+            rhs = ForAll(var, T_Nice(n_ary_OR(rhs_list)))
+            return OR(lhs, rhs)
+        elif len(rhs_list) > 0:
+            rhs = ForAll(var, T_Nice(n_ary_OR(rhs_list)))
+            return rhs
+        elif len(lhs_list) > 0:
+            lhs = T_Nice(n_ary_OR(lhs_list))
+            return lhs
     else:
         return expression
 
 
-def n_ary_AND(expressions_list) -> AND:
-    #TODO
+def n_ary_AND(expressions_list):
+    answer = tt()
+    for term in expressions_list:
+        answer = make_AND(answer, term)
+    return answer
 
 
-def n_ary_OR(expressions_list) -> OR:
-    #TODO
+def n_ary_OR(expressions_list):
+    answer = ff()
+    for term in expressions_list:
+        answer = make_OR(answer, term)
+    return answer
 
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    expression = ForAll("x", ThereExists("y", ForAll("z", AND(Implies(Equals("y", "z"), Equals("x", "y")),
-                                                              Predicate("R", "x", "y")))))
+    expression = ForAll('x', AND(Predicate("A", "x", "y"), Equals('y', 'z')))
     print("Original Expression:", expression)  # Original expression
     print("\nNegation Normal Form:", expression._negation_normal_form())  # Negation Normal Form
     print("\nGood FO3 Translation: ", T_Good_Dash(expression._negation_normal_form()))  # Good FO3 Term
