@@ -195,7 +195,7 @@ def Implies(a, b) -> OR:
 
 
 def big_AND(terms, variable):
-    """ This method computes the n-ary logical AND of n elements """
+    """ This method helps compute the n-ary logical AND of n elements for the GOOD translation """
     answer = tt()
     for term in terms:
         modified_term = ff()
@@ -206,7 +206,7 @@ def big_AND(terms, variable):
 
 
 def big_OR(terms, variable):
-    """ This method computes the n-ary logical OR of n elements """
+    """ This method helps compute the n-ary logical OR of n elements for the GOOD translation """
     answer = ff()
     for term in terms:
         modified_term = tt()
@@ -282,26 +282,56 @@ def T_Nice(expression):
         terms = expression.getAsAndList()
         var = expression.variable
 
-        lhs_list = #does NOT depend on the variable  #TODO
-        rhs_list = #DOES depend on the variable  #TODO
+        lhs_list = [] # does NOT depend on the variable
+        rhs_list = [] # DOES depend on the variable
+        for term in terms:
+            if isinstance(term, ForAll) or isinstance(term, ThereExists):
+                if term.variable == var:
+                    rhs_list += term
+                else:
+                    lhs_list += term
+            else:
+                if term.argument1 == var or term.argument2 == var:
+                    rhs_list += term
+                else:
+                    lhs_list += term
 
-        lhs = big_AND(#TODO)
-        rhs = ThereExists(big_AND(#TODO), var)
+        lhs = n_ary_AND(lhs_list)
+        rhs = ThereExists(n_ary_AND(rhs_list), var)
 
         return AND(lhs, rhs)
     elif isinstance(expression, ForAll):
         terms = expression.getAsOrList()
         var = expression.variable
 
-        lhs_list =  # does NOT depend on the variable  #TODO
-        rhs_list =  # DOES depend on the variable  #TODO
+        lhs_list = []  # does NOT depend on the variable
+        rhs_list = []  # DOES depend on the variable
+        for term in terms:
+            if isinstance(term, ForAll) or isinstance(term, ThereExists):
+                if term.variable == var:
+                    rhs_list.append(term)
+                else:
+                    lhs_list.append(term)
+            else:
+                if term.argument1 == var or term.argument2 == var:
+                    rhs_list.append(term)
+                else:
+                    lhs_list.append(term)
 
-        lhs = big_OR(#TODO)
-        rhs = ForAll(big_OR(#TODO), var)
+        lhs = n_ary_OR(lhs_list)
+        rhs = ForAll(n_ary_OR(rhs_list), var)
 
         return OR(lhs, rhs)
     else:
         return expression
+
+
+def n_ary_AND(expressions_list) -> AND:
+    #TODO
+
+
+def n_ary_OR(expressions_list) -> OR:
+    #TODO
 
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
