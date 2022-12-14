@@ -349,7 +349,8 @@ def n_ary_OR(expressions_list):
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    expression = ForAll('x', AND(Predicate("A", "x", "y"), Equals('y', 'z')))
+    expression = ForAll('x', AND(Predicate("A", "x", "y"), AND(Equals('y', 'z'), Predicate('B', 'y', 'z'))))
+
     print("Original Expression:", expression)  # Original expression
     print("\nNegation Normal Form:", expression._negation_normal_form())  # Negation Normal Form
     print("\nGood FO3 Translation: ", T_Good_Dash(expression._negation_normal_form()))  # Good FO3 Term
