@@ -17,11 +17,14 @@ def make_AND(arg1, arg2):
     else:
         return AND(arg1, arg2)
 
+
 class Term:
     def getAsAndList(self):
         return [self]
+
     def getAsOrList(self):
         return [self]
+
 
 class Negation(Term):
     """ This class describes the mathematical symbol ¬ (not/negation)
@@ -100,7 +103,6 @@ class AND(Term):
         return lhs + rhs
 
 
-
 class OR(Term):
     """This class describes a logical OR statement with two arguments, the arguments can be any logical expressions"""
 
@@ -116,6 +118,7 @@ class OR(Term):
 
     def __str__(self) -> str:
         return f'({self.argument1}) ∨ ({self.argument2})'
+
     def getAsOrList(self):
         lhs = self.argument1.getAsOrList()
         rhs = self.argument2.getAsOrList()
@@ -170,6 +173,7 @@ class ff(Term):
 
     def getAsOrList(self):
         return []
+
 
 class Predicate(Term):
     """ This class represents a single predicate denoted by the letter argument, with variables arg1 and arg2 """
@@ -282,8 +286,8 @@ def T_Nice(expression):
         terms = expression.argument.getAsAndList()
         var = expression.variable
 
-        lhs_list = [] # does NOT depend on the variable
-        rhs_list = [] # DOES depend on the variable
+        lhs_list = []  # does NOT depend on the variable
+        rhs_list = []  # DOES depend on the variable
 
         for term in terms:
             if isinstance(term, ForAll) or isinstance(term, ThereExists):
@@ -349,9 +353,9 @@ def n_ary_OR(expressions_list):
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    expression = ForAll('x', AND(Predicate("A", "x", "y"), AND(Equals('y', 'z'), Predicate('B', 'y', 'z'))))
+    test_expression = ForAll('x', AND(Predicate("A", "x", "y"), AND(Equals('y', 'z'), Predicate('B', 'y', 'z'))))
 
-    print("Original Expression:", expression)  # Original expression
-    print("\nNegation Normal Form:", expression._negation_normal_form())  # Negation Normal Form
-    print("\nGood FO3 Translation: ", T_Good_Dash(expression._negation_normal_form()))  # Good FO3 Term
-    print("\nNice FO3 Translation: ", T_Nice(T_Good_Dash(expression._negation_normal_form())))  # Nice FO3 Term
+    print("Original Expression:", test_expression)  # Original expression
+    print("\nNegation Normal Form:", test_expression._negation_normal_form())  # Negation Normal Form
+    print("\nGood FO3 Translation: ", T_Good_Dash(test_expression._negation_normal_form()))  # Good FO3 Term
+    print("\nNice FO3 Translation: ", T_Nice(T_Good_Dash(test_expression._negation_normal_form())))  # Nice FO3 Term
