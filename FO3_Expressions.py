@@ -288,7 +288,6 @@ def T_Nice(expression):
 
         lhs_list = []  # does NOT depend on the variable
         rhs_list = []  # DOES depend on the variable
-
         for term in terms:
             if isinstance(term, ForAll) or isinstance(term, ThereExists):
                 if term.variable == var:
@@ -301,10 +300,17 @@ def T_Nice(expression):
                 else:
                     lhs_list.append(term)
 
-        lhs = n_ary_AND(lhs_list)
-        rhs = ThereExists(var, n_ary_AND(rhs_list))
+        if len(lhs_list) > 0 and len(rhs_list) > 0:
+            lhs = T_Nice(n_ary_AND(lhs_list))
+            rhs = ThereExists(var, T_Nice(n_ary_AND(rhs_list)))
+            return AND(lhs, rhs)
+        elif len(rhs_list) > 0:
+            rhs = ThereExists(var, T_Nice(n_ary_AND(rhs_list)))
+            return rhs
+        elif len(lhs_list) > 0:
+            lhs = T_Nice(n_ary_AND(lhs_list))
+            return lhs
 
-        return AND(lhs, rhs)
     elif isinstance(expression, ForAll):
         terms = expression.argument.getAsOrList()
         var = expression.variable
@@ -353,7 +359,7 @@ def n_ary_OR(expressions_list):
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    test_expression = ForAll('x', AND(Predicate("A", "x", "y"), AND(Equals('y', 'z'), Predicate('B', 'y', 'z'))))
+    test_expression = ThereExists('x', AND(Predicate("A", "x", "y"), AND(Equals('y', 'z'), Predicate('B', 'y', 'z'))))
 
     print("Original Expression:", test_expression)  # Original expression
     print("\nNegation Normal Form:", test_expression._negation_normal_form())  # Negation Normal Form
