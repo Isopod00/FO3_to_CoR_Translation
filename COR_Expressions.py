@@ -1,3 +1,5 @@
+# Authors: Sebastiaan Joosten, Anthony Brogni
+
 from FO3_Expressions import *
 
 
