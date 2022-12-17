@@ -73,26 +73,10 @@ def T_Nice(expression):
         lhs_list = []  # does NOT depend on the variable
         rhs_list = []  # DOES depend on the variable
         for term in terms:
-            if isinstance(term, ForAll) or isinstance(term, ThereExists):
-                if isinstance(term.argument, Negation):
-                    if term.argument.argument.argument1 == var or term.argument.argument.argument2 == var:
-                        rhs_list.append(term)
-                    else:
-                        lhs_list.append(term)
-                elif term.variable == term.argument.argument1 or term.variable == term.argument.argument2:
-                    rhs_list.append(term)
-                else:
-                    lhs_list.append(term)
-            elif isinstance(term, Negation):
-                if term.argument.argument1 == var or term.argument.argument2 == var:
-                    rhs_list.append(term)
-                else:
-                    lhs_list.append(term)
+            if var in term._depends_on():
+                rhs_list.append(term)
             else:
-                if term.argument1 == var or term.argument2 == var:
-                    rhs_list.append(term)
-                else:
-                    lhs_list.append(term)
+                lhs_list.append(term)
         if len(lhs_list) > 0 and len(rhs_list) > 0:  # If some terms depend on the variable and some do not
             lhs = T_Nice(n_ary_AND(lhs_list))
             rhs = ThereExists(var, T_Nice(n_ary_AND(rhs_list)))
@@ -110,26 +94,10 @@ def T_Nice(expression):
         lhs_list = []  # does NOT depend on the variable
         rhs_list = []  # DOES depend on the variable
         for term in terms:
-            if isinstance(term, ForAll) or isinstance(term, ThereExists):
-                if isinstance(term.argument, Negation):
-                    if term.argument.argument.argument1 == var or term.argument.argument.argument2 == var:
-                        rhs_list.append(term)
-                    else:
-                        lhs_list.append(term)
-                elif term.variable == term.argument.argument1 or term.variable == term.argument.argument2:
-                    rhs_list.append(term)
-                else:
-                    lhs_list.append(term)
-            elif isinstance(term, Negation):
-                if term.argument.argument1 == var or term.argument.argument2 == var:
-                    rhs_list.append(term)
-                else:
-                    lhs_list.append(term)
+            if var in term._depends_on():
+                rhs_list.append(term)
             else:
-                if term.argument1 == var or term.argument2 == var:
-                    rhs_list.append(term)
-                else:
-                    lhs_list.append(term)
+                lhs_list.append(term)
         if len(lhs_list) > 0 and len(rhs_list) > 0:  # If some terms depend on the variable and some do not
             lhs = T_Nice(n_ary_OR(lhs_list))
             rhs = ForAll(var, T_Nice(n_ary_OR(rhs_list)))
@@ -187,9 +155,9 @@ def n_ary_OR(expressions_list):
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    test_expression = Negation(ThereExists('x', AND(Predicate("A", "x", "y"), AND(Equals('y', 'z'), Predicate('B', 'y', 'z')))))
+    test_expression = ThereExists('z', AND(OR(Predicate('a', 'x', 'z'), Predicate('b', 'z', 'x')), Predicate('c', 'x', 'y')))
 
     print("Original Expression:", test_expression)  # Original expression
     print("\nNegation Normal Form:", test_expression._negation_normal_form())  # Negation Normal Form
-    print("\nGood FO3 Translation: ", T_Good_Dash(test_expression._negation_normal_form()))  # Good FO3 Term
-    print("\nNice FO3 Translation: ", T_Nice(T_Good_Dash(test_expression._negation_normal_form())))  # Nice FO3 Term
+    print("\nGood FO3 Translation:", T_Good_Dash(test_expression._negation_normal_form()))  # Good FO3 Term
+    print("\nNice FO3 Translation:", T_Nice(T_Good_Dash(test_expression._negation_normal_form())))  # Nice FO3 Term

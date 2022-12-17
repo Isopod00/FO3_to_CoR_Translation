@@ -26,6 +26,9 @@ class Negation(Term):
     def __str__(self) -> str:
         return f'¬({self.argument})'
 
+    def _depends_on(self):
+        return self.argument._depends_on()
+
 
 class ForAll(Term):
     """ This class describes the mathematical symbol ∀ (for all)
@@ -45,6 +48,9 @@ class ForAll(Term):
     def __str__(self) -> str:
         return f'∀{self.variable}. {self.argument}'
 
+    def _depends_on(self):
+        return self.argument._depends_on()
+
 
 class ThereExists(Term):
     """ This class describes the mathematical symbol ∃ (there exists)
@@ -63,6 +69,9 @@ class ThereExists(Term):
 
     def __str__(self) -> str:
         return f'∃{self.variable}. {self.argument}'
+
+    def _depends_on(self):
+        return self.argument._depends_on()
 
 
 class AND(Term):
@@ -86,6 +95,9 @@ class AND(Term):
         rhs = self.argument2.getAsAndList()
         return lhs + rhs
 
+    def _depends_on(self):
+        return self.argument1._depends_on() + self.argument2._depends_on()
+
 
 class OR(Term):
     """This class describes a logical OR statement with two arguments, the arguments can be any logical expressions"""
@@ -108,6 +120,9 @@ class OR(Term):
         rhs = self.argument2.getAsOrList()
         return lhs + rhs
 
+    def _depends_on(self):
+        return self.argument1._depends_on() + self.argument2._depends_on()
+
 
 class Equals(Term):
     """ This class describes two arguments being equal to each other.
@@ -126,6 +141,9 @@ class Equals(Term):
     def __str__(self) -> str:
         return f'{self.argument1} = {self.argument2}'
 
+    def _depends_on(self):
+        return self.argument1 + self.argument2
+
 
 class tt(Term):
     """ This class represents the literal boolean value True. """
@@ -142,6 +160,9 @@ class tt(Term):
     def getAsAndList(self):
         return []
 
+    def _depends_on(self):
+        return ""
+
 
 class ff(Term):
     """ This class represents the literal boolean value False. """
@@ -157,6 +178,9 @@ class ff(Term):
 
     def getAsOrList(self):
         return []
+
+    def _depends_on(self):
+        return ""
 
 
 class Predicate(Term):
@@ -175,6 +199,9 @@ class Predicate(Term):
 
     def _negation_normal_form(self):
         return self
+
+    def _depends_on(self):
+        return self.argument1 + self.argument2
 
 
 def Implies(a, b) -> OR:
