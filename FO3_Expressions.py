@@ -278,14 +278,15 @@ def T_Good_ForAll(expression):
 
 def T_Nice(expression):
     """ Translation function for translating "good" FO3 terms into "nice" FO3 terms """
-    if isinstance(expression, OR):
+    if isinstance(expression, OR):  # OR Case
         return OR(T_Nice(expression.argument1), T_Nice(expression.argument2))
-    elif isinstance(expression, AND):
+
+    elif isinstance(expression, AND):  # AND Case
         return AND(T_Nice(expression.argument1), T_Nice(expression.argument2))
-    elif isinstance(expression, ThereExists):
+
+    elif isinstance(expression, ThereExists):  # ThereExists Case
         terms = expression.argument.getAsAndList()
         var = expression.variable
-
         lhs_list = []  # does NOT depend on the variable
         rhs_list = []  # DOES depend on the variable
         for term in terms:
@@ -299,22 +300,20 @@ def T_Nice(expression):
                     rhs_list.append(term)
                 else:
                     lhs_list.append(term)
-
-        if len(lhs_list) > 0 and len(rhs_list) > 0:
+        if len(lhs_list) > 0 and len(rhs_list) > 0:  # If some terms depend on the variable and some do not
             lhs = T_Nice(n_ary_AND(lhs_list))
             rhs = ThereExists(var, T_Nice(n_ary_AND(rhs_list)))
             return AND(lhs, rhs)
-        elif len(rhs_list) > 0:
+        elif len(rhs_list) > 0:  # If there are only terms that DO depend on the variable
             rhs = ThereExists(var, T_Nice(n_ary_AND(rhs_list)))
             return rhs
-        elif len(lhs_list) > 0:
+        elif len(lhs_list) > 0:  # If there are only terms that do NOT depend on the variable
             lhs = T_Nice(n_ary_AND(lhs_list))
             return lhs
 
-    elif isinstance(expression, ForAll):
+    elif isinstance(expression, ForAll):  # ForAll Case
         terms = expression.argument.getAsOrList()
         var = expression.variable
-
         lhs_list = []  # does NOT depend on the variable
         rhs_list = []  # DOES depend on the variable
         for term in terms:
@@ -328,22 +327,23 @@ def T_Nice(expression):
                     rhs_list.append(term)
                 else:
                     lhs_list.append(term)
-
-        if len(lhs_list) > 0 and len(rhs_list) > 0:
+        if len(lhs_list) > 0 and len(rhs_list) > 0:  # If some terms depend on the variable and some do not
             lhs = T_Nice(n_ary_OR(lhs_list))
             rhs = ForAll(var, T_Nice(n_ary_OR(rhs_list)))
             return OR(lhs, rhs)
-        elif len(rhs_list) > 0:
+        elif len(rhs_list) > 0:  # If there are only terms that DO depend on the variable
             rhs = ForAll(var, T_Nice(n_ary_OR(rhs_list)))
             return rhs
-        elif len(lhs_list) > 0:
+        elif len(lhs_list) > 0:  # If there are only terms that do NOT depend on the variable
             lhs = T_Nice(n_ary_OR(lhs_list))
             return lhs
-    else:
+
+    else:  # This case is only reached if expression is an atomic (or negated atomic) term
         return expression
 
 
 def n_ary_AND(expressions_list):
+    """ This is a function for producing a long string of n ANDs """
     answer = tt()
     for term in expressions_list:
         answer = make_AND(answer, term)
@@ -351,6 +351,7 @@ def n_ary_AND(expressions_list):
 
 
 def n_ary_OR(expressions_list):
+    """ This is a function for producing a long string of n ORs """
     answer = ff()
     for term in expressions_list:
         answer = make_OR(answer, term)
