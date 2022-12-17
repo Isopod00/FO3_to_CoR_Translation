@@ -199,7 +199,8 @@ def Implies(a, b) -> OR:
 
 
 def big_AND(terms, variable):
-    """ This method helps compute the n-ary logical AND of n elements for the GOOD translation """
+    """ This method helps compute the n-ary logical AND of n elements for the GOOD translation.
+    (This is a SPECIALIZED version of n-ary AND) Input is a set of frozensets. """
     answer = tt()
     for term in terms:
         modified_term = ff()
@@ -210,7 +211,8 @@ def big_AND(terms, variable):
 
 
 def big_OR(terms, variable):
-    """ This method helps compute the n-ary logical OR of n elements for the GOOD translation """
+    """ This method helps compute the n-ary logical OR of n elements for the GOOD translation.
+     (This is a specialized version of n-ary OR) Input is a set of frozensets. """
     answer = ff()
     for term in terms:
         modified_term = tt()
@@ -343,7 +345,7 @@ def T_Nice(expression):
 
 
 def n_ary_AND(expressions_list):
-    """ This is a function for producing a long string of n ANDs """
+    """ This is a function for computing the n-ary logical AND of n elements. Input is a list. """
     answer = tt()
     for term in expressions_list:
         answer = make_AND(answer, term)
@@ -351,7 +353,7 @@ def n_ary_AND(expressions_list):
 
 
 def n_ary_OR(expressions_list):
-    """ This is a function for producing a long string of n ORs """
+    """ This is a function for computing the n-ary logical OR of n elements. Input is a list. """
     answer = ff()
     for term in expressions_list:
         answer = make_OR(answer, term)
