@@ -74,7 +74,12 @@ def T_Nice(expression):
         rhs_list = []  # DOES depend on the variable
         for term in terms:
             if isinstance(term, ForAll) or isinstance(term, ThereExists):
-                if term.variable == var:
+                if isinstance(term.argument, Negation):
+                    if term.argument.argument.argument1 == var or term.argument.argument.argument2 == var:
+                        rhs_list.append(term)
+                    else:
+                        lhs_list.append(term)
+                elif term.variable == term.argument.argument1 or term.variable == term.argument.argument2:
                     rhs_list.append(term)
                 else:
                     lhs_list.append(term)
@@ -106,7 +111,12 @@ def T_Nice(expression):
         rhs_list = []  # DOES depend on the variable
         for term in terms:
             if isinstance(term, ForAll) or isinstance(term, ThereExists):
-                if term.variable == var:
+                if isinstance(term.argument, Negation):
+                    if term.argument.argument.argument1 == var or term.argument.argument.argument2 == var:
+                        rhs_list.append(term)
+                    else:
+                        lhs_list.append(term)
+                elif term.variable == term.argument.argument1 or term.variable == term.argument.argument2:
                     rhs_list.append(term)
                 else:
                     lhs_list.append(term)
