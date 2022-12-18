@@ -234,4 +234,4 @@ if __name__ == "__main__":
     test_expression = Negation(ThereExists('x', AND(Predicate("A", "x", "y"), AND(Equals('y', 'z'), Predicate('B', 'y', 'z')))))
 
     print("Original Expression:", test_expression)  # Original expression
-    print("\nNegation Normal Form:", test_expression._negation_normal_form())  # Negation Normal Form
+    print("Negation Normal Form:", test_expression._negation_normal_form())  # Negation Normal Form

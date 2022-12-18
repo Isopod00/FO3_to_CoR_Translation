@@ -181,7 +181,7 @@ if __name__ == "__main__":
                                   AND(OR(Predicate('A', 'x', 'z'), Predicate('B', 'z', 'x')), Predicate('C', 'x', 'y')))
 
     print("Original Expression:", test_expression)  # Original expression
-    print("\nNegation Normal Form:", test_expression._negation_normal_form())  # Negation Normal Form
+    print("Negation Normal Form:", test_expression._negation_normal_form())  # Negation Normal Form
     print("\nGood FO3 Translation:", T_Good_Dash(test_expression._negation_normal_form()))  # Good FO3 Term
-    print("\nNice FO3 Translation:", T_Nice(T_Good_Dash(test_expression._negation_normal_form())))  # Nice FO3 Term
+    print("Nice FO3 Translation:", T_Nice(T_Good_Dash(test_expression._negation_normal_form())))  # Nice FO3 Term
     print("\nFinal Translation:", final_translation(T_Nice(T_Good_Dash(test_expression._negation_normal_form()))))
