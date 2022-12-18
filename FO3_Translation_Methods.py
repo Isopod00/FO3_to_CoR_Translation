@@ -1,6 +1,6 @@
 # Authors: Sebastiaan Joosten, Anthony Brogni
 
-from FO3_Expressions import *
+from COR_Expressions import *
 
 
 def T_Good_Dash(expression):
@@ -153,11 +153,35 @@ def n_ary_OR(expressions_list):
     return answer
 
 
+def final_translation(expression):
+    """ This method computes the final step of the translation from FO3 into COR! """
+    if isinstance(expression, Predicate):
+        return Relation(expression.letter)
+    elif isinstance(expression, ff):
+        return EmptyRelation
+    elif isinstance(expression, tt):
+        return UniversalRelation
+    elif isinstance(expression, Equals):
+        return IdentityRelation()
+    elif isinstance(expression, OR):
+        return Union(final_translation(expression.argument1), final_translation(expression.argument2))
+    elif isinstance(expression, AND):
+        return Intersection(final_translation(expression.argument1), final_translation(expression.argument2))
+    elif isinstance(expression, ThereExists):
+        pass  # TODO: Write this return statement
+    elif isinstance(expression, ForAll):
+        pass  # TODO: Write this return statement
+    elif isinstance(expression, Negation):
+        return Complement(final_translation(expression.argument))
+
+
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    test_expression = ThereExists('z', AND(OR(Predicate('a', 'x', 'z'), Predicate('b', 'z', 'x')), Predicate('c', 'x', 'y')))
+    test_expression = ThereExists('z',
+                                  AND(OR(Predicate('A', 'x', 'z'), Predicate('B', 'z', 'x')), Predicate('C', 'x', 'y')))
 
     print("Original Expression:", test_expression)  # Original expression
     print("\nNegation Normal Form:", test_expression._negation_normal_form())  # Negation Normal Form
     print("\nGood FO3 Translation:", T_Good_Dash(test_expression._negation_normal_form()))  # Good FO3 Term
     print("\nNice FO3 Translation:", T_Nice(T_Good_Dash(test_expression._negation_normal_form())))  # Nice FO3 Term
+    print("\nFinal Translation:", final_translation(T_Nice(T_Good_Dash(test_expression._negation_normal_form()))))
