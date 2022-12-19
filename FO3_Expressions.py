@@ -26,7 +26,7 @@ class Negation(Term):
     def __str__(self) -> str:
         return f'¬({self.argument})'
 
-    def depends_on(self):
+    def depends_on(self) -> set:
         return self.argument.depends_on()
 
 
@@ -48,7 +48,7 @@ class ForAll(Term):
     def __str__(self) -> str:
         return f'∀{self.variable}. {self.argument}'
 
-    def depends_on(self):
+    def depends_on(self) -> set:
         return self.argument.depends_on()
 
 
@@ -70,7 +70,7 @@ class ThereExists(Term):
     def __str__(self) -> str:
         return f'∃{self.variable}. {self.argument}'
 
-    def depends_on(self):
+    def depends_on(self) -> set:
         return self.argument.depends_on()
 
 
@@ -95,8 +95,8 @@ class AND(Term):
         rhs = self.argument2.getAsAndList()
         return lhs + rhs
 
-    def depends_on(self):
-        return self.argument1.depends_on() + self.argument2.depends_on()
+    def depends_on(self) -> set:
+        return self.argument1.depends_on().Union(self.argument2.depends_on())
 
 
 class OR(Term):
@@ -120,8 +120,8 @@ class OR(Term):
         rhs = self.argument2.getAsOrList()
         return lhs + rhs
 
-    def depends_on(self):
-        return self.argument1.depends_on() + self.argument2.depends_on()
+    def depends_on(self) -> set:
+        return self.argument1.depends_on().Union(self.argument2.depends_on())
 
 
 class Equals(Term):
@@ -141,8 +141,8 @@ class Equals(Term):
     def __str__(self) -> str:
         return f'{self.argument1} = {self.argument2}'
 
-    def depends_on(self):
-        return self.argument1 + self.argument2
+    def depends_on(self) -> set:
+        return {self.argument1, self.argument2}
 
 
 class tt(Term):
@@ -160,8 +160,8 @@ class tt(Term):
     def getAsAndList(self):
         return []
 
-    def depends_on(self):
-        return ""
+    def depends_on(self) -> set:
+        return set()
 
 
 class ff(Term):
@@ -179,8 +179,8 @@ class ff(Term):
     def getAsOrList(self):
         return []
 
-    def depends_on(self):
-        return ""
+    def depends_on(self) -> set:
+        return set()
 
 
 class Predicate(Term):
@@ -200,8 +200,8 @@ class Predicate(Term):
     def negation_normal_form(self):
         return self
 
-    def depends_on(self):
-        return self.argument1 + self.argument2
+    def depends_on(self) -> set:
+        return {self.argument1, self.argument2}
 
 
 def Implies(a, b) -> OR:
