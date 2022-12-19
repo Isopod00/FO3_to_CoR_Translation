@@ -17,17 +17,17 @@ class Negation(Term):
     def __init__(self, arg):
         self.argument = arg
 
-    def _negate(self):
+    def negate(self):
         return self.argument
 
-    def _negation_normal_form(self):
-        return self.argument._negate()
+    def negation_normal_form(self):
+        return self.argument.negate()
 
     def __str__(self) -> str:
         return f'¬({self.argument})'
 
-    def _depends_on(self):
-        return self.argument._depends_on()
+    def depends_on(self):
+        return self.argument.depends_on()
 
 
 class ForAll(Term):
@@ -39,17 +39,17 @@ class ForAll(Term):
         self.variable = var
         self.argument = arg
 
-    def _negate(self):
-        return ThereExists(self.variable, self.argument._negate())
+    def negate(self):
+        return ThereExists(self.variable, self.argument.negate())
 
-    def _negation_normal_form(self):
-        return ForAll(self.variable, self.argument._negation_normal_form())
+    def negation_normal_form(self):
+        return ForAll(self.variable, self.argument.negation_normal_form())
 
     def __str__(self) -> str:
         return f'∀{self.variable}. {self.argument}'
 
-    def _depends_on(self):
-        return self.argument._depends_on()
+    def depends_on(self):
+        return self.argument.depends_on()
 
 
 class ThereExists(Term):
@@ -61,17 +61,17 @@ class ThereExists(Term):
         self.variable = var
         self.argument = arg
 
-    def _negate(self):
-        return ForAll(self.variable, self.argument._negate())
+    def negate(self):
+        return ForAll(self.variable, self.argument.negate())
 
-    def _negation_normal_form(self):
-        return ThereExists(self.variable, self.argument._negation_normal_form())
+    def negation_normal_form(self):
+        return ThereExists(self.variable, self.argument.negation_normal_form())
 
     def __str__(self) -> str:
         return f'∃{self.variable}. {self.argument}'
 
-    def _depends_on(self):
-        return self.argument._depends_on()
+    def depends_on(self):
+        return self.argument.depends_on()
 
 
 class AND(Term):
@@ -81,11 +81,11 @@ class AND(Term):
         self.argument1 = arg1
         self.argument2 = arg2
 
-    def _negate(self):
-        return OR(self.argument1._negate(), self.argument2._negate())
+    def negate(self):
+        return OR(self.argument1.negate(), self.argument2.negate())
 
     def _negation_normal_form(self):
-        return AND(self.argument1._negation_normal_form(), self.argument2._negation_normal_form())
+        return AND(self.argument1.negation_normal_form(), self.argument2.negation_normal_form())
 
     def __str__(self) -> str:
         return f'({self.argument1}) ∧ ({self.argument2})'
@@ -95,8 +95,8 @@ class AND(Term):
         rhs = self.argument2.getAsAndList()
         return lhs + rhs
 
-    def _depends_on(self):
-        return self.argument1._depends_on() + self.argument2._depends_on()
+    def depends_on(self):
+        return self.argument1.depends_on() + self.argument2.depends_on()
 
 
 class OR(Term):
@@ -106,11 +106,11 @@ class OR(Term):
         self.argument1 = arg1
         self.argument2 = arg2
 
-    def _negate(self):
-        return AND(self.argument1._negate(), self.argument2._negate())
+    def negate(self):
+        return AND(self.argument1.negate(), self.argument2.negate())
 
-    def _negation_normal_form(self):
-        return OR(self.argument1._negation_normal_form(), self.argument2._negation_normal_form())
+    def negation_normal_form(self):
+        return OR(self.argument1.negation_normal_form(), self.argument2.negation_normal_form())
 
     def __str__(self) -> str:
         return f'({self.argument1}) ∨ ({self.argument2})'
@@ -120,8 +120,8 @@ class OR(Term):
         rhs = self.argument2.getAsOrList()
         return lhs + rhs
 
-    def _depends_on(self):
-        return self.argument1._depends_on() + self.argument2._depends_on()
+    def depends_on(self):
+        return self.argument1.depends_on() + self.argument2.depends_on()
 
 
 class Equals(Term):
@@ -132,26 +132,26 @@ class Equals(Term):
         self.argument1 = arg1
         self.argument2 = arg2
 
-    def _negate(self):
+    def negate(self):
         return Negation(self)
 
-    def _negation_normal_form(self):
+    def negation_normal_form(self):
         return self
 
     def __str__(self) -> str:
         return f'{self.argument1} = {self.argument2}'
 
-    def _depends_on(self):
+    def depends_on(self):
         return self.argument1 + self.argument2
 
 
 class tt(Term):
     """ This class represents the literal boolean value True. """
 
-    def _negate(self):
+    def negate(self):
         return ff()
 
-    def _negation_normal_form(self):
+    def negation_normal_form(self):
         return self
 
     def __str__(self):
@@ -160,17 +160,17 @@ class tt(Term):
     def getAsAndList(self):
         return []
 
-    def _depends_on(self):
+    def depends_on(self):
         return ""
 
 
 class ff(Term):
     """ This class represents the literal boolean value False. """
 
-    def _negate(self):
+    def negate(self):
         return tt()
 
-    def _negation_normal_form(self):
+    def negation_normal_form(self):
         return self
 
     def __str__(self):
@@ -179,7 +179,7 @@ class ff(Term):
     def getAsOrList(self):
         return []
 
-    def _depends_on(self):
+    def depends_on(self):
         return ""
 
 
@@ -194,13 +194,13 @@ class Predicate(Term):
     def __str__(self) -> str:
         return f'{self.letter}({self.argument1},{self.argument2})'
 
-    def _negate(self):
+    def negate(self):
         return Negation(self)
 
-    def _negation_normal_form(self):
+    def negation_normal_form(self):
         return self
 
-    def _depends_on(self):
+    def depends_on(self):
         return self.argument1 + self.argument2
 
 
@@ -231,7 +231,8 @@ def make_AND(arg1, arg2):
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    test_expression = Negation(ThereExists('x', AND(Predicate("A", "x", "y"), AND(Equals('y', 'z'), Predicate('B', 'y', 'z')))))
+    test_expression = Negation(
+        ThereExists('x', AND(Predicate("A", "x", "y"), AND(Equals('y', 'z'), Predicate('B', 'y', 'z')))))
 
     print("Original Expression:", test_expression)  # Original expression
-    print("Negation Normal Form:", test_expression._negation_normal_form())  # Negation Normal Form
+    print("Negation Normal Form:", test_expression.negation_normal_form())  # Negation Normal Form

@@ -9,7 +9,7 @@ class UniversalRelation:
     def __str__(self) -> str:
         return 'T'
 
-    def _translate(self, arg1, arg2) -> tt:
+    def translate(self, arg1, arg2) -> tt:
         return tt()
 
 
@@ -19,7 +19,7 @@ class EmptyRelation:
     def __str__(self) -> str:
         return '𝟎'
 
-    def _translate(self, arg1, arg2) -> ff:
+    def translate(self, arg1, arg2) -> ff:
         return ff()
 
 
@@ -30,7 +30,7 @@ class IdentityRelation:
         return '𝟏'
 
     # This is assuming the relations we are discussing contain pairs (arg1, arg2)
-    def _translate(self, arg1, arg2) -> Equals:
+    def translate(self, arg1, arg2) -> Equals:
         return Equals(arg1, arg2)
 
 
@@ -43,8 +43,8 @@ class Converse:
     def __str__(self) -> str:
         return f'({self.argument})⁻¹'
 
-    def _translate(self, arg1, arg2):
-        return self.argument._translate(arg2, arg1)
+    def translate(self, arg1, arg2):
+        return self.argument.translate(arg2, arg1)
 
 
 class Complement:
@@ -56,8 +56,8 @@ class Complement:
     def __str__(self) -> str:
         return f'({self.argument})⁻'
 
-    def _translate(self, arg1, arg2) -> Negation:
-        return Negation(self.argument._translate(arg1, arg2))
+    def translate(self, arg1, arg2) -> Negation:
+        return Negation(self.argument.translate(arg1, arg2))
 
 
 class Union:
@@ -70,8 +70,8 @@ class Union:
     def __str__(self) -> str:
         return f'({self.argument1}) ∪ ({self.argument2})'
 
-    def _translate(self, arg1, arg2) -> OR:
-        return OR(self.argument1._translate(arg1, arg2), self.argument2._translate(arg1, arg2))
+    def translate(self, arg1, arg2) -> OR:
+        return OR(self.argument1.translate(arg1, arg2), self.argument2.translate(arg1, arg2))
 
 
 class Intersection:
@@ -84,8 +84,8 @@ class Intersection:
     def __str__(self) -> str:
         return f'({self.argument1}) ∩ ({self.argument2})'
 
-    def _translate(self, arg1, arg2) -> AND:
-        return AND(self.argument1._translate(arg1, arg2), self.argument2._translate(arg1, arg2))
+    def translate(self, arg1, arg2) -> AND:
+        return AND(self.argument1.translate(arg1, arg2), self.argument2.translate(arg1, arg2))
 
 
 class Composition:
@@ -99,8 +99,8 @@ class Composition:
         return f'{self.argument1} ∘ {self.argument2}'
 
     # This is assuming that argument1 contains pairs (x, z) and argument2 contains pairs (z, y)
-    def _translate(self, arg1, arg2) -> ThereExists:
-        return ThereExists('z', AND(self.argument1._translate(arg1, "z"), self.argument2._translate("z", arg2)))
+    def translate(self, arg1, arg2) -> ThereExists:
+        return ThereExists('z', AND(self.argument1.translate(arg1, "z"), self.argument2.translate("z", arg2)))
 
 
 class Dagger:
@@ -114,8 +114,8 @@ class Dagger:
         return f'{self.argument1} † {self.argument2}'
 
     # This is assuming that argument1 contains pairs (x, z) and argument2 contains pairs (z, y)
-    def _translate(self, arg1, arg2) -> ForAll:
-        return ForAll('z', OR(self.argument1._translate(arg1, "z"), self.argument2._translate("z", arg2)))
+    def translate(self, arg1, arg2) -> ForAll:
+        return ForAll('z', OR(self.argument1.translate(arg1, "z"), self.argument2.translate("z", arg2)))
 
 
 class Relation:
@@ -128,15 +128,15 @@ class Relation:
         return self.letter
 
     # This is assuming the relations we are discussing contain pairs (arg1, arg2)
-    def _translate(self, arg1, arg2) -> Predicate:
+    def translate(self, arg1, arg2) -> Predicate:
         return Predicate(self.letter, arg1, arg2)
 
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    expression = Union(Complement(Composition(Relation("A"), Relation("B"))),
-                       Intersection(Converse(Relation("C")), IdentityRelation()))
+    test_expression = Union(Complement(Composition(Relation("A"), Relation("B"))),
+                            Intersection(Converse(Relation("C")), IdentityRelation()))
 
-    print("Original Expression:", expression)  # Original expression
-    print("Translated Expression:", expression._translate("x", "y"))  # Translated expression
-    print("Negation Normal Form:", expression._translate("x", "y")._negation_normal_form())  # Negation normal form
+    print("Original Expression:", test_expression)  # Original expression
+    print("Translated Expression:", test_expression.translate("x", "y"))  # Translated expression
+    print("Negation Normal Form:", test_expression.translate("x", "y").negation_normal_form())  # Negation normal form

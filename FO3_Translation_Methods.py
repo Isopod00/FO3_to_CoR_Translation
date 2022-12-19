@@ -73,7 +73,7 @@ def T_Nice(expression):
         lhs_list = []  # does NOT depend on the variable
         rhs_list = []  # DOES depend on the variable
         for term in terms:
-            if var in term._depends_on():
+            if var in term.depends_on():
                 rhs_list.append(term)
             else:
                 lhs_list.append(term)
@@ -94,7 +94,7 @@ def T_Nice(expression):
         lhs_list = []  # does NOT depend on the variable
         rhs_list = []  # DOES depend on the variable
         for term in terms:
-            if var in term._depends_on():
+            if var in term.depends_on():
                 rhs_list.append(term)
             else:
                 lhs_list.append(term)
@@ -181,7 +181,7 @@ if __name__ == "__main__":
                                   AND(OR(Predicate('A', 'x', 'z'), Predicate('B', 'z', 'x')), Predicate('C', 'x', 'y')))
 
     print("Original Expression:", test_expression)  # Original expression
-    print("Negation Normal Form:", test_expression._negation_normal_form())  # Negation Normal Form
-    print("\nGood FO3 Translation:", T_Good_Dash(test_expression._negation_normal_form()))  # Good FO3 Term
-    print("Nice FO3 Translation:", T_Nice(T_Good_Dash(test_expression._negation_normal_form())))  # Nice FO3 Term
-    print("\nFinal Translation:", final_translation(T_Nice(T_Good_Dash(test_expression._negation_normal_form()))))
+    print("Negation Normal Form:", test_expression.negation_normal_form())  # Negation Normal Form
+    print("\nGood FO3 Translation:", T_Good_Dash(test_expression.negation_normal_form()))  # Good FO3 Term
+    print("Nice FO3 Translation:", T_Nice(T_Good_Dash(test_expression.negation_normal_form())))  # Nice FO3 Term
+    print("\nFinal Translation:", final_translation(T_Nice(T_Good_Dash(test_expression.negation_normal_form()))))
