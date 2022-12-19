@@ -178,11 +178,10 @@ def final_translation(expression):
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    test_expression = ThereExists('z',
-                                  AND(OR(Predicate('A', 'x', 'z'), Predicate('B', 'z', 'x')), Predicate('C', 'x', 'y')))
+    test_expression = ForAll('x', ThereExists('y', OR(Predicate('A', 'x', 'y'), Predicate('B', 'x', 'z'))))
 
     print("Original Expression:", test_expression)  # Original expression
-    print("Negation Normal Form:", test_expression.negation_normal_form())  # Negation Normal Form
-    print("\nGood FO3 Translation:", T_Good_Dash(test_expression.negation_normal_form()))  # Good FO3 Term
-    print("Nice FO3 Translation:", T_Nice(T_Good_Dash(test_expression.negation_normal_form())))  # Nice FO3 Term
-    print("\nFinal Translation:", final_translation(T_Nice(T_Good_Dash(test_expression.negation_normal_form()))))
+    print("Negation Normal Form:", negation_normal(test_expression))  # Negation Normal Form
+    print("\nGood FO3 Translation:", T_Good_Dash(negation_normal(test_expression)))  # Good FO3 Term
+    print("Nice FO3 Translation:", T_Nice(T_Good_Dash(negation_normal(test_expression))))  # Nice FO3 Term
+    print("\nFinal Translation:", final_translation(T_Nice(T_Good_Dash(negation_normal(test_expression)))))

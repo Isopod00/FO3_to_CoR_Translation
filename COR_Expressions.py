@@ -139,4 +139,4 @@ if __name__ == "__main__":
 
     print("Original Expression:", test_expression)  # Original expression
     print("Translated Expression:", test_expression.translate("x", "y"))  # Translated expression
-    print("Negation Normal Form:", test_expression.translate("x", "y").negation_normal_form())  # Negation normal form
+    print("Negation Normal Form:", negation_normal(test_expression.translate("x", "y")))  # Negation normal form

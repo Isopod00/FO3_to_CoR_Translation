@@ -229,10 +229,23 @@ def make_AND(arg1, arg2):
         return AND(arg1, arg2)
 
 
+def negation_normal(argument):
+    """ The reason for this method is that I discovered a bug in which some expressions need multiple iterations to be
+     put into negation normal form correctly. """
+    previous_iteration = argument
+    argument = argument.negation_normal_form()
+    while str(previous_iteration) != str(argument):
+        previous_iteration = argument
+        argument = argument.negation_normal_form()
+    return argument
+
+
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
     test_expression = Negation(
-        ThereExists('x', AND(Predicate("A", "x", "y"), AND(Equals('y', 'z'), Predicate('B', 'y', 'z')))))
+        ThereExists('x', Negation(
+            ThereExists('y', Negation(
+                AND(Predicate("A", "x", "y"), AND(Equals('y', 'z'), Predicate('B', 'y', 'z'))))))))
 
     print("Original Expression:", test_expression)  # Original expression
-    print("Negation Normal Form:", test_expression.negation_normal_form())  # Negation Normal Form
+    print("Negation Normal Form:", negation_normal(test_expression))  # Negation Normal Form
