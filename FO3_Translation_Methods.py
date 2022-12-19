@@ -62,6 +62,9 @@ def T_Good_ForAll(expression):
 
 def T_Nice(expression):
     """ Translation function for translating "good" FO3 terms into "nice" FO3 terms """
+    if isinstance(expression, tt) or isinstance(expression, ff):
+        return expression
+
     if isinstance(expression, OR):  # OR Case
         return OR(T_Nice(expression.argument1), T_Nice(expression.argument2))
 
@@ -71,44 +74,20 @@ def T_Nice(expression):
     elif isinstance(expression, ThereExists):  # ThereExists Case
         terms = expression.argument.getAsAndList()
         var = expression.variable
-        lhs_list = []  # does NOT depend on the variable
-        rhs_list = []  # DOES depend on the variable
-        for term in terms:
-            if var in term.depends_on():
-                rhs_list.append(term)
-            else:
-                lhs_list.append(term)
-        if len(lhs_list) > 0 and len(rhs_list) > 0:  # If some terms depend on the variable and some do not
-            lhs = T_Nice(n_ary_AND(lhs_list))
-            rhs = ThereExists(var, T_Nice(n_ary_AND(rhs_list)))
-            return AND(lhs, rhs)
-        elif len(rhs_list) > 0:  # If there are only terms that DO depend on the variable
-            rhs = ThereExists(var, T_Nice(n_ary_AND(rhs_list)))
-            return rhs
-        elif len(lhs_list) > 0:  # If there are only terms that do NOT depend on the variable
-            lhs = T_Nice(n_ary_AND(lhs_list))
-            return lhs
+        lhs_list = [term for term in terms if var not in term.depends_on()]  # does NOT depend on the variable
+        rhs_list = [term for term in terms if var in term.depends_on()]  # DOES depend on the variable
+        lhs = T_Nice(n_ary_AND(lhs_list))
+        rhs = make_ThereExists(var, T_Nice(n_ary_AND(rhs_list)))
+        return make_AND(lhs, rhs)
 
     elif isinstance(expression, ForAll):  # ForAll Case
         terms = expression.argument.getAsOrList()
         var = expression.variable
-        lhs_list = []  # does NOT depend on the variable
-        rhs_list = []  # DOES depend on the variable
-        for term in terms:
-            if var in term.depends_on():
-                rhs_list.append(term)
-            else:
-                lhs_list.append(term)
-        if len(lhs_list) > 0 and len(rhs_list) > 0:  # If some terms depend on the variable and some do not
-            lhs = T_Nice(n_ary_OR(lhs_list))
-            rhs = ForAll(var, T_Nice(n_ary_OR(rhs_list)))
-            return OR(lhs, rhs)
-        elif len(rhs_list) > 0:  # If there are only terms that DO depend on the variable
-            rhs = ForAll(var, T_Nice(n_ary_OR(rhs_list)))
-            return rhs
-        elif len(lhs_list) > 0:  # If there are only terms that do NOT depend on the variable
-            lhs = T_Nice(n_ary_OR(lhs_list))
-            return lhs
+        lhs_list = [term for term in terms if var not in term.depends_on()]  # does NOT depend on the variable
+        rhs_list = [term for term in terms if var in term.depends_on()]  # DOES depend on the variable
+        lhs = T_Nice(n_ary_OR(lhs_list))
+        rhs = make_ForAll(var, T_Nice(n_ary_OR(rhs_list)))
+        return make_OR(lhs, rhs)
 
     else:  # This case is only reached if expression is an atomic (or negated atomic) term
         return expression

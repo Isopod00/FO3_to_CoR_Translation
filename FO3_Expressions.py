@@ -210,7 +210,7 @@ def Implies(a, b) -> OR:
 
 
 def make_OR(arg1, arg2):
-    """ This method helps improve/simplify the construction of OR objects """
+    """ This method helps improve/simplify the construction of mathematical OR objects """
     if isinstance(arg1, ff):
         return arg2
     elif isinstance(arg2, ff):
@@ -220,13 +220,31 @@ def make_OR(arg1, arg2):
 
 
 def make_AND(arg1, arg2):
-    """ This method helps improve/simplify the construction of AND objects """
+    """ This method helps improve/simplify the construction of mathematical AND objects """
     if isinstance(arg1, tt):
         return arg2
     elif isinstance(arg2, tt):
         return arg1
     else:
         return AND(arg1, arg2)
+
+
+def make_ThereExists(variable, argument):
+    """ This method helps improve/simplify the creation of mathematical ThereExists objects """
+    match argument:
+        case tt() | ff():
+            return argument
+        case _:
+            return ThereExists(variable, argument)
+
+
+def make_ForAll(variable, argument):
+    """ This method helps improve/simplify the creation of mathematical ForAll objects """
+    match argument:
+        case tt() | ff():
+            return argument
+        case _:
+            return ForAll(variable, argument)
 
 
 def negation_normal(argument):
