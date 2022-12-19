@@ -1,6 +1,7 @@
 # Authors: Sebastiaan Joosten, Anthony Brogni
 
 from COR_Expressions import *
+from FO3_Expressions import *
 
 
 def T_Good_Dash(expression):

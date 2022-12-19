@@ -84,7 +84,7 @@ class AND(Term):
     def negate(self):
         return OR(self.argument1.negate(), self.argument2.negate())
 
-    def _negation_normal_form(self):
+    def negation_normal_form(self):
         return AND(self.argument1.negation_normal_form(), self.argument2.negation_normal_form())
 
     def __str__(self) -> str:
