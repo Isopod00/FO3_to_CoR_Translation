@@ -96,7 +96,7 @@ class Composition:
         self.argument2 = arg2
 
     def __str__(self) -> str:
-        return f'{self.argument1} ∘ {self.argument2}'
+        return f'({self.argument1} ∘ {self.argument2})'
 
     # This is assuming that argument1 contains pairs (x, z) and argument2 contains pairs (z, y)
     def translate(self, arg1, arg2) -> ThereExists:
@@ -111,7 +111,7 @@ class Dagger:
         self.argument2 = arg2
 
     def __str__(self) -> str:
-        return f'{self.argument1} † {self.argument2}'
+        return f'({self.argument1} † {self.argument2})'
 
     # This is assuming that argument1 contains pairs (x, z) and argument2 contains pairs (z, y)
     def translate(self, arg1, arg2) -> ForAll:

@@ -138,9 +138,9 @@ def final_translation(expression):
     if isinstance(expression, Predicate):
         return Relation(expression.letter)
     elif isinstance(expression, ff):
-        return EmptyRelation
+        return EmptyRelation()
     elif isinstance(expression, tt):
-        return UniversalRelation
+        return UniversalRelation()
     elif isinstance(expression, Equals):
         return IdentityRelation()
     elif isinstance(expression, OR):
@@ -148,9 +148,15 @@ def final_translation(expression):
     elif isinstance(expression, AND):
         return Intersection(final_translation(expression.argument1), final_translation(expression.argument2))
     elif isinstance(expression, ThereExists):
-        pass  # TODO: Write this return statement
+        if not isinstance(expression.argument, AND):
+            expression.argument = AND(expression.argument, tt())
+        return Composition(final_translation(expression.argument.argument1),
+                           final_translation(expression.argument.argument2))
     elif isinstance(expression, ForAll):
-        pass  # TODO: Write this return statement
+        if not isinstance(expression.argument, OR):
+            expression.argument = OR(expression.argument, ff())
+        return Dagger(final_translation(expression.argument.argument1),
+                      final_translation(expression.argument.argument2))
     elif isinstance(expression, Negation):
         return Complement(final_translation(expression.argument))
 
