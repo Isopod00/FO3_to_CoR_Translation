@@ -24,12 +24,14 @@ def asZ3(expression):
         case Predicate():
             return z3.Function(expression.letter, SortForEverything, SortForEverything, z3.BoolSort())(
                 z3.Const(expression.argument1, SortForEverything), z3.Const(expression.argument2, SortForEverything))
+        case Negation():
+            return z3.Not(asZ3(expression.argument))
 
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
     # Test expression must be a closed formula
-    test_expression = ForAll('x', ThereExists('y', Predicate('A', 'x', 'y')))
+    test_expression = Negation(Predicate('A', 'x', 'y'))
     print("Original Expression:", test_expression)  # Original expression
     nnf = negation_normal(test_expression)
     print("Negation Normal Form:", nnf)  # Negation Normal Form
@@ -39,7 +41,7 @@ if __name__ == "__main__":
     print("Nice FO3 Translation:", nice)  # Nice FO3 Term
     final = final_translation(nice)
     print("\nFinal Translation:", final)
-    back = ForAll('a', ForAll('b', final.translate('a', 'b')))
+    back = final.translate('x', 'y')
     print("\nSomething that should be equivalent to the original: ", back)
     s = z3.Solver()
     s.add(z3.Not(asZ3(test_expression) == asZ3(back)))
