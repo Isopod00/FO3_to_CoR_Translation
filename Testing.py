@@ -1,10 +1,11 @@
-import z3 # pip install z3-solver
+import z3  # pip install z3-solver
 
 from COR_Expressions import *
 from FO3_Expressions import *
 from FO3_Translation_Methods import *
 
 SortForEverything = z3.DeclareSort('SomeSort')
+
 
 def asZ3(expression):
     match expression:
@@ -13,17 +14,18 @@ def asZ3(expression):
         case ff():
             return False
         case ForAll():
-            return z3.ForAll([z3.Const(expression.variable,SortForEverything)], asZ3(expression.argument))
+            return z3.ForAll([z3.Const(expression.variable, SortForEverything)], asZ3(expression.argument))
         case ThereExists():
-            return z3.Exists([z3.Const(expression.variable,SortForEverything)], asZ3(expression.argument))
+            return z3.Exists([z3.Const(expression.variable, SortForEverything)], asZ3(expression.argument))
         case AND():
-            return z3.And(asZ3(expression.argument1),asZ3(expression.argument2))
+            return z3.And(asZ3(expression.argument1), asZ3(expression.argument2))
         case OR():
-            return z3.Or(asZ3(expression.argument1),asZ3(expression.argument2))
+            return z3.Or(asZ3(expression.argument1), asZ3(expression.argument2))
         case Predicate():
-            return z3.Function(expression.letter, SortForEverything, SortForEverything, z3.BoolSort())(z3.Const(expression.argument1,SortForEverything),z3.Const(expression.argument2,SortForEverything))
+            return z3.Function(expression.letter, SortForEverything, SortForEverything, z3.BoolSort())(
+                z3.Const(expression.argument1, SortForEverything), z3.Const(expression.argument2, SortForEverything))
 
-                
+
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
     # Test expression must be a closed formula
@@ -37,19 +39,19 @@ if __name__ == "__main__":
     print("Nice FO3 Translation:", nice)  # Nice FO3 Term
     final = final_translation(nice)
     print("\nFinal Translation:", final)
-    back = ForAll('a',ForAll('b',final.translate('a','b')))
+    back = ForAll('a', ForAll('b', final.translate('a', 'b')))
     print("\nSomething that should be equivalent to the original: ", back)
     s = z3.Solver()
     s.add(z3.Not(asZ3(test_expression) == asZ3(back)))
-    s.set("timeout", 600) # If this returns an error, update z3!
+    s.set("timeout", 600)  # If this returns an error, update z3!
     z3result = s.check()
-    if(z3result==z3.sat):
+    if z3result == z3.sat:
         print("\nZ3 found a bug! (this is bad!)")
         print(s.model())
         print("\nZ3 lhs: ", asZ3(test_expression))
         print("\nZ3 rhs: ", asZ3(back))
         print("\nZ3 constraint: ", z3.Not(asZ3(test_expression) == asZ3(back)))
-    elif(z3result==z3.unsat):
+    elif z3result == z3.unsat:
         print("\nZ3 proved that the round-trip returned something equivalent (this is good!)")
     else:
         print("\nZ3 returned ", z3result)
