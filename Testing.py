@@ -1,7 +1,5 @@
 import z3  # pip install z3-solver
 
-from COR_Expressions import *
-from FO3_Expressions import *
 from FO3_Translation_Methods import *
 
 SortForEverything = z3.DeclareSort('SomeSort')
