@@ -135,30 +135,29 @@ def n_ary_OR(expressions_list):
 
 def final_translation(expression):
     """ This method computes the final step of the translation from FO3 into COR! """
-    if isinstance(expression, Predicate):
-        return Relation(expression.letter)
-    elif isinstance(expression, ff):
-        return EmptyRelation()
-    elif isinstance(expression, tt):
-        return UniversalRelation()
-    elif isinstance(expression, Equals):
-        return IdentityRelation()
-    elif isinstance(expression, OR):
-        return Union(final_translation(expression.argument1), final_translation(expression.argument2))
-    elif isinstance(expression, AND):
-        return Intersection(final_translation(expression.argument1), final_translation(expression.argument2))
-    elif isinstance(expression, ThereExists):
-        if not isinstance(expression.argument, AND):
-            expression.argument = AND(expression.argument, tt())
-        return Composition(final_translation(expression.argument.argument1),
-                           final_translation(expression.argument.argument2))
-    elif isinstance(expression, ForAll):
-        if not isinstance(expression.argument, OR):
-            expression.argument = OR(expression.argument, ff())
-        return Dagger(final_translation(expression.argument.argument1),
-                      final_translation(expression.argument.argument2))
-    elif isinstance(expression, Negation):
-        return Complement(final_translation(expression.argument))
+    match expression:
+        case Predicate():
+            return Relation(expression.letter)
+        case ff():
+            return EmptyRelation()
+        case tt():
+            return UniversalRelation()
+        case Equals():
+            return IdentityRelation()
+        case OR():
+            return Union(final_translation(expression.argument1), final_translation(expression.argument2))
+        case AND():
+            return Intersection(final_translation(expression.argument1), final_translation(expression.argument2))
+        case Negation():
+            return Complement(final_translation(expression.argument))
+        case ThereExists():
+            argument = expression.argument
+            argument = AND(argument, tt()) if not isinstance(argument, AND) else argument
+            return Composition(final_translation(argument.argument1), final_translation(argument.argument2))
+        case ForAll():
+            argument = expression.argument
+            argument = OR(argument, ff()) if not isinstance(argument, OR) else argument
+            return Dagger(final_translation(argument.argument1), final_translation(argument.argument2))
 
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
