@@ -6,91 +6,90 @@ from FO3_Expressions import *
 
 def T_Good_Dash(expression):
     """ Translation function for translating FO3 terms in negation normal form into "good" FO3 terms """
-    if isinstance(expression, ForAll):
-        terms = T_Good_ForAll(expression.argument)
-        return big_AND(terms, expression.variable)
-    elif isinstance(expression, ThereExists):
-        terms = T_Good_ThereExists(expression.argument)
-        return big_OR(terms, expression.variable)
-    elif isinstance(expression, AND):
-        return AND(T_Good_Dash(expression.argument1), T_Good_Dash(expression.argument2))
-    elif isinstance(expression, OR):
-        return OR(T_Good_Dash(expression.argument1), T_Good_Dash(expression.argument2))
-    else:
-        return expression
+    match expression:
+        case ForAll():
+            terms = T_Good_ForAll(expression.argument)
+            return big_AND(terms, expression.variable)
+        case ThereExists():
+            terms = T_Good_ThereExists(expression.argument)
+            return big_OR(terms, expression.variable)
+        case AND():
+            return AND(T_Good_Dash(expression.argument1), T_Good_Dash(expression.argument2))
+        case OR():
+            return OR(T_Good_Dash(expression.argument1), T_Good_Dash(expression.argument2))
+        case _:
+            return expression
 
 
 def T_Good_ThereExists(expression):
     """ Translation function for translating FO3 terms in negation normal form into "good" FO3 terms """
-    if isinstance(expression, ForAll):
-        terms = T_Good_ForAll(expression.argument)
-        return {frozenset([big_AND(terms, expression.variable)])}
-    elif isinstance(expression, ThereExists):
-        terms = T_Good_ThereExists(expression.argument)
-        return {frozenset([big_OR(terms, expression.variable)])}
-    elif isinstance(expression, AND):
-        answer = set()
-        for set1 in T_Good_ThereExists(expression.argument1):
-            for set2 in T_Good_ThereExists(expression.argument2):
-                answer.add(set1.union(set2))
-        return answer
-    elif isinstance(expression, OR):
-        return T_Good_ThereExists(expression.argument1).union(T_Good_ThereExists(expression.argument2))
-    else:
-        return {frozenset([expression])}
+    match expression:
+        case ForAll():
+            terms = T_Good_ForAll(expression.argument)
+            return {frozenset([big_AND(terms, expression.variable)])}
+        case ThereExists():
+            terms = T_Good_ThereExists(expression.argument)
+            return {frozenset([big_OR(terms, expression.variable)])}
+        case AND():
+            answer = set()
+            for set1 in T_Good_ThereExists(expression.argument1):
+                for set2 in T_Good_ThereExists(expression.argument2):
+                    answer.add(set1.union(set2))
+            return answer
+        case OR():
+            return T_Good_ThereExists(expression.argument1).union(T_Good_ThereExists(expression.argument2))
+        case _:
+            return {frozenset([expression])}
 
 
 def T_Good_ForAll(expression):
     """ Translation function for translating FO3 terms in negation normal form into "good" FO3 terms """
-    if isinstance(expression, ForAll):
-        terms = T_Good_ForAll(expression.argument)
-        return {frozenset([big_AND(terms, expression.variable)])}
-    elif isinstance(expression, ThereExists):
-        terms = T_Good_ThereExists(expression.argument)
-        return {frozenset([big_OR(terms, expression.variable)])}
-    elif isinstance(expression, AND):
-        return T_Good_ForAll(expression.argument1).union(T_Good_ForAll(expression.argument2))
-    elif isinstance(expression, OR):
-        answer = set()
-        for set1 in T_Good_ForAll(expression.argument1):
-            for set2 in T_Good_ForAll(expression.argument2):
-                answer.add(set1.union(set2))
-        return answer
-    else:
-        return {frozenset([expression])}
+    match expression:
+        case ForAll():
+            terms = T_Good_ForAll(expression.argument)
+            return {frozenset([big_AND(terms, expression.variable)])}
+        case ThereExists():
+            terms = T_Good_ThereExists(expression.argument)
+            return {frozenset([big_OR(terms, expression.variable)])}
+        case AND():
+            return T_Good_ForAll(expression.argument1).union(T_Good_ForAll(expression.argument2))
+        case OR():
+            answer = set()
+            for set1 in T_Good_ForAll(expression.argument1):
+                for set2 in T_Good_ForAll(expression.argument2):
+                    answer.add(set1.union(set2))
+            return answer
+        case _:
+            return {frozenset([expression])}
 
 
 def T_Nice(expression):
     """ Translation function for translating "good" FO3 terms into "nice" FO3 terms """
-    if isinstance(expression, tt) or isinstance(expression, ff):
-        return expression
-
-    if isinstance(expression, OR):  # OR Case
-        return OR(T_Nice(expression.argument1), T_Nice(expression.argument2))
-
-    elif isinstance(expression, AND):  # AND Case
-        return AND(T_Nice(expression.argument1), T_Nice(expression.argument2))
-
-    elif isinstance(expression, ThereExists):  # ThereExists Case
-        terms = expression.argument.getAsAndList()
-        var = expression.variable
-        lhs_list = [term for term in terms if var not in term.depends_on()]  # does NOT depend on the variable
-        rhs_list = [term for term in terms if var in term.depends_on()]  # DOES depend on the variable
-        lhs = T_Nice(n_ary_AND(lhs_list))
-        rhs = make_ThereExists(var, T_Nice(n_ary_AND(rhs_list)))
-        return make_AND(lhs, rhs)
-
-    elif isinstance(expression, ForAll):  # ForAll Case
-        terms = expression.argument.getAsOrList()
-        var = expression.variable
-        lhs_list = [term for term in terms if var not in term.depends_on()]  # does NOT depend on the variable
-        rhs_list = [term for term in terms if var in term.depends_on()]  # DOES depend on the variable
-        lhs = T_Nice(n_ary_OR(lhs_list))
-        rhs = make_ForAll(var, T_Nice(n_ary_OR(rhs_list)))
-        return make_OR(lhs, rhs)
-
-    else:  # This case is only reached if expression is an atomic (or negated atomic) term
-        return expression
+    match expression:
+        case ff() | tt():
+            return expression
+        case OR():  # OR Case
+            return OR(T_Nice(expression.argument1), T_Nice(expression.argument2))
+        case AND():  # AND Case
+            return AND(T_Nice(expression.argument1), T_Nice(expression.argument2))
+        case ThereExists():  # ThereExists Case
+            terms = expression.argument.getAsAndList()
+            var = expression.variable
+            lhs_list = [term for term in terms if var not in term.depends_on()]  # does NOT depend on the variable
+            rhs_list = [term for term in terms if var in term.depends_on()]  # DOES depend on the variable
+            lhs = T_Nice(n_ary_AND(lhs_list))
+            rhs = make_ThereExists(var, T_Nice(n_ary_AND(rhs_list)))
+            return make_AND(lhs, rhs)
+        case ForAll():  # ForAll Case
+            terms = expression.argument.getAsOrList()
+            var = expression.variable
+            lhs_list = [term for term in terms if var not in term.depends_on()]  # does NOT depend on the variable
+            rhs_list = [term for term in terms if var in term.depends_on()]  # DOES depend on the variable
+            lhs = T_Nice(n_ary_OR(lhs_list))
+            rhs = make_ForAll(var, T_Nice(n_ary_OR(rhs_list)))
+            return make_OR(lhs, rhs)
+        case _:  # This case is only reached if expression is an atomic (or negated atomic) term
+            return expression
 
 
 def big_AND(terms, variable):

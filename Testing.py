@@ -1,3 +1,5 @@
+# Authors: Sebastiaan Joosten, Anthony Brogni
+
 import z3  # pip install z3-solver
 
 from FO3_Translation_Methods import *
