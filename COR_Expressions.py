@@ -100,7 +100,9 @@ class Composition:
 
     # This is assuming that argument1 contains pairs (x, z) and argument2 contains pairs (z, y)
     def translate(self, arg1, arg2) -> ThereExists:
-        return ThereExists('z', AND(self.argument1.translate(arg1, "z"), self.argument2.translate("z", arg2)))
+        fresh = [var for var in ['x', 'y', 'z'] if var not in [arg1, arg2]]
+        newvar = fresh.pop()
+        return ThereExists(newvar, AND(self.argument1.translate(arg1, newvar), self.argument2.translate(newvar, arg2)))
 
 
 class Dagger:
@@ -115,7 +117,7 @@ class Dagger:
 
     # This is assuming that argument1 contains pairs (x, z) and argument2 contains pairs (z, y)
     def translate(self, arg1, arg2) -> ForAll:
-        fresh = [var for var in ['x','y','z'] if var not in [arg1,arg2]]
+        fresh = [var for var in ['x', 'y', 'z'] if var not in [arg1, arg2]]
         newvar = fresh.pop()
         return ForAll(newvar, OR(self.argument1.translate(arg1, newvar), self.argument2.translate(newvar, arg2)))
 

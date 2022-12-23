@@ -121,7 +121,7 @@ class OR(Term):
         return lhs + rhs
 
     def depends_on(self) -> set:
-        return self.argument1.depends_on().Union(self.argument2.depends_on())
+        return self.argument1.depends_on().union(self.argument2.depends_on())
 
 
 class Equals(Term):
