@@ -34,7 +34,7 @@ def asZ3(expression):
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
     # Test expression must be a closed formula
-    test_expression = ForAll('x', ThereExists('y', Predicate('A', 'x', 'y')))
+    test_expression = ForAll('z', ForAll('x', AND(ThereExists('y', Predicate('A', 'x', 'y')),Predicate('A', 'z', 'y'))))
     print("Original Expression:", test_expression)  # Original expression
     nnf = negation_normal(test_expression)
     print("Negation Normal Form:", nnf)  # Negation Normal Form

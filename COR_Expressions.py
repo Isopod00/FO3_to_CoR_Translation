@@ -115,7 +115,9 @@ class Dagger:
 
     # This is assuming that argument1 contains pairs (x, z) and argument2 contains pairs (z, y)
     def translate(self, arg1, arg2) -> ForAll:
-        return ForAll('z', OR(self.argument1.translate(arg1, "z"), self.argument2.translate("z", arg2)))
+        fresh = [var for var in ['x','y','z'] if var not in [arg1,arg2]]
+        newvar = fresh.pop()
+        return ForAll(newvar, OR(self.argument1.translate(arg1, newvar), self.argument2.translate(newvar, arg2)))
 
 
 class Relation:
