@@ -13,22 +13,22 @@ def asZ3(expression):
             return True
         case ff():
             return False
-        case ForAll():
-            return z3.ForAll([z3.Const(expression.variable, SortForEverything)], asZ3(expression.argument))
-        case ThereExists():
-            return z3.Exists([z3.Const(expression.variable, SortForEverything)], asZ3(expression.argument))
-        case AND():
-            return z3.And(asZ3(expression.argument1), asZ3(expression.argument2))
-        case OR():
-            return z3.Or(asZ3(expression.argument1), asZ3(expression.argument2))
-        case Predicate():
-            return z3.Function(expression.letter, SortForEverything, SortForEverything, z3.BoolSort())(
-                z3.Const(expression.argument1, SortForEverything), z3.Const(expression.argument2, SortForEverything))
-        case Negation():
-            return z3.Not(asZ3(expression.argument))
-        case Equals():
+        case ForAll(argument=arg, variable=var):
+            return z3.ForAll([z3.Const(var, SortForEverything)], asZ3(arg))
+        case ThereExists(argument=arg, variable=var):
+            return z3.Exists([z3.Const(var, SortForEverything)], asZ3(arg))
+        case AND(argument1=arg1, argument2=arg2):
+            return z3.And(asZ3(arg1), asZ3(arg2))
+        case OR(argument1=arg1, argument2=arg2):
+            return z3.Or(asZ3(arg1), asZ3(arg2))
+        case Predicate(letter=a, argument1=arg1, argument2=arg2):
+            return z3.Function(a, SortForEverything, SortForEverything, z3.BoolSort())(
+                z3.Const(arg1, SortForEverything), z3.Const(arg2, SortForEverything))
+        case Negation(argument=arg):
+            return z3.Not(asZ3(arg))
+        case Equals(argument1=arg1, argument2=arg2):
             return z3.Function("Equals", SortForEverything, SortForEverything, z3.BoolSort())(
-                z3.Const(expression.argument1, SortForEverything), z3.Const(expression.argument2, SortForEverything))
+                z3.Const(arg1, SortForEverything), z3.Const(arg2, SortForEverything))
 
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
