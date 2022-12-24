@@ -4,6 +4,14 @@ from COR_Expressions import *
 from FO3_Expressions import *
 
 
+def list_union(list1, list2):
+    """ Computes the mathematical 'union' of two python lists """
+    answer = list1
+    for term in list2:
+        if term not in list1:
+            answer.append(term)
+    return answer
+
 def T_Good_Dash(expression):
     """ Translation function for translating FO3 terms in negation normal form into "good" FO3 terms """
     match expression:
@@ -26,20 +34,20 @@ def T_Good_ThereExists(expression):
     match expression:
         case ForAll(argument=arg, variable=var):
             terms = T_Good_ForAll(arg)
-            return {frozenset([big_AND(terms, var)])}
+            return [[big_AND(terms, var)]]
         case ThereExists(argument=arg, variable=var):
             terms = T_Good_ThereExists(arg)
-            return {frozenset([big_OR(terms, var)])}
+            return [[big_OR(terms, var)]]
         case AND(argument1=arg1, argument2=arg2):
-            answer = set()
-            for set1 in T_Good_ThereExists(arg1):
-                for set2 in T_Good_ThereExists(arg2):
-                    answer.add(set1.union(set2))
+            answer = []
+            for list1 in T_Good_ThereExists(arg1):
+                for list2 in T_Good_ThereExists(arg2):
+                    answer.append(list_union(list1, list2))
             return answer
         case OR(argument1=arg1, argument2=arg2):
-            return T_Good_ThereExists(arg1).union(T_Good_ThereExists(arg2))
+            return list_union(T_Good_ThereExists(arg1), (T_Good_ThereExists(arg2)))
         case _:
-            return {frozenset([expression])}
+            return [[expression]]
 
 
 def T_Good_ForAll(expression):
@@ -47,20 +55,20 @@ def T_Good_ForAll(expression):
     match expression:
         case ForAll(argument=arg, variable=var):
             terms = T_Good_ForAll(arg)
-            return {frozenset([big_AND(terms, var)])}
+            return [[big_AND(terms, var)]]
         case ThereExists(argument=arg, variable=var):
             terms = T_Good_ThereExists(arg)
-            return {frozenset([big_OR(terms, var)])}
+            return [[big_OR(terms, var)]]
         case AND(argument1=arg1, argument2=arg2):
-            return T_Good_ForAll(arg1).union(T_Good_ForAll(arg2))
+            return list_union(T_Good_ForAll(arg1), (T_Good_ForAll(arg2)))
         case OR(argument1=arg1, argument2=arg2):
-            answer = set()
-            for set1 in T_Good_ForAll(arg1):
-                for set2 in T_Good_ForAll(arg2):
-                    answer.add(set1.union(set2))
+            answer = []
+            for list1 in T_Good_ForAll(arg1):
+                for list2 in T_Good_ForAll(arg2):
+                    answer.append(list_union(list1, list2))
             return answer
         case _:
-            return {frozenset([expression])}
+            return [[expression]]
 
 
 def T_Nice(expression):
@@ -130,14 +138,13 @@ def n_ary_OR(expressions_list):
     return answer
 
 
-def final_translation(expression):
+def final_translation(expression, var1, var2):
     """ This method computes the final step of the translation from FO3 into COR! """
     match expression:
-        case Predicate(letter=l, argument1=arg1, argument2=arg2):
-            if (arg1 == 'x' and arg2 == 'y') or (arg1 == 'y' and arg2 == 'z') or (arg1 == 'x' and arg2 == 'z'):
-                return Relation(l)
-            else:
-                return Converse(Relation(l))
+        case Predicate(letter=l, argument1=arg1) if arg1 == var1:
+            return Relation(l)
+        case Predicate(letter=l, argument1=arg1) if arg1 == var2:
+            return Converse(Relation(l))
         case ff():
             return EmptyRelation()
         case tt():
@@ -145,19 +152,19 @@ def final_translation(expression):
         case Equals():
             return IdentityRelation()
         case OR(argument1=arg1, argument2=arg2):
-            return Union(final_translation(arg1), final_translation(arg2))
+            return Union(final_translation(arg1, var1, var2), final_translation(arg2, var1, var2))
         case AND(argument1=arg1, argument2=arg2):
-            return Intersection(final_translation(arg1), final_translation(arg2))
+            return Intersection(final_translation(arg1, var1, var2), final_translation(arg2, var1, var2))
         case Negation(argument=arg):
-            return Complement(final_translation(arg))
-        case ThereExists(argument=arg) if isinstance(arg, AND):
-            return Composition(final_translation(arg.argument1), final_translation(arg.argument2))
+            return Complement(final_translation(arg, var1, var2))
+        case ThereExists(argument=arg, variable=v) if isinstance(arg, AND):
+            return Composition(final_translation(arg.argument1, var1, v), final_translation(arg.argument2, v, var2))
         case ThereExists(argument=arg) if not isinstance(arg, AND):
-            return Composition(final_translation(arg), UniversalRelation())
-        case ForAll(argument=arg) if isinstance(arg, OR):
-            return Dagger(final_translation(arg.argument1), final_translation(arg.argument2))
+            return Composition(final_translation(arg, var1, var2), UniversalRelation())
+        case ForAll(argument=arg, variable=v) if isinstance(arg, OR):
+            return Dagger(final_translation(arg.argument1, var1, v), final_translation(arg.argument2, v, var2))
         case ForAll(argument=arg) if not isinstance(arg, OR):
-            return Dagger(final_translation(arg), EmptyRelation())
+            return Dagger(final_translation(arg, var1, var2), EmptyRelation())
 
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)

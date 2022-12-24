@@ -34,8 +34,7 @@ def asZ3(expression):
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
     # Test expression must be a closed formula
-    test_expression = ForAll('z',
-                             ForAll('x', AND(ThereExists('y', Predicate('A', 'x', 'y')), Predicate('A', 'z', 'y'))))
+    test_expression = OR(ForAll('z', OR(Negation(Predicate('A', 'x', 'z')), Negation(Predicate('B', 'z', 'y')))), AND(Predicate('C', 'y', 'x'), Equals('x', 'y')))
     print("Original Expression:", test_expression)  # Original expression
     nnf = negation_normal(test_expression)
     print("Negation Normal Form:", nnf)  # Negation Normal Form
@@ -43,9 +42,9 @@ if __name__ == "__main__":
     print("\nGood FO3 Translation:", good)  # Good FO3 Term
     nice = T_Nice(good)
     print("Nice FO3 Translation:", nice)  # Nice FO3 Term
-    final = final_translation(nice)
+    final = final_translation(nice, 'x', 'y')
     print("\nFinal Translation:", final)
-    back = ForAll('a', ForAll('b', final.translate('a', 'b')))
+    back = final.translate('x', 'y')
     print("\nSomething that should be equivalent to the original: ", back)
     s = z3.Solver()
     s.add(z3.Not(asZ3(test_expression) == asZ3(back)))
