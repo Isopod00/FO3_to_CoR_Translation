@@ -71,7 +71,7 @@ class Union:
         return f'({self.argument1}) ∪ ({self.argument2})'
 
     def translate(self, arg1, arg2) -> OR:
-        return OR(self.argument1.translate(arg1, arg2), self.argument2.translate(arg1, arg2))
+        return make_OR(self.argument1.translate(arg1, arg2), self.argument2.translate(arg1, arg2))
 
 
 class Intersection:
@@ -85,7 +85,7 @@ class Intersection:
         return f'({self.argument1}) ∩ ({self.argument2})'
 
     def translate(self, arg1, arg2) -> AND:
-        return AND(self.argument1.translate(arg1, arg2), self.argument2.translate(arg1, arg2))
+        return make_AND(self.argument1.translate(arg1, arg2), self.argument2.translate(arg1, arg2))
 
 
 class Composition:
@@ -102,7 +102,7 @@ class Composition:
     def translate(self, arg1, arg2) -> ThereExists:
         fresh = [var for var in ['x', 'y', 'z'] if var not in [arg1, arg2]]
         newvar = fresh.pop()
-        return ThereExists(newvar, AND(self.argument1.translate(arg1, newvar), self.argument2.translate(newvar, arg2)))
+        return ThereExists(newvar, make_AND(self.argument1.translate(arg1, newvar), self.argument2.translate(newvar, arg2)))
 
 
 class Dagger:
@@ -119,7 +119,7 @@ class Dagger:
     def translate(self, arg1, arg2) -> ForAll:
         fresh = [var for var in ['x', 'y', 'z'] if var not in [arg1, arg2]]
         newvar = fresh.pop()
-        return ForAll(newvar, OR(self.argument1.translate(arg1, newvar), self.argument2.translate(newvar, arg2)))
+        return ForAll(newvar, make_OR(self.argument1.translate(arg1, newvar), self.argument2.translate(newvar, arg2)))
 
 
 class Relation:
