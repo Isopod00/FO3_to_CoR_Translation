@@ -133,8 +133,11 @@ def n_ary_OR(expressions_list):
 def final_translation(expression):
     """ This method computes the final step of the translation from FO3 into COR! """
     match expression:
-        case Predicate(letter=arg):
-            return Relation(arg)
+        case Predicate(letter=l, argument1=arg1, argument2=arg2):
+            if (arg1 == 'x' and arg2 == 'y') or (arg1 == 'y' and arg2 == 'z') or (arg1 == 'x' and arg2 == 'z'):
+                return Relation(l)
+            else:
+                return Converse(Relation(l))
         case ff():
             return EmptyRelation()
         case tt():
