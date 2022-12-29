@@ -159,12 +159,26 @@ def final_translation(expression, var1, var2):
             return Complement(final_translation(arg, var1, var2))
         case ThereExists(argument=arg, variable=v) if isinstance(arg, AND):
             return Composition(final_translation(arg.argument1, var1, v), final_translation(arg.argument2, v, var2))
-        case ThereExists(argument=arg) if not isinstance(arg, AND):
-            return Composition(final_translation(arg, var1, var2), UniversalRelation())
+        case ThereExists(argument=arg, variable=v) if not isinstance(arg, AND):
+            if arg.argument1 == var1 and arg.argument2 == v:
+                return Composition(final_translation(arg, var1, v), UniversalRelation())
+            elif arg.argument1 == v and arg.argument2 == var2:
+                return Composition(UniversalRelation(), final_translation(arg, v, var2))
+            elif arg.argument1 == v and arg.argument2 == var1:
+                return Composition(final_translation(arg, var1, v), UniversalRelation())
+            elif arg.argument1 == var2 and arg.argument2 == v:
+                return Composition(UniversalRelation(), final_translation(arg, v, var2))
         case ForAll(argument=arg, variable=v) if isinstance(arg, OR):
             return Dagger(final_translation(arg.argument1, var1, v), final_translation(arg.argument2, v, var2))
-        case ForAll(argument=arg) if not isinstance(arg, OR):
-            return Dagger(final_translation(arg, var1, var2), EmptyRelation())
+        case ForAll(argument=arg, variable=v) if not isinstance(arg, OR):
+            if arg.argument1 == var1 and arg.argument2 == v:
+                return Dagger(final_translation(arg, var1, v), EmptyRelation())
+            elif arg.argument1 == v and arg.argument2 == var2:
+                return Dagger(EmptyRelation(), final_translation(arg, v, var2))
+            elif arg.argument1 == v and arg.argument2 == var1:
+                return Dagger(final_translation(arg, var1, v), EmptyRelation())
+            elif arg.argument1 == var2 and arg.argument2 == v:
+                return Dagger(EmptyRelation(), final_translation(arg, v, var2))
 
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
