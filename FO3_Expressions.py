@@ -29,6 +29,9 @@ class Negation(Term):
     def depends_on(self) -> set:
         return self.argument.depends_on()
 
+    def free_variables(self) -> set:
+        return self.argument.free_variables()
+
 
 class ForAll(Term):
     """ This class describes the mathematical symbol ∀ (for all)
@@ -51,6 +54,9 @@ class ForAll(Term):
     def depends_on(self) -> set:
         return self.argument.depends_on()
 
+    def free_variables(self) -> set:
+        return self.argument.free_variables() - {self.variable}
+
 
 class ThereExists(Term):
     """ This class describes the mathematical symbol ∃ (there exists)
@@ -72,6 +78,9 @@ class ThereExists(Term):
 
     def depends_on(self) -> set:
         return self.argument.depends_on()
+
+    def free_variables(self) -> set:
+        return self.argument.free_variables() - {self.variable}
 
 
 class AND(Term):
@@ -98,6 +107,9 @@ class AND(Term):
     def depends_on(self) -> set:
         return self.argument1.depends_on().union(self.argument2.depends_on())
 
+    def free_variables(self) -> set:
+        return self.argument1.free_variables().union(self.argument2.free_variables())
+
 
 class OR(Term):
     """This class describes a logical OR statement with two arguments, the arguments can be any logical expressions"""
@@ -123,6 +135,9 @@ class OR(Term):
     def depends_on(self) -> set:
         return self.argument1.depends_on().union(self.argument2.depends_on())
 
+    def free_variables(self) -> set:
+        return self.argument1.free_variables().union(self.argument2.free_variables())
+
 
 class Equals(Term):
     """ This class describes two arguments being equal to each other.
@@ -144,6 +159,9 @@ class Equals(Term):
     def depends_on(self) -> set:
         return {self.argument1, self.argument2}
 
+    def free_variables(self) -> set:
+        return {self.argument1, self.argument2}
+
 
 class tt(Term):
     """ This class represents the literal boolean value True. """
@@ -161,6 +179,9 @@ class tt(Term):
         return []
 
     def depends_on(self) -> set:
+        return set()
+
+    def free_variables(self) -> set:
         return set()
 
 
@@ -182,6 +203,9 @@ class ff(Term):
     def depends_on(self) -> set:
         return set()
 
+    def free_variables(self) -> set:
+        return set()
+
 
 class Predicate(Term):
     """ This class represents a single predicate denoted by the letter argument, with variables arg1 and arg2 """
@@ -201,6 +225,9 @@ class Predicate(Term):
         return self
 
     def depends_on(self) -> set:
+        return {self.argument1, self.argument2}
+
+    def free_variables(self) -> set:
         return {self.argument1, self.argument2}
 
 

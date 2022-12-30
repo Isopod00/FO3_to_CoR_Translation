@@ -34,51 +34,66 @@ def asZ3(expression):
                 z3.Const(arg1, SortForEverything), z3.Const(arg2, SortForEverything))
 
 
-def generate_random_COR(current_depth, max_depth):
-    """ This method generates a random COR expression with the specified maximum depth """
+def generate_random_FO3(current_depth, max_depth):
+    """ This method generates a random FO3 expression with the specified maximum depth """
     if current_depth >= max_depth:
-        choice = random.randint(0, 4)
+        choice = random.randint(0, 3)
     else:
-        choice = random.randint(0, 9)
+        choice = random.randint(0, 8)
     match choice:
         case 0:
-            return UniversalRelation()
+            return tt()
         case 1:
-            return EmptyRelation()
+            return ff()
         case 2:
-            return IdentityRelation()
+            var1 = ['x', 'y', 'z'][random.randint(0, 2)]
+            var2 = var1
+            # This ensures we don't get the same variable twice
+            while var2 == var1:
+                var2 = ['x', 'y', 'z'][random.randint(0, 2)]
+            return Equals(var1, var2)
         case 3:
-            choice2 = random.randint(0, 25)
-            return Converse(Relation(chr(choice2 + 65)))
+            letter_choice = chr(random.randint(0, 25) + 65)
+            var1 = ['x', 'y', 'z'][random.randint(0, 2)]
+            var2 = var1
+            # This ensures we don't get the same variable twice
+            while var2 == var1:
+                var2 = ['x', 'y', 'z'][random.randint(0, 2)]
+            return Predicate(letter_choice, var1, var2)
         case 4:
-            choice2 = random.randint(0, 25)
-            return Relation(chr(choice2 + 65))
+            return Negation(generate_random_FO3(current_depth + 1, max_depth))
         case 5:
-            return Complement(generate_random_COR(current_depth + 1, max_depth))
+            return OR(generate_random_FO3(current_depth + 1, max_depth),
+                      generate_random_FO3(current_depth + 1, max_depth))
         case 6:
-            return Union(generate_random_COR(current_depth + 1, max_depth),
-                         generate_random_COR(current_depth + 1, max_depth))
+            return AND(generate_random_FO3(current_depth + 1, max_depth),
+                       generate_random_FO3(current_depth + 1, max_depth))
         case 7:
-            return Intersection(generate_random_COR(current_depth + 1, max_depth),
-                                generate_random_COR(current_depth + 1, max_depth))
+            var = ['x', 'y', 'z'][random.randint(0, 2)]
+            return ForAll(var, generate_random_FO3(current_depth + 1, max_depth))
         case 8:
-            return Composition(generate_random_COR(current_depth + 1, max_depth),
-                               generate_random_COR(current_depth + 1, max_depth))
-        case 9:
-            return Dagger(generate_random_COR(current_depth + 1, max_depth),
-                          generate_random_COR(current_depth + 1, max_depth))
+            var = ['x', 'y', 'z'][random.randint(0, 2)]
+            return ThereExists(var, generate_random_FO3(current_depth + 1, max_depth))
 
 
-def random_COR_tester(attempts, max_depth):
+def make_FO3_expression_closed(FO3_expression):
+    """ This method takes an FO3 expression and makes it closed by applied universal quantifiers (ForAll) to any
+     free variables. """
+    closed_expression = FO3_expression
+    for variable in FO3_expression.free_variables():
+        closed_expression = ForAll(variable, closed_expression)
+    return closed_expression
+
+
+def random_FO3_tester(attempts, max_depth):
     """ This automated testing method will run the specified number of attempts while counting how many are succesful
-    and displaying the results to the terminal. Each attempt entails generating a random COR expression with the
-    specified maximum depth, converting that random expression into an FO3 expression, and then beginning our forwards
-    and backwards translation processes, using z3 to verify the equivalence of the original FO3 term and the result. """
+    and displaying the results to the terminal. Each attempt entails generating a random FO3 expression with the
+    specified maximum depth and then beginning our forwards and backwards translation processes,
+    using z3 to verify the equivalence of the original FO3 term and the result. """
     successes = 0
     for attempt in range(attempts):
-        test = generate_random_COR(0, max_depth)
-        print('Generated COR term:', test)
-        test = test.translate('x', 'y')
+        test = make_FO3_expression_closed(generate_random_FO3(0, max_depth))
+        print('Generated closed FO3 term:', test)
         if test_with_z3(test):
             successes += 1
         else:
@@ -90,7 +105,8 @@ def random_COR_tester(attempts, max_depth):
 def test_with_z3(fo3_expression) -> bool:
     """ This method uses z3 to test the equivalence of the orginal expression with the result of our fowards and
     backwards translation process, returning True if the two expressions are proven to be equivalent and False
-     otherwise. """
+    otherwise. """
+    # Test expression must be a closed formula
     print("Original Expression:", fo3_expression)  # Original expression
     nnf = negation_normal(fo3_expression)
     print("Negation Normal Form:", nnf)  # Negation Normal Form
@@ -126,4 +142,4 @@ def test_with_z3(fo3_expression) -> bool:
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    random_COR_tester(200, 1)
+    random_FO3_tester(200, 0)
