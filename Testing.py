@@ -35,8 +35,9 @@ def asZ3(expression):
 
 
 def generate_random_FO3(current_depth, max_depth):
-    """ This method generates a random FO3 expression with the specified maximum depth """
+    """ This recursive method generates a random FO3 expression with the specified maximum depth """
     if current_depth >= max_depth:
+        # Restrict the choices that can be made if the maximum depth has been reached
         choice = random.randint(0, 3)
     else:
         choice = random.randint(0, 8)
@@ -47,16 +48,16 @@ def generate_random_FO3(current_depth, max_depth):
             return ff()
         case 2:
             var1 = ['x', 'y', 'z'][random.randint(0, 2)]
+            # This code ensures we don't get the same variable twice
             var2 = var1
-            # This ensures we don't get the same variable twice
             while var2 == var1:
                 var2 = ['x', 'y', 'z'][random.randint(0, 2)]
             return Equals(var1, var2)
         case 3:
             letter_choice = chr(random.randint(0, 25) + 65)
             var1 = ['x', 'y', 'z'][random.randint(0, 2)]
+            # This code ensures we don't get the same variable twice
             var2 = var1
-            # This ensures we don't get the same variable twice
             while var2 == var1:
                 var2 = ['x', 'y', 'z'][random.randint(0, 2)]
             return Predicate(letter_choice, var1, var2)
@@ -76,11 +77,11 @@ def generate_random_FO3(current_depth, max_depth):
             return ThereExists(var, generate_random_FO3(current_depth + 1, max_depth))
 
 
-def make_FO3_expression_closed(FO3_expression):
-    """ This method takes an FO3 expression and makes it closed by applied universal quantifiers (ForAll) to any
+def make_FO3_expression_closed(expression):
+    """ This method takes any FO3 expression and makes it closed by applying universal quantifiers (ForAll) to any
      free variables. """
-    closed_expression = FO3_expression
-    for variable in FO3_expression.free_variables():
+    closed_expression = expression
+    for variable in expression.free_variables():
         closed_expression = ForAll(variable, closed_expression)
     return closed_expression
 
