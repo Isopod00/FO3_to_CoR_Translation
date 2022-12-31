@@ -34,9 +34,9 @@ def asZ3(expression):
                 z3.Const(arg1, SortForEverything), z3.Const(arg2, SortForEverything))
 
 
-def generate_random_FO3(current_depth, max_depth):
+def generate_random_FO3(max_depth):
     """ This recursive method generates a random FO3 expression with the specified maximum depth """
-    if current_depth >= max_depth:
+    if max_depth <= 0:
         # Restrict the choices that can be made if the maximum depth has been reached
         choice = random.randint(0, 3)
     else:
@@ -62,19 +62,19 @@ def generate_random_FO3(current_depth, max_depth):
                 var2 = ['x', 'y', 'z'][random.randint(0, 2)]
             return Predicate(letter_choice, var1, var2)
         case 4:
-            return Negation(generate_random_FO3(current_depth + 1, max_depth))
+            return Negation(generate_random_FO3(max_depth - 1))
         case 5:
-            return OR(generate_random_FO3(current_depth + 1, max_depth),
-                      generate_random_FO3(current_depth + 1, max_depth))
+            return OR(generate_random_FO3(max_depth - 1),
+                      generate_random_FO3(max_depth - 1))
         case 6:
-            return AND(generate_random_FO3(current_depth + 1, max_depth),
-                       generate_random_FO3(current_depth + 1, max_depth))
+            return AND(generate_random_FO3(max_depth - 1),
+                       generate_random_FO3(max_depth - 1))
         case 7:
             var = ['x', 'y', 'z'][random.randint(0, 2)]
-            return ForAll(var, generate_random_FO3(current_depth + 1, max_depth))
+            return ForAll(var, generate_random_FO3(max_depth - 1))
         case 8:
             var = ['x', 'y', 'z'][random.randint(0, 2)]
-            return ThereExists(var, generate_random_FO3(current_depth + 1, max_depth))
+            return ThereExists(var, generate_random_FO3(max_depth - 1))
 
 
 def make_FO3_expression_closed(expression):
@@ -93,7 +93,7 @@ def random_FO3_tester(attempts, max_depth):
     using z3 to verify the equivalence of the original FO3 term and the result. """
     successes = 0
     for attempt in range(attempts):
-        test = make_FO3_expression_closed(generate_random_FO3(0, max_depth))
+        test = make_FO3_expression_closed(generate_random_FO3(max_depth))
         print('Generated closed FO3 term:', test)
         if test_with_z3(test):
             successes += 1
