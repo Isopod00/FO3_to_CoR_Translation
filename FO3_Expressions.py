@@ -10,6 +10,12 @@ class Term:
         return [self]
 
 
+class Typed_Variable:
+    """ This class represents a typed variable from a specific set. """
+    def __init__(self, v, s):
+        self.variable = v
+        self.set = s
+
 class Negation(Term):
     """ This class describes the mathematical symbol ¬ (not/negation)
     The argument for this class can be any logical expression that the negation should be applied to. """
