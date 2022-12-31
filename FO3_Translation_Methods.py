@@ -83,15 +83,15 @@ def T_Nice(expression):
             return AND(T_Nice(arg1), T_Nice(arg2))
         case ThereExists(argument=arg, variable=var):  # ThereExists Case
             terms = arg.getAsAndList()
-            lhs_list = [term for term in terms if var not in term.depends_on()]  # does NOT depend on the variable
-            rhs_list = [term for term in terms if var in term.depends_on()]  # DOES depend on the variable
+            lhs_list = [term for term in terms if var not in term.free_variables()]  # does NOT depend on the variable
+            rhs_list = [term for term in terms if var in term.free_variables()]  # DOES depend on the variable
             lhs = T_Nice(n_ary_AND(lhs_list))
             rhs = make_ThereExists(var, T_Nice(n_ary_AND(rhs_list)))
             return make_AND(lhs, rhs)
         case ForAll(argument=arg, variable=var):  # ForAll Case
             terms = arg.getAsOrList()
-            lhs_list = [term for term in terms if var not in term.depends_on()]  # does NOT depend on the variable
-            rhs_list = [term for term in terms if var in term.depends_on()]  # DOES depend on the variable
+            lhs_list = [term for term in terms if var not in term.free_variables()]  # does NOT depend on the variable
+            rhs_list = [term for term in terms if var in term.free_variables()]  # DOES depend on the variable
             lhs = T_Nice(n_ary_OR(lhs_list))
             rhs = make_ForAll(var, T_Nice(n_ary_OR(rhs_list)))
             return make_OR(lhs, rhs)
@@ -150,8 +150,10 @@ def final_translation(expression, var1, var2):
             return EmptyRelation()
         case tt():
             return UniversalRelation()
-        case Equals():
+        case Equals(argument1=arg1, argument2=arg2) if arg1 == var1 or arg2 == var2:
             return IdentityRelation()
+        case Equals(argument1=arg1, argument2=arg2) if arg1 == var2 or arg2 == var1:
+            return Converse(IdentityRelation())
         case OR(argument1=arg1, argument2=arg2):
             return Union(final_translation(arg1, var1, var2), final_translation(arg2, var1, var2))
         case AND(argument1=arg1, argument2=arg2):
@@ -161,16 +163,16 @@ def final_translation(expression, var1, var2):
         case ThereExists(argument=arg, variable=v) if isinstance(arg, AND):
             return Composition(final_translation(arg.argument1, var1, v), final_translation(arg.argument2, v, var2))
         case ThereExists(argument=arg, variable=v) if not isinstance(arg, AND):
-            if var1 in arg.depends_on():
+            if var1 in arg.free_variables():
                 return Composition(final_translation(arg, var1, v), UniversalRelation())
-            elif var2 in arg.depends_on():
+            elif var2 in arg.free_variables() or v in arg.free_variables():
                 return Composition(UniversalRelation(), final_translation(arg, v, var2))
         case ForAll(argument=arg, variable=v) if isinstance(arg, OR):
             return Dagger(final_translation(arg.argument1, var1, v), final_translation(arg.argument2, v, var2))
         case ForAll(argument=arg, variable=v) if not isinstance(arg, OR):
-            if var1 in arg.depends_on():
+            if var1 in arg.free_variables():
                 return Dagger(final_translation(arg, var1, v), EmptyRelation())
-            elif var2 in arg.depends_on():
+            elif var2 in arg.free_variables() or v in arg.free_variables():
                 return Dagger(EmptyRelation(), final_translation(arg, v, var2))
 
 
@@ -182,4 +184,4 @@ if __name__ == "__main__":
     print("Negation Normal Form:", negation_normal(test_expression))  # Negation Normal Form
     print("\nGood FO3 Translation:", T_Good_Dash(negation_normal(test_expression)))  # Good FO3 Term
     print("Nice FO3 Translation:", T_Nice(T_Good_Dash(negation_normal(test_expression))))  # Nice FO3 Term
-    print("\nFinal Translation:", final_translation(T_Nice(T_Good_Dash(negation_normal(test_expression)))))
+    print("\nFinal Translation:", final_translation(T_Nice(T_Good_Dash(negation_normal(test_expression))), 'x', 'y'))
