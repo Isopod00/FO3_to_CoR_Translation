@@ -47,11 +47,19 @@ def generate_random_FO3(max_depth):
         case 1:
             return ff()
         case 2:
-            var1, var2 = ['x', 'y', 'z'][random.randint(0, 2)], ['x', 'y', 'z'][random.randint(0, 2)]
+            var1 = ['x', 'y', 'z'][random.randint(0, 2)]
+            # This code ensures we don't get the same variable twice TODO: take this out eventually
+            var2 = var1
+            while var2 == var1:
+                var2 = ['x', 'y', 'z'][random.randint(0, 2)]
             return Equals(var1, var2)
         case 3:
             letter_choice = chr(random.randint(0, 25) + 65)
-            var1, var2 = ['x', 'y', 'z'][random.randint(0, 2)], ['x', 'y', 'z'][random.randint(0, 2)]
+            var1 = ['x', 'y', 'z'][random.randint(0, 2)]
+            # This code ensures we don't get the same variable twice TODO: take this out eventually
+            var2 = var1
+            while var2 == var1:
+                var2 = ['x', 'y', 'z'][random.randint(0, 2)]
             return Predicate(letter_choice, var1, var2)
         case 4:
             return Negation(generate_random_FO3(max_depth - 1))
@@ -109,7 +117,7 @@ def test_with_z3(fo3_expression) -> bool:
     print("Nice FO3 Translation:", nice)  # Nice FO3 Term
     final = final_translation(nice, 'x', 'y')
     print("\nFinal Translation:", final)
-    back = final.translate('x', 'y')
+    back = ForAll('a', ForAll('b', final.translate('a', 'b')))
     print("\nSomething that should be equivalent to the original: ", back)
     s = z3.Solver()
     s.add(z3.Not(asZ3(fo3_expression) == asZ3(back)))
@@ -135,4 +143,4 @@ def test_with_z3(fo3_expression) -> bool:
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    random_FO3_tester(200, 0)
+    random_FO3_tester(1000, 0)
