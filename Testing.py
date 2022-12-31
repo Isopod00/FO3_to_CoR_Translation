@@ -47,19 +47,11 @@ def generate_random_FO3(max_depth):
         case 1:
             return ff()
         case 2:
-            var1 = ['x', 'y', 'z'][random.randint(0, 2)]
-            # This code ensures we don't get the same variable twice
-            var2 = var1
-            while var2 == var1:
-                var2 = ['x', 'y', 'z'][random.randint(0, 2)]
+            var1, var2 = ['x', 'y', 'z'][random.randint(0, 2)], ['x', 'y', 'z'][random.randint(0, 2)]
             return Equals(var1, var2)
         case 3:
             letter_choice = chr(random.randint(0, 25) + 65)
-            var1 = ['x', 'y', 'z'][random.randint(0, 2)]
-            # This code ensures we don't get the same variable twice
-            var2 = var1
-            while var2 == var1:
-                var2 = ['x', 'y', 'z'][random.randint(0, 2)]
+            var1, var2 = ['x', 'y', 'z'][random.randint(0, 2)], ['x', 'y', 'z'][random.randint(0, 2)]
             return Predicate(letter_choice, var1, var2)
         case 4:
             return Negation(generate_random_FO3(max_depth - 1))
