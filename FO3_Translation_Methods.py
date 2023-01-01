@@ -6,7 +6,7 @@ from FO3_Expressions import *
 
 def list_union(list1, list2):
     """ Computes the mathematical 'union' of two python lists """
-    answer = list1
+    answer = list1.copy()
     for term in list2:
         if term not in list1:
             answer.append(term)
@@ -17,11 +17,11 @@ def T_Good_Dash(expression):
     """ Translation function for translating FO3 terms in negation normal form into "good" FO3 terms """
     match expression:
         case ForAll(argument=arg, variable=var):
-            terms = T_Good_ForAll(arg)
-            return big_AND(terms, var)
+            lists = T_Good_ForAll(arg)
+            return n_ary_AND([ForAll(var, n_ary_OR([term for term in terms])) for terms in lists])
         case ThereExists(argument=arg, variable=var):
-            terms = T_Good_ThereExists(arg)
-            return big_OR(terms, var)
+            lists = T_Good_ThereExists(arg)
+            return n_ary_OR([ThereExists(var, n_ary_AND([term for term in terms])) for terms in lists])
         case AND(argument1=arg1, argument2=arg2):
             return AND(T_Good_Dash(arg1), T_Good_Dash(arg2))
         case OR(argument1=arg1, argument2=arg2):
@@ -34,11 +34,11 @@ def T_Good_ThereExists(expression):
     """ Translation function for translating FO3 terms in negation normal form into "good" FO3 terms """
     match expression:
         case ForAll(argument=arg, variable=var):
-            terms = T_Good_ForAll(arg)
-            return [[big_AND(terms, var)]]
+            lists = T_Good_ForAll(arg)
+            return [[n_ary_AND([ForAll(var, n_ary_OR([term for term in terms])) for terms in lists])]]
         case ThereExists(argument=arg, variable=var):
-            terms = T_Good_ThereExists(arg)
-            return [[big_OR(terms, var)]]
+            lists = T_Good_ThereExists(arg)
+            return [[n_ary_OR([ThereExists(var, n_ary_AND([term for term in terms])) for terms in lists])]]
         case AND(argument1=arg1, argument2=arg2):
             answer = []
             for list1 in T_Good_ThereExists(arg1):
@@ -55,11 +55,11 @@ def T_Good_ForAll(expression):
     """ Translation function for translating FO3 terms in negation normal form into "good" FO3 terms """
     match expression:
         case ForAll(argument=arg, variable=var):
-            terms = T_Good_ForAll(arg)
-            return [[big_AND(terms, var)]]
+            lists = T_Good_ForAll(arg)
+            return [[n_ary_AND([ForAll(var, n_ary_OR([term for term in terms])) for terms in lists])]]
         case ThereExists(argument=arg, variable=var):
-            terms = T_Good_ThereExists(arg)
-            return [[big_OR(terms, var)]]
+            lists = T_Good_ThereExists(arg)
+            return [[n_ary_OR([ThereExists(var, n_ary_AND([term for term in terms])) for terms in lists])]]
         case AND(argument1=arg1, argument2=arg2):
             return list_union(T_Good_ForAll(arg1), (T_Good_ForAll(arg2)))
         case OR(argument1=arg1, argument2=arg2):
@@ -99,32 +99,8 @@ def T_Nice(expression):
             return expression
 
 
-def big_AND(terms, variable):
-    """ This method helps compute the n-ary logical AND of n elements for the GOOD translation.
-    (This is a SPECIALIZED version of n-ary AND) Input is a set of frozensets. """
-    answer = tt()
-    for term in terms:
-        modified_term = ff()
-        for predicate in term:
-            modified_term = make_OR(modified_term, predicate)
-        answer = make_AND(answer, ForAll(variable, modified_term))
-    return answer
-
-
-def big_OR(terms, variable):
-    """ This method helps compute the n-ary logical OR of n elements for the GOOD translation.
-     (This is a specialized version of n-ary OR) Input is a set of frozensets. """
-    answer = ff()
-    for term in terms:
-        modified_term = tt()
-        for predicate in term:
-            modified_term = make_AND(modified_term, predicate)
-        answer = make_OR(answer, ThereExists(variable, modified_term))
-    return answer
-
-
 def n_ary_AND(expressions_list):
-    """ This is a function for computing the n-ary logical AND of n elements. Input is a list. """
+    """ This is a function for computing the n-ary logical AND of n elements. Input is a list of elements. """
     answer = tt()
     for term in expressions_list:
         answer = make_AND(answer, term)
@@ -132,7 +108,7 @@ def n_ary_AND(expressions_list):
 
 
 def n_ary_OR(expressions_list):
-    """ This is a function for computing the n-ary logical OR of n elements. Input is a list. """
+    """ This is a function for computing the n-ary logical OR of n elements. Input is a list of elements. """
     answer = ff()
     for term in expressions_list:
         answer = make_OR(answer, term)

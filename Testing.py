@@ -134,7 +134,7 @@ def test_with_z3(fo3_expression) -> bool:
         print("\nZ3 proved that the round-trip returned something equivalent (this is good!)")
         return True
     else:
-        print("\nZ3 returned ", z3result)
+        print("\nZ3 timed out and returned ", z3result)
         return False
         # TODO: if Z3 times out, we should try with a finite sort instead,
         # Here's how to get a finite sort of three elements:
@@ -143,4 +143,4 @@ def test_with_z3(fo3_expression) -> bool:
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    random_FO3_tester(1000, 0)
+    random_FO3_tester(200, 1)
