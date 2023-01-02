@@ -30,51 +30,45 @@ def asZ3(expression):
         case Negation(argument=arg):
             return z3.Not(asZ3(arg))
         case Equals(argument1=arg1, argument2=arg2):
-            return z3.Function("Equals", SortForEverything, SortForEverything, z3.BoolSort())(
-                z3.Const(arg1, SortForEverything), z3.Const(arg2, SortForEverything))
+            return z3.Const(arg1, SortForEverything) == z3.Const(arg2, SortForEverything)
 
 
-def generate_random_FO3(max_depth):
+def generate_random_FO3(size):
     """ This recursive method generates a random FO3 expression with the specified maximum depth """
-    if max_depth <= 0:
+    if size <= 1:
         # Restrict the choices that can be made if the maximum depth has been reached
         choice = random.randint(0, 3)
+    elif size <= 2:
+        choice = random.randint(4, 6)
     else:
-        choice = random.randint(0, 8)
+        choice = random.randint(4, 8)
+        size_other = random.randint(1, size - 1)
     match choice:
         case 0:
             return tt()
         case 1:
             return ff()
         case 2:
-            var1 = ['x', 'y', 'z'][random.randint(0, 2)]
-            # This code ensures we don't get the same variable twice TODO: take this out eventually
-            var2 = var1
-            while var2 == var1:
-                var2 = ['x', 'y', 'z'][random.randint(0, 2)]
+            var1, var2 = ['x', 'y', 'z'][random.randint(0, 2)], ['x', 'y', 'z'][random.randint(0, 2)]
             return Equals(var1, var2)
         case 3:
-            letter_choice = chr(random.randint(0, 25) + 65)
-            var1 = ['x', 'y', 'z'][random.randint(0, 2)]
-            # This code ensures we don't get the same variable twice TODO: take this out eventually
-            var2 = var1
-            while var2 == var1:
-                var2 = ['x', 'y', 'z'][random.randint(0, 2)]
+            letter_choice = ['Q', 'R', 'S'][random.randint(0, 2)]
+            var1, var2 = ['x', 'y', 'z'][random.randint(0, 2)], ['x', 'y', 'z'][random.randint(0, 2)]
             return Predicate(letter_choice, var1, var2)
         case 4:
-            return Negation(generate_random_FO3(max_depth - 1))
+            var = ['x', 'y', 'z'][random.randint(0, 2)]
+            return ForAll(var, generate_random_FO3(size - 1))
         case 5:
-            return OR(generate_random_FO3(max_depth - 1),
-                      generate_random_FO3(max_depth - 1))
+            var = ['x', 'y', 'z'][random.randint(0, 2)]
+            return ThereExists(var, generate_random_FO3(size - 1))
         case 6:
-            return AND(generate_random_FO3(max_depth - 1),
-                       generate_random_FO3(max_depth - 1))
+            return Negation(generate_random_FO3(size - 1))
         case 7:
-            var = ['x', 'y', 'z'][random.randint(0, 2)]
-            return ForAll(var, generate_random_FO3(max_depth - 1))
+            return OR(generate_random_FO3(size_other - 1),
+                      generate_random_FO3(size - size_other))
         case 8:
-            var = ['x', 'y', 'z'][random.randint(0, 2)]
-            return ThereExists(var, generate_random_FO3(max_depth - 1))
+            return AND(generate_random_FO3(size_other - 1),
+                       generate_random_FO3(size - size_other))
 
 
 def make_FO3_expression_closed(expression):
@@ -86,22 +80,22 @@ def make_FO3_expression_closed(expression):
     return closed_expression
 
 
-def random_FO3_tester(attempts, max_depth):
+def random_FO3_tester(attempts, size):
     """ This automated testing method will run the specified number of attempts while counting how many are succesful
     and displaying the results to the terminal. Each attempt entails generating a random FO3 expression with the
     specified maximum depth and then beginning our forwards and backwards translation processes,
     using z3 to verify the equivalence of the original FO3 term and the result. """
     successes = 0
     for attempt in range(attempts):
-        test = make_FO3_expression_closed(generate_random_FO3(max_depth))
+        test = make_FO3_expression_closed(generate_random_FO3(size))
         print('Generated closed FO3 term:', test)
         if test_with_z3(test):
             successes += 1
         else:
             print('WARNING: TEST FAILED!')
-            return  # TODO: We don't need to keep this return but it helps for now
+            return False # TODO: We don't need to keep this return but it helps for now
     print(f'{successes} / {attempts} were successful! That is {100 * successes / attempts}% accuracy')
-
+    return True
 
 def test_with_z3(fo3_expression) -> bool:
     """ This method uses z3 to test the equivalence of the orginal expression with the result of our fowards and
@@ -143,4 +137,8 @@ def test_with_z3(fo3_expression) -> bool:
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    random_FO3_tester(200, 1)
+    for n in range(1, 21):
+        if random_FO3_tester(n, n):
+            pass
+        else:
+            break

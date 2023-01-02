@@ -118,17 +118,23 @@ def n_ary_OR(expressions_list):
 def final_translation(expression, var1, var2):
     """ This method computes the final step of the translation from FO3 into COR! """
     match expression:
-        case Predicate(letter=l, argument1=arg1, argument2=arg2) if arg1 == var1 or arg2 == var2:
+        case Predicate(letter=l, argument1=arg1, argument2=arg2) if arg1 == var1 and arg2 == arg1:
+            return Composition(Intersection(Relation(l), IdentityRelation()), UniversalRelation())
+        case Predicate(letter=l, argument1=arg1, argument2=arg2) if arg1 == var2 and arg2 == arg1:
+            return Composition(UniversalRelation(), Intersection(Relation(l), IdentityRelation()))
+        case Predicate(letter=l, argument1=arg1, argument2=arg2) if arg1 == var1 and arg2 == var2:
             return Relation(l)
-        case Predicate(letter=l, argument1=arg1, argument2=arg2) if arg1 == var2 or arg2 == var1:
+        case Predicate(letter=l, argument1=arg1, argument2=arg2) if arg1 == var2 and arg2 == var1:
             return Converse(Relation(l))
         case ff():
             return EmptyRelation()
         case tt():
             return UniversalRelation()
-        case Equals(argument1=arg1, argument2=arg2) if arg1 == var1 or arg2 == var2:
+        case Equals(argument1=arg1, argument2=arg2) if arg1 == arg2:  # If the variables are the same
+            return UniversalRelation()
+        case Equals(argument1=arg1, argument2=arg2) if arg1 == var1 and arg2 == var2:
             return IdentityRelation()
-        case Equals(argument1=arg1, argument2=arg2) if arg1 == var2 or arg2 == var1:
+        case Equals(argument1=arg1, argument2=arg2) if arg1 == var2 and arg2 == var1:
             return Converse(IdentityRelation())
         case OR(argument1=arg1, argument2=arg2):
             return Union(final_translation(arg1, var1, var2), final_translation(arg2, var1, var2))
@@ -136,20 +142,16 @@ def final_translation(expression, var1, var2):
             return Intersection(final_translation(arg1, var1, var2), final_translation(arg2, var1, var2))
         case Negation(argument=arg):
             return Complement(final_translation(arg, var1, var2))
-        case ThereExists(argument=arg, variable=v) if isinstance(arg, AND):
-            return Composition(final_translation(arg.argument1, var1, v), final_translation(arg.argument2, v, var2))
-        case ThereExists(argument=arg, variable=v) if not isinstance(arg, AND):
-            if var1 in arg.free_variables():
-                return Composition(final_translation(arg, var1, v), UniversalRelation())
-            elif var2 in arg.free_variables() or v in arg.free_variables():
-                return Composition(UniversalRelation(), final_translation(arg, v, var2))
-        case ForAll(argument=arg, variable=v) if isinstance(arg, OR):
-            return Dagger(final_translation(arg.argument1, var1, v), final_translation(arg.argument2, v, var2))
-        case ForAll(argument=arg, variable=v) if not isinstance(arg, OR):
-            if var1 in arg.free_variables():
-                return Dagger(final_translation(arg, var1, v), EmptyRelation())
-            elif var2 in arg.free_variables() or v in arg.free_variables():
-                return Dagger(EmptyRelation(), final_translation(arg, v, var2))
+        case ThereExists(argument=arg, variable=v):
+            and_list = arg.getAsAndList()
+            lhs = [term for term in and_list if var1 in term.free_variables()] if var1 != v else []
+            rhs = [term for term in and_list if term not in lhs]
+            return Composition(final_translation(n_ary_AND(lhs), var1, v), final_translation(n_ary_AND(rhs), v, var2))
+        case ForAll(argument=arg, variable=v):
+            or_list = arg.getAsOrList()
+            lhs = [term for term in or_list if var1 in term.free_variables()] if var1 != v else []
+            rhs = [term for term in or_list if term not in lhs]
+            return Dagger(final_translation(n_ary_OR(lhs), var1, v), final_translation(n_ary_OR(rhs), v, var2))
 
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
