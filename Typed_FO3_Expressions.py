@@ -12,9 +12,14 @@ class Term:
 
 class Typed_Variable:
     """ This class represents a typed variable from a specific set. """
+
     def __init__(self, v, s):
-        self.variable = v
+        self.var = v
         self.set = s
+
+    def __str__(self) -> str:
+        return f'{self.var} ∈ {self.set}'
+
 
 class Negation(Term):
     """ This class describes the mathematical symbol ¬ (not/negation)
@@ -293,10 +298,13 @@ def negation_normal(argument):
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
+    x = Typed_Variable('x', 'Q')
+    y = Typed_Variable('y', 'R')
+    z = Typed_Variable('z', 'S')
     test_expression = Negation(
-        ThereExists('x', Negation(
-            ThereExists('y', Negation(
-                AND(Predicate("A", "x", "y"), AND(Equals('y', 'z'), Predicate('B', 'y', 'z'))))))))
+        ThereExists(x, Negation(
+            ThereExists(y, Negation(
+                AND(Predicate("A", x, y), AND(Equals(y, z), Predicate('B', y, z))))))))
 
     print("Original Expression:", test_expression)  # Original expression
     print("Negation Normal Form:", negation_normal(test_expression))  # Negation Normal Form
