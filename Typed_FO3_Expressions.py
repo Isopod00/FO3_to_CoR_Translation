@@ -20,6 +20,10 @@ class Typed_Variable:
     def __str__(self) -> str:
         return f'{self.var} ∈ {self.set}'
 
+    def __eq__(self, other):
+        """ Define what it means for two Typed_variables to be 'equal' """
+        return isinstance(other, Typed_Variable) and self.var == other.var and self.set == other.set
+
 
 class Negation(Term):
     """ This class describes the mathematical symbol ¬ (not/negation)
@@ -152,7 +156,7 @@ class OR(Term):
 
 class Equals(Term):
     """ This class describes two arguments being equal to each other.
-    The two arguments (arg1 and arg2) should be strings """
+    The two arguments (arg1 and arg2) should be Typed_Variables """
 
     def __init__(self, arg1, arg2):
         self.argument1 = arg1
