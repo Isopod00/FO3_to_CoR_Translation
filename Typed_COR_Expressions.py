@@ -4,11 +4,7 @@ from Typed_FO3_Expressions import *
 
 
 class Typed_UniversalRelation:
-    """ This class describes the COR mathematical symbol T (universal relation) on set1 and set2"""
-
-    def __init__(self, set1, set2):
-        self.set1 = set1
-        self.set2 = set2
+    """ This class describes the COR mathematical symbol T (universal relation) on two sets """
 
     def __str__(self) -> str:
         return 'T'
@@ -18,11 +14,7 @@ class Typed_UniversalRelation:
 
 
 class Typed_EmptyRelation:
-    """ This class describes the COR mathematical symbol 𝟎 (empty relation) on set1 and set2"""
-
-    def __init__(self, set1, set2):
-        self.set1 = set1
-        self.set2 = set2
+    """ This class describes the COR mathematical symbol 𝟎 (empty relation) on two sets """
 
     def __str__(self) -> str:
         return '𝟎'
@@ -32,22 +24,18 @@ class Typed_EmptyRelation:
 
 
 class Typed_IdentityRelation:
-    """ This class describes the COR mathematical symbol 𝟏 (identity relation) on set1 and set2 """
-
-    def __init__(self, set1, set2):
-        self.set1 = set1
-        self.set2 = set2
+    """ This class describes the COR mathematical symbol 𝟏 (identity relation) on two sets """
 
     def __str__(self) -> str:
         return '𝟏'
 
-    # This is assuming the relations we are discussing contain pairs (arg1, arg2)
+    # This is assuming the typed relations we are discussing contain Typed_Variables (arg1, arg2)
     def translate(self, arg1, arg2) -> Equals:
         return Equals(arg1, arg2)
 
 
 class Converse:
-    """ This class describes the converse of a relation (R⁻¹), which is all (b, a) such that (a, b) ∈ R """
+    """ This class describes the converse of a typed relation (R⁻¹), which is all (b, a) such that (a, b) ∈ R """
 
     def __init__(self, arg):
         self.argument = arg
@@ -60,7 +48,7 @@ class Converse:
 
 
 class Complement:
-    """ This class describes the complement of a relation (R⁻ ) which is all (a, b) not in R """
+    """ This class describes the complement of a typed relation (R⁻ ) which is all (a, b) not in R """
 
     def __init__(self, arg):
         self.argument = arg
@@ -73,7 +61,7 @@ class Complement:
 
 
 class Union:
-    """This class describes the union between two relations arg1 and arg2, which can be any relations """
+    """This class describes the union between two typed relations arg1 and arg2 """
 
     def __init__(self, arg1, arg2):
         self.argument1 = arg1
@@ -87,7 +75,7 @@ class Union:
 
 
 class Intersection:
-    """This class describes the intersection between two relations arg1 and arg2, which can be any relations """
+    """This class describes the intersection between two typed relations arg1 and arg2 """
 
     def __init__(self, arg1, arg2):
         self.argument1 = arg1
@@ -110,7 +98,7 @@ class Composition:
     def __str__(self) -> str:
         return f'({self.argument1}) ∘ ({self.argument2})'
 
-    # This is assuming that argument1 contains pairs (x, z) and argument2 contains pairs (z, y)
+    # This is assuming that argument1 contains pairs (arg1, newtypedvar) and argument2 contains pairs (newtypedvar, arg2)
     def translate(self, arg1, arg2) -> ThereExists:
         fresh_var = [var for var in ['x', 'y', 'z'] if var not in [arg1.var, arg2.var]]
         fresh_set = [s for s in ['Q', 'R', 'S'] if s not in [arg1.set, arg2.set]]
@@ -129,7 +117,7 @@ class Dagger:
     def __str__(self) -> str:
         return f'({self.argument1}) † ({self.argument2})'
 
-    # This is assuming that argument1 contains pairs (x, z) and argument2 contains pairs (z, y)
+    # This is assuming that argument1 contains pairs (arg1, newtypedvar) and argument2 contains pairs (newtypedvar, arg2)
     def translate(self, arg1, arg2) -> ForAll:
         fresh_var = [var for var in ['x', 'y', 'z'] if var not in [arg1.var, arg2.var]]
         fresh_set = [s for s in ['Q', 'R', 'S'] if s not in [arg1.set, arg2.set]]
@@ -139,12 +127,10 @@ class Dagger:
 
 
 class Typed_Relation:
-    """ This class represents a single relation denoted by the letter argument on set1 and set2"""
+    """ This class represents a relation on two sets denoted by the letter argument """
 
-    def __init__(self, letter, set1, set2):
+    def __init__(self, letter):
         self.letter = letter
-        self.set1 = set1
-        self.set2 = set2
 
     def __str__(self) -> str:
         return self.letter
@@ -156,8 +142,8 @@ class Typed_Relation:
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    test_expression = Union(Complement(Composition(Typed_Relation("A", 'Q', 'R'), Typed_Relation("B", 'R', 'Q'))),
-                            Intersection(Converse(Typed_Relation("C", 'S', 'Q')), Typed_IdentityRelation('Q', 'Q')))
+    test_expression = Union(Complement(Composition(Typed_Relation("A"), Typed_Relation("B"))),
+                            Intersection(Converse(Typed_Relation("C")), Typed_IdentityRelation()))
 
     x = Typed_Variable('x', 'Q')
     y = Typed_Variable('y', 'R')

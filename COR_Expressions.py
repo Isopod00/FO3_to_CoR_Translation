@@ -98,7 +98,7 @@ class Composition:
     def __str__(self) -> str:
         return f'({self.argument1}) ∘ ({self.argument2})'
 
-    # This is assuming that argument1 contains pairs (x, z) and argument2 contains pairs (z, y)
+    # This is assuming that argument1 contains pairs (arg1, newvar) and argument2 contains pairs (newvar, arg2)
     def translate(self, arg1, arg2) -> ThereExists:
         fresh = [var for var in ['x', 'y', 'z'] if var not in [arg1, arg2]]
         newvar = fresh.pop()
@@ -115,7 +115,7 @@ class Dagger:
     def __str__(self) -> str:
         return f'({self.argument1}) † ({self.argument2})'
 
-    # This is assuming that argument1 contains pairs (x, z) and argument2 contains pairs (z, y)
+    # This is assuming that argument1 contains pairs (arg1, newvar) and argument2 contains pairs (newvar, arg2)
     def translate(self, arg1, arg2) -> ForAll:
         fresh = [var for var in ['x', 'y', 'z'] if var not in [arg1, arg2]]
         newvar = fresh.pop()
