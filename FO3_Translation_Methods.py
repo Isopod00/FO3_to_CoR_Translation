@@ -2,15 +2,7 @@
 
 from COR_Expressions import *
 from FO3_Expressions import *
-
-
-def list_union(list1, list2):
-    """ Computes the mathematical 'union' of two python lists """
-    answer = list1.copy()
-    for term in list2:
-        if term not in list1:
-            answer.append(term)
-    return answer
+from List_Methods import *
 
 
 def T_Good_Dash(expression):
@@ -156,7 +148,7 @@ def final_translation(expression, var1, var2):
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    test_expression = ForAll('x', ThereExists('y', OR(Predicate('A', 'x', 'y'), Predicate('B', 'x', 'z'))))
+    test_expression = ForAll('x', ThereExists('y', Predicate('A', 'x', 'y')))
 
     print("Original Expression:", test_expression)  # Original expression
     print("Negation Normal Form:", negation_normal(test_expression))  # Negation Normal Form
