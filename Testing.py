@@ -42,7 +42,6 @@ def generate_random_FO3(size):
         choice = random.randint(4, 6)
     else:
         choice = random.randint(4, 8)
-        size_other = random.randint(1, size - 1)
     match choice:
         case 0:
             return tt()
@@ -64,9 +63,11 @@ def generate_random_FO3(size):
         case 6:
             return Negation(generate_random_FO3(size - 1))
         case 7:
+            size_other = random.randint(1, size - 1)
             return OR(generate_random_FO3(size_other - 1),
                       generate_random_FO3(size - size_other))
         case 8:
+            size_other = random.randint(1, size - 1)
             return AND(generate_random_FO3(size_other - 1),
                        generate_random_FO3(size - size_other))
 
@@ -89,15 +90,17 @@ def random_FO3_tester(attempts, size):
     for attempt in range(attempts):
         test = make_FO3_expression_closed(generate_random_FO3(size))
         print('Generated closed FO3 term:', test)
-        if test_with_z3(test):
-            successes += 1
-        else:
+        return_value = test_with_z3(test)
+        if return_value < 0:
             print('WARNING: TEST FAILED!')
-            return False # TODO: We don't need to keep this return but it helps for now
-    print(f'{successes} / {attempts} were successful! That is {100 * successes / attempts}% accuracy')
+            return False
+        else:
+            successes += return_value
+    print(f'{successes}/{attempts} were successful without timing out! That is {100 * successes / attempts}% accuracy')
     return True
 
-def test_with_z3(fo3_expression) -> bool:
+
+def test_with_z3(fo3_expression) -> int:
     """ This method uses z3 to test the equivalence of the orginal expression with the result of our fowards and
     backwards translation process, returning True if the two expressions are proven to be equivalent and False
     otherwise. """
@@ -123,13 +126,13 @@ def test_with_z3(fo3_expression) -> bool:
         print("\nZ3 lhs: ", asZ3(fo3_expression))
         print("\nZ3 rhs: ", asZ3(back))
         print("\nZ3 constraint: ", z3.Not(asZ3(fo3_expression) == asZ3(back)))
-        return False
+        return -1
     elif z3result == z3.unsat:
         print("\nZ3 proved that the round-trip returned something equivalent (this is good!)")
-        return True
+        return 1
     else:
         print("\nZ3 timed out and returned ", z3result)
-        return False
+        return 0
         # TODO: if Z3 times out, we should try with a finite sort instead,
         # Here's how to get a finite sort of three elements:
         # S, (a, b, c) = z3.EnumSort('round', ['a','b','c'])
