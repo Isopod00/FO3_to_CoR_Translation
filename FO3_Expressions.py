@@ -10,6 +10,21 @@ class Term:
         return [self]
 
 
+class Typed_Variable:
+    """ This class represents a typed variable from a specific set. """
+
+    def __init__(self, v, s):
+        self.var = v
+        self.set = s
+
+    def __str__(self) -> str:
+        return f'{self.var} ∈ {self.set}'
+
+    def __eq__(self, other):
+        """ Define what it means for two Typed_variables to be 'equal' """
+        return isinstance(other, Typed_Variable) and self.var == other.var and self.set == other.set
+
+
 class Negation(Term):
     """ This class describes the mathematical symbol ¬ (not/negation)
     The argument for this class can be any logical expression that the negation should be applied to. """
@@ -291,6 +306,18 @@ if __name__ == "__main__":
         ThereExists('x', Negation(
             ThereExists('y', Negation(
                 AND(Predicate("A", "x", "y"), AND(Equals('y', 'z'), Predicate('B', 'y', 'z'))))))))
+
+    print("Original Expression:", test_expression)  # Original expression
+    print("Negation Normal Form:", negation_normal(test_expression))  # Negation Normal Form
+
+    print()
+    x = Typed_Variable('x', 'Q')
+    y = Typed_Variable('y', 'R')
+    z = Typed_Variable('z', 'S')
+    test_expression = Negation(
+        ThereExists(x, Negation(
+            ThereExists(y, Negation(
+                AND(Predicate("A", x, y), AND(Equals(y, z), Predicate('B', y, z))))))))
 
     print("Original Expression:", test_expression)  # Original expression
     print("Negation Normal Form:", negation_normal(test_expression))  # Negation Normal Form

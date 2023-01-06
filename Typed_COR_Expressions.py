@@ -1,6 +1,6 @@
 # Authors: Sebastiaan Joosten, Anthony Brogni
 
-from Typed_FO3_Expressions import *
+from FO3_Expressions import *
 
 
 class Typed_UniversalRelation:
