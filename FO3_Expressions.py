@@ -1,5 +1,7 @@
 # Authors: Sebastiaan Joosten, Anthony Brogni
 
+from List_Methods import *
+
 class Term:
     """ This is a super class that other classes can inherit from. """
 
@@ -44,7 +46,7 @@ class Negation(Term):
     def depends_on(self) -> set:
         return self.argument.depends_on()
 
-    def free_variables(self) -> set:
+    def free_variables(self) -> list:
         return self.argument.free_variables()
 
 
@@ -69,8 +71,8 @@ class ForAll(Term):
     def depends_on(self) -> set:
         return self.argument.depends_on()
 
-    def free_variables(self) -> set:
-        return self.argument.free_variables() - {self.variable}
+    def free_variables(self) -> list:
+        return list_difference(self.argument.free_variables(), [self.variable])
 
 
 class ThereExists(Term):
@@ -94,8 +96,8 @@ class ThereExists(Term):
     def depends_on(self) -> set:
         return self.argument.depends_on()
 
-    def free_variables(self) -> set:
-        return self.argument.free_variables() - {self.variable}
+    def free_variables(self) -> list:
+        return list_difference(self.argument.free_variables(), [self.variable])
 
 
 class AND(Term):
@@ -122,8 +124,8 @@ class AND(Term):
     def depends_on(self) -> set:
         return self.argument1.depends_on().union(self.argument2.depends_on())
 
-    def free_variables(self) -> set:
-        return self.argument1.free_variables().union(self.argument2.free_variables())
+    def free_variables(self) -> list:
+        return list_union(self.argument1.free_variables(), self.argument2.free_variables())
 
 
 class OR(Term):
@@ -150,8 +152,8 @@ class OR(Term):
     def depends_on(self) -> set:
         return self.argument1.depends_on().union(self.argument2.depends_on())
 
-    def free_variables(self) -> set:
-        return self.argument1.free_variables().union(self.argument2.free_variables())
+    def free_variables(self) -> list:
+        return list_union(self.argument1.free_variables(), self.argument2.free_variables())
 
 
 class Equals(Term):
@@ -174,8 +176,8 @@ class Equals(Term):
     def depends_on(self) -> set:
         return {self.argument1, self.argument2}
 
-    def free_variables(self) -> set:
-        return {self.argument1, self.argument2}
+    def free_variables(self) -> list:
+        return [self.argument1, self.argument2]
 
 
 class tt(Term):
@@ -196,8 +198,8 @@ class tt(Term):
     def depends_on(self) -> set:
         return set()
 
-    def free_variables(self) -> set:
-        return set()
+    def free_variables(self) -> list:
+        return []
 
 
 class ff(Term):
@@ -218,8 +220,8 @@ class ff(Term):
     def depends_on(self) -> set:
         return set()
 
-    def free_variables(self) -> set:
-        return set()
+    def free_variables(self) -> list:
+        return []
 
 
 class Predicate(Term):
@@ -242,8 +244,8 @@ class Predicate(Term):
     def depends_on(self) -> set:
         return {self.argument1, self.argument2}
 
-    def free_variables(self) -> set:
-        return {self.argument1, self.argument2}
+    def free_variables(self) -> list:
+        return [self.argument1, self.argument2]
 
 
 def Implies(a, b) -> OR:

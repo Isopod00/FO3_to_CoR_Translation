@@ -1,4 +1,4 @@
-def list_union(list1, list2):
+def list_union(list1, list2) -> list:
     """ Computes the mathematical 'union' of two python lists """
     answer = list1.copy()
     for term in list2:
@@ -7,6 +7,6 @@ def list_union(list1, list2):
     return answer
 
 
-def list_difference(list1, list2):
+def list_difference(list1, list2) -> list:
     """ Computes the mathematically 'difference' of two python lists """
     return [term for term in list1 if term not in list2]
