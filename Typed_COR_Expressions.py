@@ -11,10 +11,10 @@ class Typed_UniversalRelation:
         self.set2 = s2
 
     def __str__(self) -> str:
-        return 'T'
+        return f'T[{self.set1}*{self.set2}]'
 
     def translate(self, arg1, arg2) -> tt:
-        return tt()  # TODO: I believe this needs to be changed
+        return tt()
 
     def type(self) -> list:
         return [self.set1, self.set2]
@@ -28,10 +28,10 @@ class Typed_EmptyRelation:
         self.set2 = s2
 
     def __str__(self) -> str:
-        return '𝟎'
+        return f'𝟎[{self.set1}*{self.set2}]'
 
     def translate(self, arg1, arg2) -> ff:
-        return ff()  # TODO: I believe this needs to be changed
+        return ff()
 
     def type(self) -> list:
         return [self.set1, self.set2]
@@ -45,7 +45,7 @@ class Typed_IdentityRelation:
         self.set2 = s2
 
     def __str__(self) -> str:
-        return '𝟏'
+        return f'𝟏[{self.set1}*{self.set2}]'
 
     def translate(self, arg1, arg2) -> Equals:
         return Equals(Typed_Variable(arg1, self.set1), Typed_Variable(arg2, self.set2))
@@ -143,9 +143,8 @@ class Typed_Composition:
 
     def translate(self, arg1, arg2) -> ThereExists:
         fresh_var = [var for var in ['x', 'y', 'z'] if var not in [arg1, arg2]]
-        fresh_set = [s for s in ['Q', 'R', 'S'] if s not in self.type()]
+        newset = self.argument1.type()[1]
         newvar = fresh_var.pop()
-        newset = fresh_set.pop()
         return ThereExists(Typed_Variable(newvar, newset), make_AND(self.argument1.translate(arg1, newvar),
                                                                     self.argument2.translate(newvar, arg2)))
 
@@ -165,9 +164,8 @@ class Typed_Dagger:
 
     def translate(self, arg1, arg2) -> ForAll:
         fresh_var = [var for var in ['x', 'y', 'z'] if var not in [arg1, arg2]]
-        fresh_set = [s for s in ['Q', 'R', 'S'] if s not in self.type()]
+        newset = self.argument1.type()[1]
         newvar = fresh_var.pop()
-        newset = fresh_set.pop()
         return ForAll(Typed_Variable(newvar, newset),
                       make_OR(self.argument1.translate(arg1, newvar), self.argument2.translate(newvar, arg2)))
 
@@ -181,7 +179,7 @@ class Typed_Relation:
         self.set2 = s2
 
     def __str__(self) -> str:
-        return self.letter
+        return f'{self.letter}[{self.set1}*{self.set2}]'
 
     # This is assuming the relations we are discussing contain pairs (arg1, arg2)
     def translate(self, arg1, arg2) -> Predicate:
@@ -193,7 +191,7 @@ class Typed_Relation:
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    test_expression = Typed_Composition(Typed_Relation('A', 'Q', 'S'), Typed_Relation('B', 'S', 'R'))
+    test_expression = Typed_Dagger(Typed_Relation('A', 'Q', 'S'), Typed_Relation('B', 'S', 'R'))
 
     print("Original Expression:", test_expression)  # Original expression
     print("Translated Expression:", test_expression.translate('x', 'y'))  # Translated expression
