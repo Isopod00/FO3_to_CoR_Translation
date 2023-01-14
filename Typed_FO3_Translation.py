@@ -24,26 +24,26 @@ def typed_final_translation(expression, var1, var2):
     match expression:
         case Predicate(letter=l, argument1=arg1, argument2=arg2) if arg1 == var1 and arg2 == arg1:
             return Typed_Composition(
-                Typed_Intersection(Typed_Relation(l, var1.set, var2.set), Typed_IdentityRelation(var1.set, var2.set)),
-                Typed_UniversalRelation(var1.set, var2.set))
+                Typed_Intersection(Typed_Relation(l, arg1.set, arg2.set), Typed_IdentityRelation(arg1.set, arg2.set)),
+                Typed_UniversalRelation(arg1.set, arg2.set))
         case Predicate(letter=l, argument1=arg1, argument2=arg2) if arg1 == var2 and arg2 == arg1:
-            return Typed_Composition(Typed_UniversalRelation(var1.set, var2.set),
-                                     Typed_Intersection(Typed_Relation(l, var1.set, var2.set),
-                                                        Typed_IdentityRelation(var1.set, var2.set)))
+            return Typed_Composition(Typed_UniversalRelation(arg1.set, arg2.set),
+                                     Typed_Intersection(Typed_Relation(l, arg1.set, arg2.set),
+                                                        Typed_IdentityRelation(arg1.set, arg2.set)))
         case Predicate(letter=l, argument1=arg1, argument2=arg2) if arg1 == var1 and arg2 == var2:
-            return Typed_Relation(l, var1.set, var2.set)
+            return Typed_Relation(l, arg1.set, arg2.set)
         case Predicate(letter=l, argument1=arg1, argument2=arg2) if arg1 == var2 and arg2 == var1:
-            return Typed_Converse(Typed_Relation(l, var1.set, var2.set))
+            return Typed_Converse(Typed_Relation(l, arg1.set, arg2.set))
         case ff():
             return Typed_EmptyRelation(var1.set, var2.set)
         case tt():
             return Typed_UniversalRelation(var1.set, var2.set)
         case Equals(argument1=arg1, argument2=arg2) if arg1 == arg2:  # If the variables are the same
-            return Typed_UniversalRelation(var1.set, var2.set)
+            return Typed_UniversalRelation(arg1.set, arg2.set)
         case Equals(argument1=arg1, argument2=arg2) if arg1 == var1 and arg2 == var2:
-            return Typed_IdentityRelation(var1.set, var2.set)
+            return Typed_IdentityRelation(arg1.set, arg2.set)
         case Equals(argument1=arg1, argument2=arg2) if arg1 == var2 and arg2 == var1:
-            return Typed_Converse(Typed_IdentityRelation(var1.set, var2.set))
+            return Typed_Converse(Typed_IdentityRelation(arg1.set, arg2.set))
         case OR(argument1=arg1, argument2=arg2):
             return Typed_Union(typed_final_translation(arg1, var1, var2), typed_final_translation(arg2, var1, var2))
         case AND(argument1=arg1, argument2=arg2):
