@@ -143,7 +143,7 @@ class Typed_Composition:
 
     def translate(self, arg1, arg2) -> ThereExists:
         fresh_var = [var for var in ['x', 'y', 'z'] if var not in [arg1, arg2]]
-        newset = self.argument1.type()[1]
+        newset = self.argument1.type()[1]  # Or self.argument2.type()[0] is also correct, they should be the same
         newvar = fresh_var.pop()
         return ThereExists(Typed_Variable(newvar, newset), make_AND(self.argument1.translate(arg1, newvar),
                                                                     self.argument2.translate(newvar, arg2)))
@@ -164,7 +164,7 @@ class Typed_Dagger:
 
     def translate(self, arg1, arg2) -> ForAll:
         fresh_var = [var for var in ['x', 'y', 'z'] if var not in [arg1, arg2]]
-        newset = self.argument1.type()[1]
+        newset = self.argument1.type()[1]  # Or self.argument2.type()[0] is also correct, they should be the same
         newvar = fresh_var.pop()
         return ForAll(Typed_Variable(newvar, newset),
                       make_OR(self.argument1.translate(arg1, newvar), self.argument2.translate(newvar, arg2)))
