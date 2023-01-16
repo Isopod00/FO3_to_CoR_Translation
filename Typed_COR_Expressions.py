@@ -67,15 +67,7 @@ class Typed_Converse:
         return [self.argument.type()[1], self.argument.type()[0]]
 
     def translate(self, arg1, arg2):
-        match self.argument:
-            case Typed_Relation(letter=l, set1=s1, set2=s2):
-                return Predicate(l, Typed_Variable(arg2, s2), Typed_Variable(arg1, s1))
-            case Typed_IdentityRelation(set1=s1, set2=s2):
-                return Equals(Typed_Variable(arg2, s2), Typed_Variable(arg1, s1))
-            case Typed_UniversalRelation():
-                return tt()  # TODO: I believe this needs to be changed
-            case Typed_EmptyRelation():
-                return ff()  # TODO: I believe this needs to be changed
+        return self.argument.translate(arg2, arg1)
 
 
 class Typed_Complement:
@@ -98,8 +90,11 @@ class Typed_Union:
     """This class describes the union between two typed relations arg1 and arg2 """
 
     def __init__(self, arg1, arg2):
-        self.argument1 = arg1
-        self.argument2 = arg2
+        if arg1.type() != arg2.type():  # Type checking
+            raise Exception(f'ERROR: Union type mismatch! Type 1 is:{arg1.type()} and Type 2 is:{arg2.type()}')
+        else:
+            self.argument1 = arg1
+            self.argument2 = arg2
 
     def __str__(self) -> str:
         return f'({self.argument1}) ∪ ({self.argument2})'
@@ -115,8 +110,11 @@ class Typed_Intersection:
     """This class describes the intersection between two typed relations arg1 and arg2 """
 
     def __init__(self, arg1, arg2):
-        self.argument1 = arg1
-        self.argument2 = arg2
+        if arg1.type() != arg2.type():  # Type checking
+            raise Exception(f'ERROR: Intersection type mismatch! Type 1 is:{arg1.type()} and Type 2 is:{arg2.type()}')
+        else:
+            self.argument1 = arg1
+            self.argument2 = arg2
 
     def __str__(self) -> str:
         return f'({self.argument1}) ∩ ({self.argument2})'
@@ -132,8 +130,11 @@ class Typed_Composition:
     """ This class describes the composition operation arg1 ∘ arg2 = {(x, y) | (x, z) ∈ arg1 ∧ (z, y) ∈ arg2} """
 
     def __init__(self, arg1, arg2):
-        self.argument1 = arg1
-        self.argument2 = arg2
+        if arg1.type()[1] != arg2.type()[0]:  # Type checking
+            raise Exception(f'ERROR: Composition type mismatch! Type 1 is:{arg1.type()} and Type 2 is:{arg2.type()}')
+        else:
+            self.argument1 = arg1
+            self.argument2 = arg2
 
     def __str__(self) -> str:
         return f'({self.argument1}) ∘ ({self.argument2})'
@@ -153,8 +154,11 @@ class Typed_Dagger:
     """ This class describes the dagger operation arg1 † arg2 = {(x, y) | (x, z) ∈ arg1 ∨ (z, y) ∈ arg2} """
 
     def __init__(self, arg1, arg2):
-        self.argument1 = arg1
-        self.argument2 = arg2
+        if arg1.type()[1] != arg2.type()[0]:  # Type checking
+            raise Exception(f'ERROR: Dagger type mismatch! Type 1 is:{arg1.type()} and Type 2 is:{arg2.type()}')
+        else:
+            self.argument1 = arg1
+            self.argument2 = arg2
 
     def __str__(self) -> str:
         return f'({self.argument1}) † ({self.argument2})'
