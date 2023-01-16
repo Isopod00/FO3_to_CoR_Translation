@@ -74,14 +74,14 @@ def T_Nice(expression):
         case AND(argument1=arg1, argument2=arg2):  # AND Case
             return AND(T_Nice(arg1), T_Nice(arg2))
         case ThereExists(argument=arg, variable=var):  # ThereExists Case
-            terms = arg.getAsAndList()
+            terms = T_Nice(arg).getAsAndList()
             lhs_list = [term for term in terms if var not in term.free_variables()]  # does NOT depend on the variable
             rhs_list = [term for term in terms if var in term.free_variables()]  # DOES depend on the variable
             lhs = T_Nice(n_ary_AND(lhs_list))
             rhs = make_ThereExists(var, T_Nice(n_ary_AND(rhs_list)))
             return make_AND(lhs, rhs)
         case ForAll(argument=arg, variable=var):  # ForAll Case
-            terms = arg.getAsOrList()
+            terms = T_Nice(arg).getAsOrList()
             lhs_list = [term for term in terms if var not in term.free_variables()]  # does NOT depend on the variable
             rhs_list = [term for term in terms if var in term.free_variables()]  # DOES depend on the variable
             lhs = T_Nice(n_ary_OR(lhs_list))

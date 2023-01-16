@@ -24,18 +24,28 @@ def generate_random_typed_FO3(size, allowed_variables):
         case 1:
             return ff()
         case 2:
-            var1, var2 = allowed_variables[random.randint(0, 2)], allowed_variables[random.randint(0, 2)]
+            var1 = allowed_variables[random.randint(0, 2)]
+            random.shuffle(allowed_variables)
+            var2 = [var for var in allowed_variables if var.set == var1.set].pop()
             return Equals(var1, var2)
         case 3:
             letter_choice = ['A', 'B', 'C'][random.randint(0, 2)]
             var1, var2 = allowed_variables[random.randint(0, 2)], allowed_variables[random.randint(0, 2)]
             return Predicate(letter_choice, var1, var2)
         case 4:
-            var = allowed_variables[random.randint(0, 2)]
-            return ForAll(var, generate_random_typed_FO3(size - 1, allowed_variables))
+            var = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], ['Q', 'R', 'S', 'T'][random.randint(0, 3)])
+            allowed_variables2 = allowed_variables.copy()
+            random.shuffle(allowed_variables2)
+            allowed_variables2.pop()
+            allowed_variables2.append(var)
+            return ForAll(var, generate_random_typed_FO3(size - 1, allowed_variables2))
         case 5:
-            var = allowed_variables[random.randint(0, 2)]
-            return ThereExists(var, generate_random_typed_FO3(size - 1, allowed_variables))
+            var = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], ['Q', 'R', 'S', 'T'][random.randint(0, 3)])
+            allowed_variables2 = allowed_variables.copy()
+            random.shuffle(allowed_variables2)
+            allowed_variables2.pop()
+            allowed_variables2.append(var)
+            return ThereExists(var, generate_random_typed_FO3(size - 1, allowed_variables2))
         case 6:
             return Negation(generate_random_typed_FO3(size - 1, allowed_variables))
         case 7:
@@ -60,7 +70,7 @@ def random_typed_FO3_tester(attempts, size):
         z = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], ['Q', 'R', 'S', 'T'][random.randint(0, 3)])
         test = make_typed_FO3_expression_closed(generate_random_typed_FO3(size, [x, y, z]))
         print('Generated typed FO3 term:', test)
-        return_value = test_typed_with_z3(test, x, y)
+        return_value = test_typed_with_z3(test)
         if return_value < 0:
             print('WARNING: TEST FAILED!')
             return False
@@ -78,23 +88,23 @@ def typed_asZ3(expression):
         case ff():
             return False
         case ForAll(argument=arg, variable=var):
-            return z3.ForAll([z3.Const(str(var), SortForEverything)], typed_asZ3(arg))
+            return z3.ForAll([z3.Const(str(var), z3.DeclareSort(var.set))], typed_asZ3(arg))
         case ThereExists(argument=arg, variable=var):
-            return z3.Exists([z3.Const(str(var), SortForEverything)], typed_asZ3(arg))
+            return z3.Exists([z3.Const(str(var), z3.DeclareSort(var.set))], typed_asZ3(arg))
         case AND(argument1=arg1, argument2=arg2):
             return z3.And(typed_asZ3(arg1), typed_asZ3(arg2))
         case OR(argument1=arg1, argument2=arg2):
             return z3.Or(typed_asZ3(arg1), typed_asZ3(arg2))
         case Predicate(letter=a, argument1=arg1, argument2=arg2):
-            return z3.Function(a, SortForEverything, SortForEverything, z3.BoolSort())(
-                z3.Const(str(arg1), SortForEverything), z3.Const(str(arg2), SortForEverything))
+            return z3.Function(a, z3.DeclareSort(arg1.set), z3.DeclareSort(arg2.set), z3.BoolSort())(
+                z3.Const(str(arg1), z3.DeclareSort(arg1.set)), z3.Const(str(arg2), z3.DeclareSort(arg2.set)))
         case Negation(argument=arg):
             return z3.Not(typed_asZ3(arg))
         case Equals(argument1=arg1, argument2=arg2):
-            return z3.Const(str(arg1), SortForEverything) == z3.Const(str(arg2), SortForEverything)
+            return z3.Const(str(arg1), z3.DeclareSort(arg1.set)) == z3.Const(str(arg2), z3.DeclareSort(arg2.set))
 
 
-def test_typed_with_z3(fo3_expression, first, second) -> int:
+def test_typed_with_z3(fo3_expression) -> int:
     """ This method uses z3 to test the equivalence of the orginal expression with the result of our fowards and
     backwards translation process, returning True if the two expressions are proven to be equivalent and False
     otherwise. """
@@ -106,9 +116,9 @@ def test_typed_with_z3(fo3_expression, first, second) -> int:
     print("\nGood FO3 Translation:", good)  # Good FO3 Term
     nice = FO3_Translation_Methods.T_Nice(good)
     print("Nice FO3 Translation:", nice)  # Nice FO3 Term
-    final = typed_final_translation(nice, first, second)
+    final = typed_final_translation(nice, Typed_Variable('x', "Left"), Typed_Variable('y', "Right"))
     print("\nFinal Translation:", final)
-    back = ForAll('a', ForAll('b', final.translate('a', 'b')))
+    back = ForAll(Typed_Variable('a', 'A'), ForAll(Typed_Variable('b', 'B'), final.translate('a', 'b')))
     print("\nSomething that should be equivalent to the original: ", back)
     s = z3.Solver()
     s.add(z3.Not(typed_asZ3(fo3_expression) == typed_asZ3(back)))
@@ -143,8 +153,4 @@ def make_typed_FO3_expression_closed(expression):
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    for n in range(1, 21):
-        if random_typed_FO3_tester(n, n):
-            pass
-        else:
-            break
+    random_typed_FO3_tester(1000, 3)
