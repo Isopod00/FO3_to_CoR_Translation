@@ -154,7 +154,7 @@ def make_typed_FO3_expression_closed(expression):
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
     for n in range(1, 21):
-        if random_typed_FO3_tester(n, n):
+        if random_typed_FO3_tester(100, n):
             pass
         else:
             break
