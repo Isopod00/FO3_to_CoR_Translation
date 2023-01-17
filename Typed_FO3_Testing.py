@@ -119,7 +119,7 @@ def test_typed_with_z3(fo3_expression) -> int:
     final = typed_final_translation(nice, Typed_Variable('x', "Left"), Typed_Variable('y', "Right"))
     print("\nFinal Translation:", final)
     back = ForAll(Typed_Variable('a', 'A'), ForAll(Typed_Variable('b', 'B'), final.translate('a', 'b')))
-    print("\nSomething that should be equivalent to the original: ", back)
+    print("\nSomething that should be equivalent to the original:", back)
     s = z3.Solver()
     s.add(z3.Not(typed_asZ3(fo3_expression) == typed_asZ3(back)))
     s.set("timeout", 600)  # If this returns an error, update z3!

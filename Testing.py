@@ -118,7 +118,7 @@ def test_with_z3(fo3_expression) -> int:
     final = final_translation(nice, 'x', 'y')
     print("\nFinal Translation:", final)
     back = ForAll('a', ForAll('b', final.translate('a', 'b')))
-    print("\nSomething that should be equivalent to the original: ", back)
+    print("\nSomething that should be equivalent to the original:", back)
     s = z3.Solver()
     s.add(z3.Not(asZ3(fo3_expression) == asZ3(back)))
     s.set("timeout", 600)  # If this returns an error, update z3!
