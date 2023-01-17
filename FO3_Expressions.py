@@ -177,7 +177,7 @@ class Equals(Term):
         return {self.argument1, self.argument2}
 
     def free_variables(self) -> list:
-        return [self.argument1, self.argument2]
+        return [self.argument1, self.argument2] if self.argument1 != self.argument2 else [self.argument1]
 
 
 class tt(Term):
@@ -245,7 +245,7 @@ class Predicate(Term):
         return {self.argument1, self.argument2}
 
     def free_variables(self) -> list:
-        return [self.argument1, self.argument2]
+        return [self.argument1, self.argument2] if self.argument1 != self.argument2 else [self.argument1]
 
 
 def Implies(a, b) -> OR:
