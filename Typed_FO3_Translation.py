@@ -39,7 +39,7 @@ def typed_final_translation(expression, var1, var2):
         case tt():
             return Typed_UniversalRelation(var1.set, var2.set)
         case Equals(argument1=arg1, argument2=arg2) if arg1 == arg2:  # If the variables are the same
-            return Typed_UniversalRelation(arg1.set, arg2.set)
+            return Typed_UniversalRelation(var1.set, var2.set)
         case Equals(argument1=arg1, argument2=arg2) if arg1 == var1 and arg2 == var2:
             return Typed_IdentityRelation(arg1.set, arg2.set)
         case Equals(argument1=arg1, argument2=arg2) if arg1 == var2 and arg2 == var1:
