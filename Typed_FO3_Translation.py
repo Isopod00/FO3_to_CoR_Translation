@@ -65,7 +65,7 @@ def typed_final_translation(expression, var1, var2):
             or_list = arg.getAsOrList()
             lhs = [term for term in or_list if var1 in term.free_variables()] if var1 != v else []
             rhs = [term for term in or_list if var2 in term.free_variables()] if var2 != v and var1 != var2 else []
-            if [term for term in lhs if term in rhs] == [] :
+            if [term for term in lhs if term in rhs] == []:
                 remainder = [term for term in or_list if term not in lhs + rhs]
                 remainder_translated = Typed_Union(typed_final_translation(n_ary_OR(remainder), v, v),
                                                    Typed_Complement(Typed_IdentityRelation(v.set, v.set)))
@@ -73,12 +73,13 @@ def typed_final_translation(expression, var1, var2):
                                     Typed_Dagger(remainder_translated,
                                                  typed_final_translation(n_ary_OR(rhs), v, var2)))
             else:
-                print(or_list,var1,var2,v)
+                print(or_list, var1, var2, v)
                 print([term for term in lhs if term in rhs])
                 raise Exception("term occurs twice")
         case _:
-            print(expression,var1,var2)
+            print(expression, var1, var2)
             raise Exception("Types not compatible")
+
 
 if __name__ == "__main__":
     x = Typed_Variable('x', 'Q')
