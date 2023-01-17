@@ -19,40 +19,36 @@ def generate_random_typed_FO3(size, allowed_variables):
     else:
         choice = random.randint(4, 8)
     match choice:
-        case 0:
+        case 0:  # True
             return tt()
-        case 1:
+        case 1:  # False
             return ff()
-        case 2:
+        case 2:  # Equals
             var1 = allowed_variables[random.randint(0, 2)]
             random.shuffle(allowed_variables)
             var2 = [var for var in allowed_variables if var.set == var1.set].pop()
             return Equals(var1, var2)
-        case 3:
+        case 3:  # Predicate
             letter_choice = ['A', 'B', 'C'][random.randint(0, 2)]
             var1, var2 = allowed_variables[random.randint(0, 2)], allowed_variables[random.randint(0, 2)]
             return Predicate(letter_choice, var1, var2)
-        case 4:
+        case 4:  # ForAll
             var = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], ['Q', 'R', 'S', 'T'][random.randint(0, 3)])
-            allowed_variables2 = allowed_variables.copy()
-            random.shuffle(allowed_variables2)
-            allowed_variables2.pop()
-            allowed_variables2.append(var)
-            return ForAll(var, generate_random_typed_FO3(size - 1, allowed_variables2))
-        case 5:
+            new_allowed_variables = allowed_variables.copy()
+            new_allowed_variables[random.randint(0, 2)] = var
+            return ForAll(var, generate_random_typed_FO3(size - 1, new_allowed_variables))
+        case 5:  # ThereExists
             var = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], ['Q', 'R', 'S', 'T'][random.randint(0, 3)])
-            allowed_variables2 = allowed_variables.copy()
-            random.shuffle(allowed_variables2)
-            allowed_variables2.pop()
-            allowed_variables2.append(var)
-            return ThereExists(var, generate_random_typed_FO3(size - 1, allowed_variables2))
-        case 6:
+            new_allowed_variables = allowed_variables.copy()
+            new_allowed_variables[random.randint(0, 2)] = var
+            return ThereExists(var, generate_random_typed_FO3(size - 1, new_allowed_variables))
+        case 6:  # Negation
             return Negation(generate_random_typed_FO3(size - 1, allowed_variables))
-        case 7:
+        case 7:  # OR
             size_other = random.randint(1, size - 1)
             return OR(generate_random_typed_FO3(size_other - 1, allowed_variables),
                       generate_random_typed_FO3(size - size_other, allowed_variables))
-        case 8:
+        case 8:  # AND
             size_other = random.randint(1, size - 1)
             return AND(generate_random_typed_FO3(size_other - 1, allowed_variables),
                        generate_random_typed_FO3(size - size_other, allowed_variables))
