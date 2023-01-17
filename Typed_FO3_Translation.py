@@ -25,9 +25,9 @@ def typed_final_translation(expression, var1, var2):
         case Predicate(letter=l, argument1=arg1, argument2=arg2) if arg1 == var1 and arg2 == arg1:
             return Typed_Composition(
                 Typed_Intersection(Typed_Relation(l, arg1.set, arg2.set), Typed_IdentityRelation(arg1.set, arg2.set)),
-                Typed_UniversalRelation(arg1.set, arg2.set))
+                Typed_UniversalRelation(var1.set, var2.set))
         case Predicate(letter=l, argument1=arg1, argument2=arg2) if arg1 == var2 and arg2 == arg1:
-            return Typed_Composition(Typed_UniversalRelation(arg1.set, arg2.set),
+            return Typed_Composition(Typed_UniversalRelation(var1.set, var2.set),
                                      Typed_Intersection(Typed_Relation(l, arg1.set, arg2.set),
                                                         Typed_IdentityRelation(arg1.set, arg2.set)))
         case Predicate(letter=l, argument1=arg1, argument2=arg2) if arg1 == var1 and arg2 == var2:
