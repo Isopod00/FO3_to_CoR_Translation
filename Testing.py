@@ -1,4 +1,7 @@
-# Authors: Sebastiaan Joosten, Anthony Brogni
+# Authors: Sebastiaan J. C. Joosten, Anthony Brogni
+# Last Changed: January 2023
+""" This file is for the random generation of (untyped) FO3 expressions and for automated testing of our translation
+ process using z3! """
 
 import random
 
@@ -34,9 +37,9 @@ def asZ3(expression):
 
 
 def generate_random_FO3(size):
-    """ This recursive method generates a random FO3 expression with the specified maximum depth """
+    """ This recursive method generates a random FO3 expression with the specified size (depth of expression tree) """
     if size <= 1:
-        # Restrict the choices that can be made if the maximum depth has been reached
+        # Restrict the choices that can be made to allow our expression to grow to the specified size
         choice = random.randint(0, 3)
     elif size <= 2:
         choice = random.randint(4, 6)
@@ -51,7 +54,7 @@ def generate_random_FO3(size):
             var1, var2 = ['x', 'y', 'z'][random.randint(0, 2)], ['x', 'y', 'z'][random.randint(0, 2)]
             return Equals(var1, var2)
         case 3:
-            letter_choice = ['Q', 'R', 'S'][random.randint(0, 2)]
+            letter_choice = ['A', 'B', 'C'][random.randint(0, 2)]
             var1, var2 = ['x', 'y', 'z'][random.randint(0, 2)], ['x', 'y', 'z'][random.randint(0, 2)]
             return Predicate(letter_choice, var1, var2)
         case 4:

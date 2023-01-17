@@ -1,31 +1,20 @@
+# Authors: Anthony Brogni, Sebastiaan J. C. Joosten
+# Last Changed: January 2023
+""" This file stores the final_translation method for translating typed FO3 expressions into COR. """
+
 import FO3_Translation_Methods
+
 from Typed_COR_Expressions import *
-
-
-def n_ary_AND(expressions_list):
-    """ This is a function for computing the n-ary logical AND of n elements. Input is a list of elements. """
-    answer = tt()
-    for term in expressions_list:
-        answer = make_AND(answer, term)
-    return answer
-
-
-def n_ary_OR(expressions_list):
-    """ This is a function for computing the n-ary logical OR of n elements. Input is a list of elements. """
-    answer = ff()
-    for term in expressions_list:
-        answer = make_OR(answer, term)
-    return answer
 
 
 # For this method, var1 and var2 are Typed_Variable objects
 def typed_final_translation(expression, var1, var2):
-    """ This method computes the final step of the translation from FO3 into COR! """
+    """ This method computes the final step of the translation from (typed) FO3 into COR! """
     match expression:
         case Predicate(letter=l, argument1=arg1, argument2=arg2) if arg1 == var1 and arg2 == arg1:
-            return Typed_Composition(
-                Typed_Intersection(Typed_Relation(l, arg1.set, arg2.set), Typed_IdentityRelation(arg1.set, arg2.set)),
-                Typed_UniversalRelation(var1.set, var2.set))
+            return Typed_Composition(Typed_Intersection(Typed_Relation(l, arg1.set, arg2.set),
+                                                        Typed_IdentityRelation(arg1.set, arg2.set)),
+                                     Typed_UniversalRelation(var1.set, var2.set))
         case Predicate(letter=l, argument1=arg1, argument2=arg2) if arg1 == var2 and arg2 == arg1:
             return Typed_Composition(Typed_UniversalRelation(var1.set, var2.set),
                                      Typed_Intersection(Typed_Relation(l, arg1.set, arg2.set),
@@ -53,32 +42,33 @@ def typed_final_translation(expression, var1, var2):
             return Typed_Complement(typed_final_translation(arg, var1, var2))
         case ThereExists(argument=arg, variable=v):
             and_list = arg.getAsAndList()
+
             lhs = [term for term in and_list if var1 in term.free_variables()] if var1 != v else []
             rhs = [term for term in and_list if var2 in term.free_variables()] if var2 != v and var1 != var2 else []
             remainder = [term for term in and_list if term not in lhs + rhs]  # These terms depend only on v!
-            remainder_translated = Typed_Intersection(typed_final_translation(n_ary_AND(remainder), v, v),
-                                                      Typed_IdentityRelation(v.set, v.set))
-            return Typed_Composition(typed_final_translation(n_ary_AND(lhs), var1, v),
-                                     Typed_Composition(remainder_translated,
-                                                       typed_final_translation(n_ary_AND(rhs), v, var2)))
+
+            lhs_translated = typed_final_translation(FO3_Translation_Methods.n_ary_AND(lhs), var1, v)
+            rhs_translated = typed_final_translation(FO3_Translation_Methods.n_ary_AND(rhs), v, var2)
+            remainder_translated = make_typed_Intersection(
+                typed_final_translation(FO3_Translation_Methods.n_ary_AND(remainder), v, v),
+                Typed_IdentityRelation(v.set, v.set))
+
+            return Typed_Composition(lhs_translated, Typed_Composition(remainder_translated, rhs_translated))
         case ForAll(argument=arg, variable=v):
             or_list = arg.getAsOrList()
             lhs = [term for term in or_list if var1 in term.free_variables()] if var1 != v else []
             rhs = [term for term in or_list if var2 in term.free_variables()] if var2 != v and var1 != var2 else []
-            if [term for term in lhs if term in rhs] == []:
-                remainder = [term for term in or_list if term not in lhs + rhs]  # These terms depend only on v!
-                remainder_translated = Typed_Union(typed_final_translation(n_ary_OR(remainder), v, v),
-                                                   Typed_Complement(Typed_IdentityRelation(v.set, v.set)))
-                return Typed_Dagger(typed_final_translation(n_ary_OR(lhs), var1, v),
-                                    Typed_Dagger(remainder_translated,
-                                                 typed_final_translation(n_ary_OR(rhs), v, var2)))
-            else:
-                print(or_list, var1, var2, v)
-                print([term for term in lhs if term in rhs])
-                raise Exception("term occurs twice")
+            remainder = [term for term in or_list if term not in lhs + rhs]  # These terms depend only on v!
+
+            lhs_translated = typed_final_translation(FO3_Translation_Methods.n_ary_OR(lhs), var1, v)
+            rhs_translated = typed_final_translation(FO3_Translation_Methods.n_ary_OR(rhs), v, var2)
+            remainder_translated = make_typed_Union(
+                typed_final_translation(FO3_Translation_Methods.n_ary_OR(remainder), v, v),
+                Typed_Complement(Typed_IdentityRelation(v.set, v.set)))
+
+            return Typed_Dagger(lhs_translated, Typed_Dagger(remainder_translated, rhs_translated))
         case _:
-            print(expression, var1, var2)
-            raise Exception("Types not compatible")
+            raise Exception(f'Types not Compatible! Expression: {expression} var1: {var1} var2: {var2}')
 
 
 if __name__ == "__main__":

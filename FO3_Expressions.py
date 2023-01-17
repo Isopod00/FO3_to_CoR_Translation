@@ -1,9 +1,12 @@
-# Authors: Sebastiaan Joosten, Anthony Brogni
+# Authors: Sebastiaan J. C. Joosten, Anthony Brogni
+# Last Changed: January 2023
+""" This file contains everything you need to build mathematical FO3 objects in Python, even typed FO3 objects! """
 
 from List_Methods import *
 
+
 class Term:
-    """ This is a super class that other classes can inherit from. """
+    """ This is a super class that other FO3 expression classes inherit from. """
 
     def getAsAndList(self):
         return [self]
@@ -23,7 +26,7 @@ class Typed_Variable:
         return f'{self.var} ∈ {self.set}'
 
     def __eq__(self, other):
-        """ Define what it means for two Typed_variables to be 'equal' """
+        """ Define what it means for two Typed_Variables to be 'equal' """
         return isinstance(other, Typed_Variable) and self.var == other.var and self.set == other.set
 
 

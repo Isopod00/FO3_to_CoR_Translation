@@ -1,4 +1,8 @@
-# Authors: Sebastiaan Joosten, Anthony Brogni
+# Authors: Sebastiaan J. C. Joosten, Anthony Brogni
+# Last Changed: January 2023
+""" This file contains all the various translation methods/steps for translating FO3 expressions into COR! The same
+ 'good' and 'nice' methods can be used for buth typed and untype FO3 expressions, but for typed FO3 expressions a
+ seperate final_translation method is provided in its own file (Typed_FO3_Translation.py) """
 
 from COR_Expressions import *
 from FO3_Expressions import *

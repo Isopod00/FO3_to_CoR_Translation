@@ -1,4 +1,6 @@
-# Authors: Sebastiaan Joosten, Anthony Brogni
+# Authors: Sebastiaan J. C. Joosten, Anthony Brogni
+# Last Changed: January 2023
+""" This file contains everything you need to build (untyped) mathematical COR objects in Python. """
 
 from FO3_Expressions import *
 
@@ -102,7 +104,8 @@ class Composition:
     def translate(self, arg1, arg2) -> ThereExists:
         fresh = [var for var in ['x', 'y', 'z'] if var not in [arg1, arg2]]
         newvar = fresh.pop()
-        return ThereExists(newvar, make_AND(self.argument1.translate(arg1, newvar), self.argument2.translate(newvar, arg2)))
+        return ThereExists(newvar,
+                           make_AND(self.argument1.translate(arg1, newvar), self.argument2.translate(newvar, arg2)))
 
 
 class Dagger:

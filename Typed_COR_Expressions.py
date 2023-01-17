@@ -1,4 +1,6 @@
-# Authors: Sebastiaan Joosten, Anthony Brogni
+# Authors: Sebastiaan J. C. Joosten, Anthony Brogni
+# Last Changed: January 2023
+""" This file contains everything you need to build typed mathematical COR objects in Python! """
 
 from FO3_Expressions import *
 
@@ -195,6 +197,24 @@ class Typed_Relation:
 
     def type(self) -> list:
         return [self.set1, self.set2]
+
+
+def make_typed_Union(arg1, arg2):
+    if isinstance(arg1, Typed_EmptyRelation):
+        return arg2
+    elif isinstance(arg2, Typed_EmptyRelation):
+        return arg1
+    else:
+        return Typed_Union(arg1, arg2)
+
+
+def make_typed_Intersection(arg1, arg2):
+    if isinstance(arg1, Typed_UniversalRelation):
+        return arg2
+    elif isinstance(arg2, Typed_UniversalRelation):
+        return arg1
+    else:
+        return Typed_Intersection(arg1, arg2)
 
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
