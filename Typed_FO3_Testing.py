@@ -62,9 +62,17 @@ def random_typed_FO3_tester(attempts, size):
     using z3 to verify the equivalence of the original FO3 term and the result. """
     successes = 0
     for attempt in range(attempts):
+        # Generate 3 random variables
         x = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], ['Q', 'R', 'S', 'T'][random.randint(0, 3)])
         y = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], ['Q', 'R', 'S', 'T'][random.randint(0, 3)])
         z = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], ['Q', 'R', 'S', 'T'][random.randint(0, 3)])
+
+        # Ensure that all 3 'random' variables will be different from each other, so there are actually 3 to choose from
+        while y == x:
+            y = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], ['Q', 'R', 'S', 'T'][random.randint(0, 3)])
+        while z == y or z == x:
+            z = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], ['Q', 'R', 'S', 'T'][random.randint(0, 3)])
+
         test = make_typed_FO3_expression_closed(generate_random_typed_FO3(size, [x, y, z]))
         print('Generated typed FO3 term:', test)
         return_value = test_typed_with_z3(test)
