@@ -55,7 +55,7 @@ def typed_final_translation(expression, var1, var2):
             and_list = arg.getAsAndList()
             lhs = [term for term in and_list if var1 in term.free_variables()] if var1 != v else []
             rhs = [term for term in and_list if var2 in term.free_variables()] if var2 != v and var1 != var2 else []
-            remainder = [term for term in and_list if term not in lhs + rhs]
+            remainder = [term for term in and_list if term not in lhs + rhs]  # These terms depend only on v!
             remainder_translated = Typed_Intersection(typed_final_translation(n_ary_AND(remainder), v, v),
                                                       Typed_IdentityRelation(v.set, v.set))
             return Typed_Composition(typed_final_translation(n_ary_AND(lhs), var1, v),
@@ -66,7 +66,7 @@ def typed_final_translation(expression, var1, var2):
             lhs = [term for term in or_list if var1 in term.free_variables()] if var1 != v else []
             rhs = [term for term in or_list if var2 in term.free_variables()] if var2 != v and var1 != var2 else []
             if [term for term in lhs if term in rhs] == []:
-                remainder = [term for term in or_list if term not in lhs + rhs]
+                remainder = [term for term in or_list if term not in lhs + rhs]  # These terms depend only on v!
                 remainder_translated = Typed_Union(typed_final_translation(n_ary_OR(remainder), v, v),
                                                    Typed_Complement(Typed_IdentityRelation(v.set, v.set)))
                 return Typed_Dagger(typed_final_translation(n_ary_OR(lhs), var1, v),

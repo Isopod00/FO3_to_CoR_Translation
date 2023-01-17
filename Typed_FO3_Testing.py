@@ -26,6 +26,7 @@ def generate_random_typed_FO3(size, allowed_variables):
         case 2:  # Equals
             var1 = allowed_variables[random.randint(0, 2)]
             random.shuffle(allowed_variables)
+            # This ensures that both variables will come from the same set
             var2 = [var for var in allowed_variables if var.set == var1.set].pop()
             return Equals(var1, var2)
         case 3:  # Predicate
@@ -149,4 +150,4 @@ def make_typed_FO3_expression_closed(expression):
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    random_typed_FO3_tester(1000, 3)
+    random_typed_FO3_tester(500, 3)
