@@ -4,6 +4,7 @@ The goal of this project is to translate First-Order 3-variable (FO3) predicate 
 Contributors: Anthony Brogni, Sebastiaan Joosten
 
 Our project currently supports:
+
 -FO3 Expressions (including terms with repeated arguments, such as the predicate R(x, x))
 
 -COR Expressions (both typed and untyped)
