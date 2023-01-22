@@ -199,6 +199,15 @@ class Typed_Relation:
         return [self.set1, self.set2]
 
 
+def make_typed_Composition(arg1, arg2):
+    if isinstance(arg1, Typed_IdentityRelation):
+        return arg2
+    elif isinstance(arg2, Typed_IdentityRelation):
+        return arg1
+    else:
+        return Typed_Composition(arg1, arg2)
+
+
 def make_typed_Union(arg1, arg2):
     if isinstance(arg1, Typed_EmptyRelation):
         return arg2
