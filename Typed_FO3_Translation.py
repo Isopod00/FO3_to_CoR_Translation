@@ -72,10 +72,12 @@ def typed_final_translation(expression, var1, var2):
 
 
 if __name__ == "__main__":
-    x = Typed_Variable('x', 'Q')
-    y = Typed_Variable('y', 'S')
+    x = Typed_Variable('x', 'A')
+    y = Typed_Variable('y', 'B')
+    z = Typed_Variable('y', 'C')
+    w = Typed_Variable('w', 'D')
 
-    test_expression = ForAll(x, ThereExists(y, Predicate('A', x, y)))
+    test_expression = ThereExists(x, ThereExists(y, ThereExists(z, ThereExists(w, Predicate("P", x, w)))))
 
     print("Original Expression:", test_expression)  # Original expression
     print("Negation Normal Form:", negation_normal(test_expression))  # Negation Normal Form
@@ -84,4 +86,4 @@ if __name__ == "__main__":
     print("Nice FO3 Translation:", FO3_Translation_Methods.T_Nice(
         FO3_Translation_Methods.T_Good_Dash(negation_normal(test_expression))))  # Nice FO3 Term
     print("\nFinal Translation:", typed_final_translation(
-        FO3_Translation_Methods.T_Nice(FO3_Translation_Methods.T_Good_Dash(negation_normal(test_expression))), x, y))
+        FO3_Translation_Methods.T_Nice(FO3_Translation_Methods.T_Good_Dash(negation_normal(test_expression))), Typed_Variable('x', "Left"), Typed_Variable('y', "Right")))
