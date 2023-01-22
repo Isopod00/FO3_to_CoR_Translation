@@ -34,9 +34,9 @@ def typed_final_translation(expression, var1, var2):
         case Equals(argument1=arg1, argument2=arg2) if arg1 == var2 and arg2 == var1:
             return Typed_Converse(Typed_IdentityRelation(arg1.set, arg2.set))
         case OR(argument1=arg1, argument2=arg2):
-            return Typed_Union(typed_final_translation(arg1, var1, var2), typed_final_translation(arg2, var1, var2))
+            return make_typed_Union(typed_final_translation(arg1, var1, var2), typed_final_translation(arg2, var1, var2))
         case AND(argument1=arg1, argument2=arg2):
-            return Typed_Intersection(typed_final_translation(arg1, var1, var2),
+            return make_typed_Intersection(typed_final_translation(arg1, var1, var2),
                                       typed_final_translation(arg2, var1, var2))
         case Negation(argument=arg):
             return Typed_Complement(typed_final_translation(arg, var1, var2))
