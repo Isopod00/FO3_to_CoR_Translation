@@ -143,8 +143,8 @@ def test_with_z3(fo3_expression) -> int:
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    for n in range(1, 21):
-        if random_FO3_tester(100, n):
+    for n in range(1, 25):
+        if random_FO3_tester(n, n):
             pass
         else:
             break
