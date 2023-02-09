@@ -93,7 +93,6 @@ class Typed_Union:
 
     def __init__(self, arg1, arg2):
         if arg1.type() != arg2.type():  # Type checking
-            print(f'arg1: {arg1}, arg2: {arg2}')
             raise Exception(f'ERROR: Union type mismatch! Type 1 is:{arg1.type()} and Type 2 is:{arg2.type()}')
         else:
             self.argument1 = arg1
@@ -114,7 +113,6 @@ class Typed_Intersection:
 
     def __init__(self, arg1, arg2):
         if arg1.type() != arg2.type():  # Type checking
-            print(f'arg1: {arg1}, arg2: {arg2}')
             raise Exception(f'ERROR: Intersection type mismatch! Type 1 is:{arg1.type()} and Type 2 is:{arg2.type()}')
         else:
             self.argument1 = arg1
@@ -135,7 +133,6 @@ class Typed_Composition:
 
     def __init__(self, arg1, arg2):
         if arg1.type()[1] != arg2.type()[0]:  # Type checking
-            print(f'arg1: {arg1}, arg2: {arg2}')
             raise Exception(f'ERROR: Composition type mismatch! Type 1 is:{arg1.type()} and Type 2 is:{arg2.type()}')
         else:
             self.argument1 = arg1
@@ -160,7 +157,6 @@ class Typed_Dagger:
 
     def __init__(self, arg1, arg2):
         if arg1.type()[1] != arg2.type()[0]:  # Type checking
-            print(f'arg1: {arg1}, arg2: {arg2}')
             raise Exception(f'ERROR: Dagger type mismatch! Type 1 is:{arg1.type()} and Type 2 is:{arg2.type()}')
         else:
             self.argument1 = arg1
