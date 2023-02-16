@@ -11,9 +11,9 @@ from Typed_FO3_Translation import *
 
 
 def generate_random_typed_FO3(size, allowed_variables):
-    """ This recursive method generates a random FO3 expression with the specified maximum depth """
+    """ This method generates a random typed FO3 expression with the specified size (depth of expression tree) """
     if size <= 1:
-        # Restrict the choices that can be made if the maximum depth has been reached
+        # Restrict the choices that can be made to allow our expression to grow to the specified size
         choice = random.randint(0, 3)
     elif size <= 2:
         choice = random.randint(4, 6)
@@ -59,7 +59,7 @@ def generate_random_typed_FO3(size, allowed_variables):
 def random_typed_FO3_tester(attempts, size):
     """ This automated testing method will run the specified number of attempts while counting how many are succesful
     and displaying the results to the terminal. Each attempt entails generating a random FO3 expression with the
-    specified maximum depth and then beginning our forwards and backwards translation processes,
+    specified size and then beginning our forwards and backwards translation processes,
     using z3 to verify the equivalence of the original FO3 term and the result. """
     successes = 0
     for attempt in range(attempts):
