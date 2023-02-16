@@ -73,7 +73,7 @@ def random_typed_FO3_tester(attempts, size):
         return_value = test_typed_with_z3(test)
         if return_value < 0:
             print('WARNING: TEST FAILED!')
-            return False
+            return False  # This is just for initial testing purposes
         else:
             successes += return_value
     print(f'{successes}/{attempts} were successful without timing out! That is {100 * successes / attempts}% accuracy')
