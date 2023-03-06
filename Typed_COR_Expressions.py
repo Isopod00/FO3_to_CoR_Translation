@@ -1,5 +1,5 @@
 # Authors: Sebastiaan J. C. Joosten, Anthony Brogni
-# Last Changed: January 2023
+# Last Changed: March 2023
 """ This file contains everything you need to build typed mathematical COR objects in Python! """
 
 from FO3_Expressions import *
@@ -222,10 +222,77 @@ def make_typed_Intersection(arg1, arg2):
         return Typed_Intersection(arg1, arg2)
 
 
+def fully_simplify_Typed_COR(expression):
+    """ Fully simplifies a COR expression """
+    previous_iteration = expression
+    expression = simplify_Typed_COR(expression)
+    while str(previous_iteration) != str(expression):
+        previous_iteration = expression
+        expression = simplify_Typed_COR(expression)
+    return expression
+
+
+def simplify_Typed_COR(expression):
+    """ Simplifies a COR expression """
+    match expression:
+        case Typed_Complement(argument=arg):
+            match arg:
+                case Typed_UniversalRelation():
+                    return Typed_EmptyRelation(expression.type()[0], expression.type()[1])
+                case Typed_EmptyRelation():
+                    return Typed_UniversalRelation(expression.type()[0], expression.type()[1])
+                case _:
+                    return Typed_Complement(simplify_Typed_COR(arg))
+        case Typed_Dagger(argument1=arg1, argument2=arg2):
+            if isinstance(arg1, Typed_EmptyRelation) and isinstance(arg2, Typed_EmptyRelation):
+                return Typed_EmptyRelation(expression.type()[0], expression.type()[1])
+            elif isinstance(arg1, Typed_EmptyRelation) and isinstance(arg2, Typed_UniversalRelation):
+                return Typed_UniversalRelation(expression.type()[0], expression.type()[1])
+            elif isinstance(arg1, Typed_UniversalRelation) and isinstance(arg2, Typed_EmptyRelation):
+                return Typed_UniversalRelation(expression.type()[0], expression.type()[1])
+            else:
+                return Typed_Dagger(simplify_Typed_COR(arg1), simplify_Typed_COR(arg2))
+        case Typed_Composition(argument1=arg1, argument2=arg2):
+            if isinstance(arg1, Typed_IdentityRelation):
+                return simplify_Typed_COR(arg2)
+            elif isinstance(arg2, Typed_IdentityRelation):
+                return simplify_Typed_COR(arg1)
+            elif isinstance(arg1, Typed_UniversalRelation) and isinstance(arg2, Typed_UniversalRelation):
+                return Typed_UniversalRelation(expression.type()[0], expression.type()[1])
+            else:
+                return Typed_Composition(simplify_Typed_COR(arg1), simplify_Typed_COR(arg2))
+        case Typed_Union(argument1=arg1, argument2=arg2):
+            if isinstance(arg1, Typed_EmptyRelation):
+                return simplify_Typed_COR(arg2)
+            elif isinstance(arg2, Typed_EmptyRelation):
+                return simplify_Typed_COR(arg1)
+            elif isinstance(arg1, Typed_UniversalRelation):
+                return Typed_UniversalRelation(expression.type()[0], expression.type()[1])
+            elif isinstance(arg2, Typed_UniversalRelation):
+                return Typed_UniversalRelation(expression.type()[0], expression.type()[1])
+            else:
+                return Typed_Union(simplify_Typed_COR(arg1), simplify_Typed_COR(arg2))
+        case Typed_Intersection(argument1=arg1, argument2=arg2):
+            if isinstance(arg1, Typed_UniversalRelation):
+                return simplify_Typed_COR(arg2)
+            elif isinstance(arg2, Typed_UniversalRelation):
+                return simplify_Typed_COR(arg1)
+            elif isinstance(arg1, Typed_EmptyRelation):
+                return Typed_EmptyRelation(expression.type()[0], expression.type()[1])
+            elif isinstance(arg2, Typed_EmptyRelation):
+                return Typed_EmptyRelation(expression.type()[0], expression.type()[1])
+            else:
+                return Typed_Intersection(simplify_Typed_COR(arg1), simplify_Typed_COR(arg2))
+        case _:
+            return expression
+
+
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
     test_expression = Typed_Dagger(Typed_Relation('A', 'Q', 'S'), Typed_Relation('B', 'S', 'R'))
 
-    print("Original Expression:", test_expression)  # Original expression
+    print("Original Expression:  ", test_expression)  # Original expression
+    print("Simplified:", fully_simplify_Typed_COR(test_expression))
     print("Translated Expression:", test_expression.translate('x', 'y'))  # Translated expression
-    print("Negation Normal Form:", negation_normal(test_expression.translate('x', 'y')))  # Negation normal form
+    print("Negation Normal Form: ", negation_normal(test_expression.translate('x', 'y')))  # Negation normal form
+    print("Simplified:", fully_simplify_FO3(negation_normal(test_expression.translate('x', 'y'))))

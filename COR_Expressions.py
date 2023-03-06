@@ -1,5 +1,5 @@
 # Authors: Sebastiaan J. C. Joosten, Anthony Brogni
-# Last Changed: January 2023
+# Last Changed: March 2023
 """ This file contains everything you need to build (untyped) mathematical COR objects in Python. """
 
 from FO3_Expressions import *
@@ -139,11 +139,74 @@ class Relation:
         return Predicate(self.letter, arg1, arg2)
 
 
+def fully_simplify_COR(expression):
+    """ Fully simplifies a COR expression """
+    previous_iteration = expression
+    expression = simplify_COR(expression)
+    while str(previous_iteration) != str(expression):
+        previous_iteration = expression
+        expression = simplify_COR(expression)
+    return expression
+
+
+def simplify_COR(expression):
+    """ Simplifies a COR expression """
+    match expression:
+        case Complement(argument=arg):
+            match arg:
+                case UniversalRelation():
+                    return EmptyRelation()
+                case EmptyRelation():
+                    return UniversalRelation()
+                case _:
+                    return Complement(simplify_COR(arg))
+        case Dagger(argument1=arg1, argument2=arg2):
+            if isinstance(arg1, EmptyRelation) and isinstance(arg2, EmptyRelation):
+                return EmptyRelation()
+            elif isinstance(arg1, EmptyRelation) and isinstance(arg2, UniversalRelation):
+                return UniversalRelation()
+            elif isinstance(arg1, UniversalRelation) and isinstance(arg2, EmptyRelation):
+                return UniversalRelation()
+            else:
+                return Dagger(simplify_COR(arg1), simplify_COR(arg2))
+        case Composition(argument1=arg1, argument2=arg2):
+            if isinstance(arg1, IdentityRelation):
+                return simplify_COR(arg2)
+            elif isinstance(arg2, IdentityRelation):
+                return simplify_COR(arg1)
+            elif isinstance(arg1, UniversalRelation) and isinstance(arg2, UniversalRelation):
+                return UniversalRelation()
+            else:
+                return Composition(simplify_COR(arg1), simplify_COR(arg2))
+        case Union(argument1=arg1, argument2=arg2):
+            if isinstance(arg1, EmptyRelation):
+                return simplify_COR(arg2)
+            elif isinstance(arg2, EmptyRelation):
+                return simplify_COR(arg1)
+            elif isinstance(arg1, UniversalRelation) or isinstance(arg2, UniversalRelation):
+                return UniversalRelation()
+            else:
+                return Union(simplify_COR(arg1), simplify_COR(arg2))
+        case Intersection(argument1=arg1, argument2=arg2):
+            if isinstance(arg1, UniversalRelation):
+                return simplify_COR(arg2)
+            elif isinstance(arg2, UniversalRelation):
+                return simplify_COR(arg1)
+            elif isinstance(arg1, EmptyRelation) or isinstance(arg2, EmptyRelation):
+                return EmptyRelation()
+            else:
+                return Intersection(simplify_COR(arg1), simplify_COR(arg2))
+        case _:
+            return expression
+
+
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
     test_expression = Union(Complement(Composition(Relation("A"), Relation("B"))),
                             Intersection(Converse(Relation("C")), IdentityRelation()))
 
-    print("Original Expression:", test_expression)  # Original expression
+    print("Original Expression:  ", test_expression)  # Original expression
+    print("Simplified:           ", fully_simplify_COR(test_expression))  # Simplified expression
     print("Translated Expression:", test_expression.translate("x", "y"))  # Translated expression
-    print("Negation Normal Form:", negation_normal(test_expression.translate("x", "y")))  # Negation normal form
+    print("Negation Normal Form: ", negation_normal(test_expression.translate("x", "y")))  # Negation normal form
+    print("Simplified:           ", fully_simplify_FO3(negation_normal(test_expression.translate("x", "y"))))

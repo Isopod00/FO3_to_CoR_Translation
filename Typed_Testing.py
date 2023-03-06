@@ -1,5 +1,5 @@
 # Authors: Sebastiaan J. C. Joosten, Anthony Brogni
-# Last Changed: January 2023
+# Last Changed: March 2023
 """ This file is for the random generation of untyped FO3 expressions and for automated testing of our typed translation
  process using z3! """
 
@@ -69,7 +69,6 @@ def random_typed_FO3_tester(attempts, size):
         z = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], ['Q', 'R', 'S', 'T'][random.randint(0, 3)])
 
         test = make_typed_FO3_expression_closed(generate_random_typed_FO3(size, [x, y, z]))
-        print('Generated typed FO3 term:', test)
         return_value = test_typed_with_z3(test)
         if return_value < 0:
             print('WARNING: TEST FAILED!')
@@ -109,20 +108,25 @@ def test_typed_with_z3(fo3_expression) -> int:
     backwards translation process, returning True if the two expressions are proven to be equivalent and False
     otherwise. """
     # Test expression must be a closed formula
-    print("Original Expression:", fo3_expression)  # Original expression
+    print("\nOriginal Expression:   ", fo3_expression)  # Original expression
     nnf = negation_normal(fo3_expression)
-    print("Negation Normal Form:", nnf)  # Negation Normal Form
+    print("Negation Normal Form:  ", nnf)  # Negation Normal Form
     good = FO3_Translation_Methods.T_Good_Dash(nnf)
-    print("\nGood FO3 Translation:", good)  # Good FO3 Term
+    print("Good FO3 Translation:  ", good)  # Good FO3 Term
     nice = FO3_Translation_Methods.T_Nice(good)
-    print("Nice FO3 Translation:", nice)  # Nice FO3 Term
+    print("Nice FO3 Translation:  ", nice)  # Nice FO3 Term
     final = typed_final_translation(nice, Typed_Variable('x', "Left"), Typed_Variable('y', "Right"))
-    print("\nFinal Translation:", final)
-    back = ForAll(Typed_Variable('a', 'A'), ForAll(Typed_Variable('b', 'B'), final.translate('a', 'b')))
+    print("\nFinal Translation:   ", final)
+    simplified = fully_simplify_Typed_COR(final)
+    print("Simplified:          ", simplified)
+    back = ForAll(Typed_Variable('a', 'A'), ForAll(Typed_Variable('b', 'B'), simplified.translate('a', 'b')))
     print("\nSomething that should be equivalent to the original:", back)
+    final_result = fully_simplify_FO3(
+        FO3_Translation_Methods.T_Nice(back))  # T_Nice is used to get rid of ForAll(a) and ForAll(b)
+    print("Simplified:", final_result)
     s = z3.Solver()
     s.add(z3.Not(typed_asZ3(fo3_expression) == typed_asZ3(back)))
-    s.set("timeout", 600)  # If this returns an error, update z3!
+    s.set("timeout", 1000)  # If this returns an error, update the z3 module
     z3result = s.check()
     if z3result == z3.sat:
         print("\nZ3 found a bug! (this is bad!)")
