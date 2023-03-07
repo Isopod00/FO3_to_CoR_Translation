@@ -116,14 +116,10 @@ def test_with_z3(fo3_expression) -> int:
     print("Nice FO3 Translation:", nice)  # Nice FO3 Term
     final = final_translation(nice, 'x', 'y')
     print("Final Translation:   ", final)
-    simplified = fully_simplify_COR(final)
-    print("Simplified:          ", simplified)
-    back = ForAll('a', ForAll('b', simplified.translate('a', 'b')))
+    back = ForAll('a', ForAll('b', final.translate('a', 'b')))
     print("\nSomething that should be equivalent to the original:", back)
-    final_result = fully_simplify_FO3(T_Nice(back))  # T_Nice is used to get rid of ForAll(a) and ForAll(b)
-    print("Simplified:", final_result)
     s = z3.Solver()
-    s.add(z3.Not(asZ3(fo3_expression) == asZ3(final_result)))
+    s.add(z3.Not(asZ3(fo3_expression) == asZ3(back)))
     s.set("timeout", 1000)  # If this returns an error, update the z3 module
     z3result = s.check()
     if z3result == z3.sat:

@@ -206,7 +206,5 @@ if __name__ == "__main__":
                             Intersection(Converse(Relation("C")), IdentityRelation()))
 
     print("Original Expression:  ", test_expression)  # Original expression
-    print("Simplified:           ", fully_simplify_COR(test_expression))  # Simplified expression
     print("Translated Expression:", test_expression.translate("x", "y"))  # Translated expression
     print("Negation Normal Form: ", negation_normal(test_expression.translate("x", "y")))  # Negation normal form
-    print("Simplified:           ", fully_simplify_FO3(negation_normal(test_expression.translate("x", "y"))))
