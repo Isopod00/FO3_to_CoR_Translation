@@ -307,7 +307,7 @@ def negation_normal(argument):
 
 def fully_simplify_FO3(expression):
     """ Fully simplifies an FO3 expression """
-    expression = FO3_Translation_Methods.T_Nice(FO3_Translation_Methods.T_Good_Dash(negation_normal(expression)))
+    expression = FO3_Translation_Methods.T_Nice(negation_normal(expression))
     previous_iteration = expression
     expression = simplify_FO3(expression)
     while str(previous_iteration) != str(expression):
