@@ -182,4 +182,8 @@ def look_for_simplification_rules(attempts):
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    look_for_simplification_rules(10_000)
+    for n in range(1, 25):
+        if random_FO3_tester(n, n):
+            pass
+        else:
+            break
