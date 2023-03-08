@@ -121,7 +121,7 @@ def test_typed_with_z3(fo3_expression) -> int:
     print("Simplify Final Translation:", simplified)
     back = ForAll(Typed_Variable('a', 'A'), ForAll(Typed_Variable('b', 'B'), simplified.translate('a', 'b')))
     print("\nTranslate back to FO3:", back)
-    final_result = fully_simplify_FO3(FO3_Translation_Methods.T_Nice(back))  # T_Nice gets rid of ForAll(a) & ForAll(b)
+    final_result = fully_simplify_FO3(back)
     print("Something that should be equivalent to the original:", final_result)
     s = z3.Solver()
     s.add(z3.Not(typed_asZ3(fo3_expression) == typed_asZ3(back)))

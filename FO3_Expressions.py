@@ -1,7 +1,7 @@
 # Authors: Sebastiaan J. C. Joosten, Anthony Brogni
 # Last Changed: March 2023
 """ This file contains everything you need to build mathematical FO3 objects in Python, even typed FO3 objects! """
-
+import FO3_Translation_Methods
 from List_Methods import *
 
 
@@ -307,6 +307,7 @@ def negation_normal(argument):
 
 def fully_simplify_FO3(expression):
     """ Fully simplifies an FO3 expression """
+    expression = FO3_Translation_Methods.T_Nice(FO3_Translation_Methods.T_Good_Dash(negation_normal(expression)))
     previous_iteration = expression
     expression = simplify_FO3(expression)
     while str(previous_iteration) != str(expression):
