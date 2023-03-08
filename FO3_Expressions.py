@@ -369,6 +369,7 @@ if __name__ == "__main__":
 
     print("Original Expression: ", test_expression)  # Original expression
     print("Negation Normal Form:", negation_normal(test_expression))  # Negation Normal Form
+    print("Simplified:          ", fully_simplify_FO3(negation_normal(test_expression)))
 
     print()
     x = Typed_Variable('x', 'Q')
@@ -381,3 +382,4 @@ if __name__ == "__main__":
 
     print("Original Expression: ", test_expression)  # Original expression
     print("Negation Normal Form:", negation_normal(test_expression))  # Negation Normal Form
+    print("Simplified:          ", fully_simplify_FO3(negation_normal(test_expression)))
