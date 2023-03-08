@@ -356,6 +356,11 @@ def simplify_FO3(expression):
                 return ff()
             else:
                 return AND(simplify_FO3(arg1), simplify_FO3(arg2))
+        case Equals(argument1=arg1, argument2=arg2):
+            if arg1 == arg2:
+                return tt()
+            else:
+                return Equals(arg1, arg2)
         case _:
             return expression
 
