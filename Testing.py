@@ -146,11 +146,13 @@ def test_with_z3(fo3_expression) -> int:
 
 
 def look_for_simplification_rules(attempts):
-    results = open("results.txt", "r+")
-    rules_found_so_far = results.readlines()
+    fo3_results = open("FO3_Rules.txt", "r+")
+    cor_results = open("COR_Rules.txt", "r+")
+    fo3_rules_found_so_far = fo3_results.readlines()
+    cor_rules_found_so_far = cor_results.readlines()
 
     for iteration in range(attempts):
-        first = generate_random_FO3(random.randint(2, 5))
+        first = generate_random_FO3(2)
         second = generate_random_FO3(1)
         if isinstance(second, Equals) and second.argument1 == second.argument2:
             second = tt()  # x=x is always True
@@ -161,18 +163,23 @@ def look_for_simplification_rules(attempts):
         z3result = s.check()
         if z3result == z3.unsat:
             rule = str(first) + " == " + str(second) + "\n"
-            if rule not in rules_found_so_far:
+            if rule not in fo3_rules_found_so_far:
                 print("Z3 found a new simplification rule:", rule)
-                rules_found_so_far.append(rule)
-                results.write(rule)
+                fo3_rules_found_so_far.append(rule)
+                fo3_results.write(rule)
 
-    results.close()
+                cor_first = str(final_translation(first, 'x', 'y'))
+                cor_second = str(final_translation(second, 'x', 'y'))
+                if cor_first != cor_second:
+                    cor_rule = cor_first + " == " + cor_second + "\n"
+                    if cor_rule not in cor_rules_found_so_far and "None" not in cor_rule:
+                        cor_rules_found_so_far.append(cor_rule)
+                        cor_results.write(cor_rule)
+
+    fo3_results.close()
+    cor_results.close()
 
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    for n in range(1, 25):
-        if random_FO3_tester(n, n):
-            pass
-        else:
-            break
+    look_for_simplification_rules(10_000)

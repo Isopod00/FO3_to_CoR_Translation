@@ -1,0 +1,65 @@
+∀x. False == False
+¬(True) == False
+∃y. True == True
+∃x. False == False
+¬(False) == True
+∀y. True == True
+∀z. True == True
+∀x. True == True
+∀x. x = x == True
+∀y. False == False
+∃z. False == False
+∀z. z = z == True
+∃x. True == True
+¬(y = y) == False
+∃z. x = z == True
+∀z. False == False
+∃y. x = y == True
+∃z. x = x == True
+∃z. z = x == True
+¬(x = x) == False
+∃z. x = y == x = y
+∃y. z = z == True
+∃z. True == True
+∀y. z = z == True
+∀y. x = x == True
+∃x. x = x == True
+∃z. y = z == True
+∃x. x = y == True
+∃y. False == False
+∀x. z = z == True
+∃z. z = z == True
+∀x. y = y == True
+∀x. z = y == z = y
+∃x. y = y == True
+∀y. y = y == True
+∃x. z = x == True
+∀x. y = z == y = z
+∃y. y = z == True
+∃y. y = y == True
+∃x. x = z == True
+∃y. x = z == x = z
+¬(z = z) == False
+∃z. z = y == True
+∃z. y = y == True
+∃y. x = x == True
+∃x. z = z == True
+∀y. x = z == z = x
+∃x. y = x == True
+∀z. x = x == True
+∀z. y = y == True
+∃z. A(x,y) == A(x,y)
+∀z. B(x,x) == B(x,x)
+∃y. z = y == True
+∃x. y = z == z = y
+∃y. y = x == True
+∀x. y = z == z = y
+∃z. y = x == x = y
+∃y. B(z,x) == B(z,x)
+∀y. z = x == z = x
+∀x. C(y,y) == C(y,y)
+∀z. x = y == x = y
+∀y. z = x == x = z
+∃y. x = z == z = x
+∀y. B(z,x) == B(z,x)
+∀x. z = y == y = z
