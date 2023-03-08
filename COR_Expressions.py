@@ -176,6 +176,8 @@ def simplify_COR(expression):
                 return simplify_COR(arg1)
             elif isinstance(arg1, UniversalRelation) and isinstance(arg2, UniversalRelation):
                 return UniversalRelation()
+            elif isinstance(arg2, EmptyRelation):
+                return EmptyRelation()
             else:
                 return Composition(simplify_COR(arg1), simplify_COR(arg2))
         case Union(argument1=arg1, argument2=arg2):

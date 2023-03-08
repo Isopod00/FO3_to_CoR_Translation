@@ -259,6 +259,8 @@ def simplify_Typed_COR(expression):
                 return simplify_Typed_COR(arg1)
             elif isinstance(arg1, Typed_UniversalRelation) and isinstance(arg2, Typed_UniversalRelation):
                 return Typed_UniversalRelation(expression.type()[0], expression.type()[1])
+            elif isinstance(arg2, Typed_EmptyRelation):
+                return Typed_EmptyRelation(expression.type()[0], expression.type()[1])
             else:
                 return Typed_Composition(simplify_Typed_COR(arg1), simplify_Typed_COR(arg2))
         case Typed_Union(argument1=arg1, argument2=arg2):
