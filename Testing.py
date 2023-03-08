@@ -36,12 +36,13 @@ def asZ3(expression):
             return z3.Const(arg1, SortForEverything) == z3.Const(arg2, SortForEverything)
 
 
+# size parameter must be >= 1
 def generate_random_FO3(size):
     """ This method generates a random FO3 expression with the specified size (depth of expression tree) """
-    if size <= 1:
+    if size == 1:
         # Restrict the choices that can be made to allow our expression to grow to the specified size
         choice = random.randint(0, 3)
-    elif size <= 2:
+    elif size == 2:
         choice = random.randint(4, 6)
     else:
         choice = random.randint(4, 8)
@@ -67,11 +68,11 @@ def generate_random_FO3(size):
             return Negation(generate_random_FO3(size - 1))
         case 7:
             size_other = random.randint(1, size - 1)
-            return OR(generate_random_FO3(size_other - 1),
+            return OR(generate_random_FO3(size_other),
                       generate_random_FO3(size - size_other))
         case 8:
             size_other = random.randint(1, size - 1)
-            return AND(generate_random_FO3(size_other - 1),
+            return AND(generate_random_FO3(size_other),
                        generate_random_FO3(size - size_other))
 
 
@@ -120,7 +121,7 @@ def test_with_z3(fo3_expression) -> int:
     print("Simplify Final Translation:", simplified)
     back = ForAll('a', ForAll('b', simplified.translate('a', 'b')))
     print("\nTranslate back to FO3:", back)
-    final_result = fully_simplify_FO3(T_Nice(back))  # T_Nice is used to get rid of ForAll(a) and ForAll(b)
+    final_result = fully_simplify_FO3(back)
     print("Something that should be equivalent to the original:", final_result)
     s = z3.Solver()
     s.add(z3.Not(asZ3(fo3_expression) == asZ3(final_result)))
@@ -142,6 +143,30 @@ def test_with_z3(fo3_expression) -> int:
         # TODO: if Z3 times out, we should try with a finite sort instead,
         # Here's how to get a finite sort of three elements:
         # S, (a, b, c) = z3.EnumSort('round', ['a','b','c'])
+
+
+def look_for_simplification_rules(attempts):
+    results = open("results.txt", "r+")
+    rules_found_so_far = results.readlines()
+
+    for iteration in range(attempts):
+        first = generate_random_FO3(random.randint(2, 5))
+        second = generate_random_FO3(1)
+        if isinstance(second, Equals) and second.argument1 == second.argument2:
+            second = tt()  # x=x is always True
+
+        s = z3.Solver()
+        s.add(z3.Not(asZ3(first) == asZ3(second)))
+        s.set("timeout", 1000)  # If this returns an error, update the z3 module
+        z3result = s.check()
+        if z3result == z3.unsat:
+            rule = str(first) + " == " + str(second) + "\n"
+            if rule not in rules_found_so_far:
+                print("Z3 found a new simplification rule:", rule)
+                rules_found_so_far.append(rule)
+                results.write(rule)
+
+    results.close()
 
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
