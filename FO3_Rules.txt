@@ -63,3 +63,279 @@
 ∃y. x = z == z = x
 ∀y. B(z,x) == B(z,x)
 ∀x. z = y == y = z
+¬(¬(∃x. ∀z. False)) == False
+¬(∀z. ∀x. ¬(x = z)) == True
+(¬(z = y)) ∧ (False) == False
+¬(∀z. ∃y. ∀x. True) == False
+(∃z. False) ∧ (∀z. False) == False
+((¬(True)) ∧ (False)) ∧ (True) == False
+(∀x. True) ∧ (True) == True
+¬(∀z. True) == False
+∃y. ∀x. ∀z. ∀z. True == True
+∃z. ¬(True) == False
+(z = x) ∧ (¬(¬(True))) == x = z
+(¬(x = y)) ∨ (¬(False)) == True
+(C(x,x)) ∨ (¬(False)) == True
+¬(∀x. False) == True
+(∀x. ¬(¬(False))) ∨ (False) == False
+∀y. ∃x. True == True
+∃y. (¬(x = x)) ∨ (True) == True
+∀x. (True) ∨ (∃x. False) == True
+(∀y. C(z,z)) ∧ (∃z. False) == False
+(A(y,y)) ∨ (∃y. True) == True
+∀x. (True) ∧ (¬(False)) == True
+∃x. (∀z. True) ∧ (y = x) == True
+∃z. ∃y. False == False
+(y = y) ∨ ((∃x. True) ∧ (False)) == True
+¬(∀z. False) == True
+∃y. (False) ∨ (∀y. True) == True
+((C(y,z)) ∨ (∀y. False)) ∧ (¬(True)) == False
+∀y. ¬(False) == True
+∃x. (∀z. A(y,x)) ∨ (y = y) == True
+¬((∃z. A(x,y)) ∧ (False)) == True
+∀y. (∀z. y = y) ∨ (False) == True
+∀y. ¬(¬(False)) == False
+(¬(False)) ∧ (z = y) == y = z
+(∀z. x = x) ∨ (∀z. False) == True
+¬((False) ∨ (∃y. y = z)) == False
+(False) ∨ (∃y. True) == True
+¬(¬(x = z)) == x = z
+((True) ∧ ((y = y) ∨ (∃z. False))) ∨ (B(x,z)) == True
+(∀y. (x = y) ∨ (∀y. C(z,y))) ∧ (False) == False
+∃y. ∀x. ∃z. False == False
+(∀x. True) ∧ (∀y. True) == True
+(¬(True)) ∨ (∀y. False) == False
+∃y. ¬(∀x. True) == False
+(True) ∨ (¬(∃z. True)) == True
+∀x. ¬(False) == True
+∃z. (z = x) ∧ ((True) ∧ (∃z. True)) == True
+¬((False) ∨ (∃z. z = y)) == False
+¬((C(z,z)) ∨ (∃y. True)) == False
+∀z. ((z = y) ∧ (∀z. False)) ∧ (False) == False
+((∀y. x = z) ∨ (∀y. x = z)) ∨ (True) == True
+∃z. ∃x. True == True
+(∃x. False) ∨ (False) == False
+(True) ∧ (¬(False)) == True
+∀x. ∃x. ¬(∃y. False) == True
+(∃y. False) ∧ (∀x. False) == False
+((¬(False)) ∧ (∃z. False)) ∧ (False) == False
+(∀y. ∃y. ∃z. z = y) ∨ (False) == True
+∃z. ∀z. True == True
+∀z. ∃x. True == True
+(¬(False)) ∨ (B(z,z)) == True
+(y = y) ∨ ((z = y) ∧ (∀x. y = z)) == True
+∃y. ∀z. ∀x. y = y == True
+∀x. ∀z. True == True
+∃z. (∀y. False) ∨ (True) == True
+(∀z. True) ∨ (B(y,z)) == True
+∃y. ¬(¬(¬(True))) == False
+¬(∃z. True) == False
+((True) ∨ (∀z. False)) ∨ (B(x,z)) == True
+∀y. ∃z. True == True
+(∃z. True) ∨ (∃z. True) == True
+¬(∀z. ∃y. y = x) == False
+(∃z. True) ∨ (C(y,z)) == True
+(∀y. False) ∨ (¬(False)) == True
+(¬(∀z. ∃y. True)) ∨ (True) == True
+∃x. ∃y. False == False
+∀x. (∀y. ¬(False)) ∧ (False) == False
+(z = x) ∧ (¬(z = z)) == False
+∀x. ¬(y = x) == False
+∀x. ∃z. False == False
+∀y. ∃x. z = z == True
+∀x. ∀x. ∃z. ∀y. True == True
+∃y. ∀x. ∃y. True == True
+(z = z) ∧ (¬(True)) == False
+∀z. ¬(∃x. z = y) == False
+∀y. ∀x. z = z == True
+(False) ∨ (¬(∀x. True)) == False
+(∀y. z = z) ∨ (∀z. True) == True
+(False) ∨ (∃x. x = x) == True
+(False) ∧ (∃z. z = z) == False
+(∃z. x = z) ∨ (∀z. ∃x. B(y,z)) == True
+∀x. ∀x. z = z == True
+¬(∃x. ∀z. True) == False
+¬(∀z. (False) ∧ (∃x. y = y)) == True
+(∃z. True) ∧ (¬(∃y. False)) == True
+¬((False) ∧ ((∃z. False) ∨ (y = x))) == True
+(False) ∧ (¬(z = z)) == False
+¬(¬(∀y. False)) == False
+∃z. ∀y. ¬(¬(y = y)) == True
+∀x. ((∃x. x = z) ∨ (True)) ∧ (True) == True
+¬(¬(True)) == True
+¬(∀z. (True) ∧ (¬(False))) == False
+∀z. ¬((∃z. True) ∨ (x = z)) == False
+∀z. (True) ∨ (∀y. False) == True
+(True) ∨ ((True) ∧ (∃x. False)) == True
+∃y. ∃z. False == False
+(∃y. True) ∨ (True) == True
+∃z. ((x = z) ∨ (∃z. False)) ∧ (y = y) == True
+¬(¬((z = x) ∧ (¬(True)))) == False
+¬((True) ∨ (∀z. False)) == False
+(False) ∧ (∀z. A(z,z)) == False
+(¬(¬(False))) ∧ (z = z) == False
+∀x. ∀y. True == True
+∃y. ¬(¬(True)) == True
+¬(∃x. y = y) == False
+¬((¬(True)) ∨ (¬(True))) == True
+(∃z. y = y) ∨ (True) == True
+∃x. ¬((¬(True)) ∧ (True)) == True
+((¬(y = z)) ∨ (x = x)) ∨ (C(z,z)) == True
+(z = z) ∨ (∀x. ∃z. False) == True
+(¬(¬(∃z. x = y))) ∧ (False) == False
+(False) ∨ (¬(True)) == False
+(¬(False)) ∨ (¬(∀x. y = z)) == True
+∃y. ∀x. y = y == True
+¬(∀y. True) == False
+¬(¬(∀x. ¬(True))) == False
+(¬(∀y. False)) ∧ (∃z. True) == True
+((False) ∨ (∀z. A(x,y))) ∨ (True) == True
+(∃x. x = y) ∧ (∃x. False) == False
+∃z. (¬(∀x. y = x)) ∨ (True) == True
+∀z. ∀z. ∃z. False == False
+∃y. (True) ∧ ((¬(False)) ∨ (A(z,y))) == True
+(False) ∧ (∃x. True) == False
+(∀x. ∃x. True) ∨ (True) == True
+∀x. ¬(z = x) == False
+¬(∃y. ∃z. ¬(True)) == True
+∃x. ∃x. ∀x. True == True
+(∃z. True) ∨ (∀x. A(y,z)) == True
+∃y. ∃x. False == False
+(True) ∨ (¬(¬(True))) == True
+(False) ∨ ((∃x. B(z,z)) ∨ (True)) == True
+∀x. ∃y. ∃y. ¬(False) == True
+∃z. ¬(∀x. False) == True
+∀y. ∃z. (False) ∧ (¬(True)) == False
+¬((¬(False)) ∨ (False)) == False
+∀z. ¬(z = z) == False
+∃x. (z = z) ∧ (∀x. True) == True
+(∀y. True) ∨ ((z = x) ∧ (∃y. True)) == True
+((∀y. False) ∧ (True)) ∧ (False) == False
+(False) ∧ (¬(B(x,x))) == False
+¬(∃x. y = x) == False
+(¬(False)) ∨ (∀z. False) == True
+∃x. ∀z. ¬(True) == False
+∀y. ¬(∀x. y = y) == False
+(False) ∨ (∀x. True) == True
+¬(∀x. ∀y. True) == False
+¬((∀z. True) ∨ (∀z. True)) == False
+(∃z. y = z) ∧ (False) == False
+(False) ∨ (∃x. ¬(z = z)) == False
+∃y. ∃x. ∀x. ¬(True) == False
+(y = y) ∨ (¬(True)) == True
+¬(∃y. True) == False
+∀y. (¬(y = y)) ∧ (∀z. B(y,y)) == False
+∀y. ¬(True) == False
+∃y. (x = y) ∨ (∃y. True) == True
+¬((False) ∧ (¬(B(x,z)))) == True
+¬((¬(¬(A(z,z)))) ∨ (x = x)) == False
+∃x. ∃y. (True) ∧ (¬(y = y)) == False
+∀z. (∃y. ∀z. False) ∧ (False) == False
+¬((False) ∨ (¬(False))) == False
+(A(z,x)) ∨ (∀y. ∃z. True) == True
+(A(y,x)) ∨ (¬(False)) == True
+(∀x. ¬(True)) ∨ (y = y) == True
+∀z. y = x == x = y
+∀x. ∃y. x = x == True
+¬((∃x. ∃z. False) ∨ (True)) == False
+∀x. ∀y. ∀y. False == False
+∀y. ¬(∀y. ¬(True)) == True
+∃y. (∀z. False) ∧ (True) == False
+(False) ∧ (¬(False)) == False
+∀z. ¬(∃y. False) == True
+∃z. ∀y. ∃z. ∀z. False == False
+¬(∃z. ¬(¬(True))) == False
+∀z. ∀x. True == True
+¬(∀z. ∃x. False) == True
+∀y. (∀x. False) ∧ (y = z) == False
+¬((False) ∧ ((True) ∨ (¬(A(y,y))))) == True
+¬(¬((∀x. False) ∧ (B(x,y)))) == False
+∀z. ∀z. A(y,y) == A(y,y)
+∀z. ∀x. x = x == True
+∀z. ¬(y = z) == False
+∀x. ∀y. ∃y. ∃z. z = z == True
+((¬(A(z,y))) ∨ (B(x,y))) ∧ (False) == False
+¬(¬(∀z. ∀x. True)) == True
+∃z. ∃x. ¬(∃z. z = z) == False
+(∃z. z = z) ∧ (False) == False
+(∀z. y = x) ∨ (True) == True
+¬(∃x. False) == True
+¬(¬(∀x. True)) == True
+(∀y. False) ∨ (False) == False
+∃x. (False) ∧ (∃y. A(y,z)) == False
+(True) ∨ (¬(False)) == True
+(¬(False)) ∨ (A(y,x)) == True
+(C(z,x)) ∨ (¬(∀y. False)) == True
+∀y. (False) ∧ (∃x. ∀z. C(z,y)) == False
+(False) ∨ (∀y. False) == False
+(∃y. ¬(∀z. x = x)) ∨ (B(x,x)) == B(x,x)
+∃x. ¬(∀x. ¬(True)) == True
+∃y. (False) ∧ (∃x. A(x,z)) == False
+∀z. ∃y. ∃z. False == False
+(∃z. True) ∨ (C(y,x)) == True
+∃z. (y = y) ∧ (∃y. z = y) == True
+(False) ∨ ((∀x. False) ∨ (∃x. True)) == True
+(False) ∧ (∀x. ∀z. y = y) == False
+∃x. ∃z. False == False
+∃x. ∀z. True == True
+(¬(False)) ∨ (∃y. ∃x. True) == True
+∀x. ¬(x = z) == False
+∃x. (∀z. True) ∨ (¬(True)) == True
+(True) ∧ (∀y. True) == True
+∃z. (∀x. ∃y. False) ∧ (False) == False
+(x = y) ∧ (¬(True)) == False
+∀x. ∃x. True == True
+(¬(¬(y = y))) ∨ (C(x,x)) == True
+∀y. ∀z. (A(z,z)) ∨ (¬(False)) == True
+∃z. ∀z. False == False
+∀y. (C(x,y)) ∧ (¬(¬(False))) == False
+(∀x. ∀z. y = x) ∨ (True) == True
+¬((∀x. True) ∨ (∃x. C(x,y))) == False
+(¬((∃z. True) ∧ (y = x))) ∨ (y = x) == True
+∃y. (False) ∧ (∀x. C(y,x)) == False
+∀x. ∃y. ¬(False) == True
+∀z. ∃z. ∃x. z = y == True
+∃x. ¬(y = y) == False
+¬(∃x. ∀y. False) == True
+∀x. ¬(¬(y = y)) == True
+∀y. ∃x. ∀z. True == True
+¬(∃x. (False) ∧ (∀z. False)) == True
+¬(¬(∀z. y = y)) == True
+∃x. ¬(False) == True
+∀z. ∀y. ¬(False) == True
+(∀y. False) ∧ (∀x. True) == False
+(∃y. x = z) ∧ (∀x. ∃y. False) == False
+¬(∃z. False) == True
+∀z. ∃y. True == True
+∀z. (False) ∨ (¬(False)) == True
+∀z. ∃x. ∀z. z = z == True
+(∀y. True) ∨ (B(z,z)) == True
+∀z. ∃y. ¬(False) == True
+∀z. ∀y. True == True
+∃x. ¬(True) == False
+∀y. (True) ∧ (∀z. True) == True
+∃x. ((¬(x = z)) ∧ (False)) ∧ (False) == False
+∀y. ∃z. ∀x. ∃x. z = z == True
+∃x. (B(x,y)) ∨ (¬(B(y,y))) == True
+∃y. ∃x. (∀x. False) ∨ (False) == False
+(¬(False)) ∨ (∀x. False) == True
+∃x. ∃x. ∃y. False == False
+(y = y) ∨ ((∀y. ¬(A(y,z))) ∨ (C(z,x))) == True
+(False) ∨ (∀z. x = x) == True
+(C(x,x)) ∨ (¬(¬(¬(False)))) == True
+∀x. ∃x. ∀z. False == False
+∃x. ((∃x. A(z,z)) ∨ (A(x,y))) ∨ (True) == True
+¬(¬(False)) == False
+(∃x. True) ∧ (¬(True)) == False
+∀x. ¬(∀x. False) == True
+∀y. (∃y. z = z) ∧ (∃x. False) == False
+∃y. ∀x. ∀z. ¬(False) == True
+∃y. (True) ∧ ((True) ∨ (¬(y = z))) == True
+∃z. (∃x. True) ∧ (y = z) == True
+(¬(False)) ∨ (∃y. ∀y. x = y) == True
+(∃x. True) ∨ (True) == True
+(∀y. True) ∨ (False) == True
+∃z. (True) ∨ (∃y. B(y,z)) == True
+((False) ∧ (∃x. False)) ∧ (True) == False
+∀x. ∃x. ¬(True) == False
+¬(¬((True) ∨ (∃x. y = x))) == True

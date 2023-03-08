@@ -152,7 +152,7 @@ def look_for_simplification_rules(attempts):
     cor_rules_found_so_far = cor_results.readlines()
 
     for iteration in range(attempts):
-        first = generate_random_FO3(2)
+        first = generate_random_FO3(random.randint(2,5))
         second = generate_random_FO3(1)
         if isinstance(second, Equals) and second.argument1 == second.argument2:
             second = tt()  # x=x is always True
