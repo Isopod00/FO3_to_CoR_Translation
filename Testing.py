@@ -74,6 +74,54 @@ def generate_random_FO3(size):
             size_other = random.randint(1, size - 1)
             return AND(generate_random_FO3(size_other),
                        generate_random_FO3(size - size_other))
+            
+            
+# size parameter must be >= 1
+def generate_all_FO3_formulas(size):
+    """ This method generates ALL FO3 expressions with the specified size (depth of expression tree) """
+    if size == 1:
+        # Restrict the choices that can be made to allow our expression to grow to the specified size
+        choices = range(0, 4)
+    elif size == 2:
+        choices = range(4, 7)
+    else:
+        choices = range(4, 8)
+    for choice in choices:
+        match choice:
+            case 0:
+                yield tt()
+            case 1:
+                yield ff()
+            case 2:
+                for var1 in ['x', 'y', 'z']:
+                    for var2 in ['x', 'y', 'z']:
+                        yield Equals(var1, var2)
+            case 3:
+                for letter_choice in ['A', 'B', 'C']:
+                    for var1 in ['x', 'y', 'z']:
+                        for var2 in ['x', 'y', 'z']:
+                            yield Predicate(letter_choice, var1, var2)
+            case 4:
+                for var in ['x', 'y', 'z']:
+                    for formula in generate_all_FO3_formulas(size - 1):
+                        yield ForAll(var, formula)
+            case 5:
+                for var in ['x', 'y', 'z']:
+                    for formula in generate_all_FO3_formulas(size - 1):
+                        yield ThereExists(var, formula)
+            case 6:
+                for formula in generate_all_FO3_formulas(size - 1):
+                    yield Negation(formula)
+            case 7:
+                for size_other in range(1, size):
+                    for formula in generate_all_FO3_formulas(size_other):
+                        for formula2 in generate_all_FO3_formulas(size - size_other):
+                            yield OR(formula, formula2)
+            case 8:
+                for size_other in range(1, size):
+                    for formula in generate_all_FO3_formulas(size_other):
+                        for formula2 in generate_all_FO3_formulas(size - size_other):
+                            yield AND(formula, formula2)
 
 
 def make_FO3_expression_closed(expression):
@@ -145,36 +193,36 @@ def test_with_z3(fo3_expression) -> int:
         # S, (a, b, c) = z3.EnumSort('round', ['a','b','c'])
 
 
-def look_for_simplification_rules(attempts, size):
+def look_for_simplification_rules(size):
     fo3_results = open("FO3_Rules.txt", "r+", encoding="utf8")
     cor_results = open("COR_Rules.txt", "r+", encoding="utf8")
     fo3_rules_found_so_far = fo3_results.readlines()
     cor_rules_found_so_far = cor_results.readlines()
 
-    for iteration in range(attempts):
-        first = generate_random_FO3(size)
-        second = generate_random_FO3(random.randint(1, size-1))
-        if isinstance(second, Equals) and second.argument1 == second.argument2:
-            second = tt()  # x=x is always True
+    for first in generate_all_FO3_formulas(size):
+        for second_size in range(1, size):
+            for second in generate_all_FO3_formulas(second_size):
+                if isinstance(second, Equals) and second.argument1 == second.argument2:
+                    second = tt()  # x=x is always True
 
-        s = z3.Solver()
-        s.add(z3.Not(asZ3(first) == asZ3(second)))
-        s.set("timeout", 1000)  # If this returns an error, update the z3 module
-        z3result = s.check()
-        if z3result == z3.unsat:
-            rule = str(first) + " == " + str(second) + "\n"
-            if rule not in fo3_rules_found_so_far:
-                print("Z3 found a new simplification rule:", rule)
-                fo3_rules_found_so_far.append(rule)
-                fo3_results.write(rule)
+                s = z3.Solver()
+                s.add(z3.Not(asZ3(first) == asZ3(second)))
+                s.set("timeout", 1000)  # If this returns an error, update the z3 module
+                z3result = s.check()
+                if z3result == z3.unsat:
+                    rule = str(first) + " == " + str(second) + "\n"
+                    if rule not in fo3_rules_found_so_far:
+                        print("Z3 found a new simplification rule:", rule)
+                        fo3_rules_found_so_far.append(rule)
+                        fo3_results.write(rule)
 
-                cor_first = str(final_translation(first, 'x', 'y'))
-                cor_second = str(final_translation(second, 'x', 'y'))
-                if cor_first != cor_second:
-                    cor_rule = cor_first + " == " + cor_second + "\n"
-                    if cor_rule not in cor_rules_found_so_far and "None" not in cor_rule:
-                        cor_rules_found_so_far.append(cor_rule)
-                        cor_results.write(cor_rule)
+                        cor_first = str(final_translation(first, 'x', 'y'))
+                        cor_second = str(final_translation(second, 'x', 'y'))
+                        if cor_first != cor_second:
+                            cor_rule = cor_first + " == " + cor_second + "\n"
+                            if cor_rule not in cor_rules_found_so_far and "None" not in cor_rule:
+                                cor_rules_found_so_far.append(cor_rule)
+                                cor_results.write(cor_rule)
 
     fo3_results.close()
     cor_results.close()
@@ -182,4 +230,4 @@ def look_for_simplification_rules(attempts, size):
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    look_for_simplification_rules(100, 2)
+    look_for_simplification_rules(2)
