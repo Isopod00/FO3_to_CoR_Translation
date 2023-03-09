@@ -131,8 +131,8 @@ def test_with_z3(fo3_expression) -> int:
         print("\nZ3 found a bug! (this is bad!)")
         print(s.model())
         print("\nZ3 lhs: ", asZ3(fo3_expression))
-        print("\nZ3 rhs: ", asZ3(back))
-        print("\nZ3 constraint: ", z3.Not(asZ3(fo3_expression) == asZ3(back)))
+        print("\nZ3 rhs: ", asZ3(final_result))
+        print("\nZ3 constraint: ", z3.Not(asZ3(fo3_expression) == asZ3(final_result)))
         return -1
     elif z3result == z3.unsat:
         print("\nZ3 proved that the round-trip returned something equivalent (this is good!)")
