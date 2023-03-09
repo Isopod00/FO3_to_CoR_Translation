@@ -146,8 +146,8 @@ def test_with_z3(fo3_expression) -> int:
 
 
 def look_for_simplification_rules(attempts, size):
-    fo3_results = open("FO3_Rules.txt", "r+")
-    cor_results = open("COR_Rules.txt", "r+")
+    fo3_results = open("FO3_Rules.txt", "r+", encoding="utf8")
+    cor_results = open("COR_Rules.txt", "r+", encoding="utf8")
     fo3_rules_found_so_far = fo3_results.readlines()
     cor_rules_found_so_far = cor_results.readlines()
 
@@ -182,8 +182,4 @@ def look_for_simplification_rules(attempts, size):
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    for n in range(1, 25):
-        if random_FO3_tester(n, n):
-            pass
-        else:
-            break
+    look_for_simplification_rules(100, 2)
