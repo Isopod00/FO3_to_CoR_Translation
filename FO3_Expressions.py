@@ -337,6 +337,8 @@ def simplify_FO3(expression):
             match arg:
                 case tt() | ff():
                     return arg
+                case Equals(argument1=arg1, argument2=arg2) if v == arg1 or v == arg2:
+                    return tt()
                 case _:
                     return ThereExists(v, simplify_FO3(arg))
         case OR(argument1=arg1, argument2=arg2):

@@ -145,15 +145,15 @@ def test_with_z3(fo3_expression) -> int:
         # S, (a, b, c) = z3.EnumSort('round', ['a','b','c'])
 
 
-def look_for_simplification_rules(attempts):
+def look_for_simplification_rules(attempts, size):
     fo3_results = open("FO3_Rules.txt", "r+")
     cor_results = open("COR_Rules.txt", "r+")
     fo3_rules_found_so_far = fo3_results.readlines()
     cor_rules_found_so_far = cor_results.readlines()
 
     for iteration in range(attempts):
-        first = generate_random_FO3(random.randint(2,5))
-        second = generate_random_FO3(1)
+        first = generate_random_FO3(size)
+        second = generate_random_FO3(random.randint(1, size-1))
         if isinstance(second, Equals) and second.argument1 == second.argument2:
             second = tt()  # x=x is always True
 
