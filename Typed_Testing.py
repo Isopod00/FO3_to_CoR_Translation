@@ -9,12 +9,13 @@ import z3  # pip install z3-solver
 from Typed_FO3_Translation import *
 
 
+# size parameter must be >= 1
 def generate_random_typed_FO3(size, allowed_variables):
     """ This method generates a random typed FO3 expression with the specified size (depth of expression tree) """
-    if size <= 1:
+    if size == 1:
         # Restrict the choices that can be made to allow our expression to grow to the specified size
         choice = random.randint(0, 3)
-    elif size <= 2:
+    elif size == 2:
         choice = random.randint(4, 6)
     else:
         choice = random.randint(4, 8)
@@ -47,11 +48,11 @@ def generate_random_typed_FO3(size, allowed_variables):
             return Negation(generate_random_typed_FO3(size - 1, allowed_variables))
         case 7:  # OR
             size_other = random.randint(1, size - 1)
-            return OR(generate_random_typed_FO3(size_other - 1, allowed_variables),
+            return OR(generate_random_typed_FO3(size_other, allowed_variables),
                       generate_random_typed_FO3(size - size_other, allowed_variables))
         case 8:  # AND
             size_other = random.randint(1, size - 1)
-            return AND(generate_random_typed_FO3(size_other - 1, allowed_variables),
+            return AND(generate_random_typed_FO3(size_other, allowed_variables),
                        generate_random_typed_FO3(size - size_other, allowed_variables))
 
 
