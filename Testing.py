@@ -161,7 +161,7 @@ def test_with_z3(fo3_expression) -> int:
     print("Simplify Final Translation:", simplified)
     back = ForAll('a', ForAll('b', simplified.translate('a', 'b')))
     print("\nTranslate back to FO3:", back)
-    final_result = fully_simplify_FO3(back)
+    final_result = fully_simplify_FO3(T_Nice(negation_normal(back)))
     print("Something that should be equivalent to the original:", final_result)
     s = z3.Solver()
     s.add(z3.Not(asZ3(fo3_expression) == asZ3(final_result)))
