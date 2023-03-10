@@ -1,17 +1,13 @@
 # Authors: Sebastiaan J. C. Joosten, Anthony Brogni
 # Last Changed: March 2023
-""" This file is for the random generation of (untyped) FO3 expressions and for automated testing of our translation
- process using z3! """
+""" This file is for the random generation of (untyped) FO3 expressions and for automated testing of our translation process using z3! """
 
 import random
-import multiprocessing
-from timeit import default_timer
 import z3  # pip install z3-solver
 
 from FO3_Translation_Methods import *
 
 SortForEverything = z3.DeclareSort('SomeSort')
-
 
 def asZ3(expression):
     """ This method computes the z3 representation of an FO3 formula """
@@ -35,7 +31,6 @@ def asZ3(expression):
             return z3.Not(asZ3(arg))
         case Equals(argument1=arg1, argument2=arg2):
             return z3.Const(arg1, SortForEverything) == z3.Const(arg2, SortForEverything)
-
 
 # size parameter must be >= 1
 def generate_random_FO3(size):
@@ -75,8 +70,7 @@ def generate_random_FO3(size):
             size_other = random.randint(1, size - 1)
             return AND(generate_random_FO3(size_other),
                        generate_random_FO3(size - size_other))
-            
-            
+                      
 # size parameter must be >= 1
 def generate_all_FO3_formulas(size):
     """ This method generates ALL FO3 expressions with the specified size (depth of expression tree) """
@@ -124,7 +118,6 @@ def generate_all_FO3_formulas(size):
                         for formula2 in generate_all_FO3_formulas(size - size_other):
                             yield AND(formula, formula2)
 
-
 def make_FO3_expression_closed(expression):
     """ This method takes any FO3 expression and makes it closed by applying universal quantifiers (ForAll) to any
      free variables. """
@@ -132,7 +125,6 @@ def make_FO3_expression_closed(expression):
     for variable in expression.free_variables():
         closed_expression = ForAll(variable, closed_expression)
     return closed_expression
-
 
 def random_FO3_tester(attempts, size):
     """ This automated testing method will run the specified number of attempts while counting how many are succesful
@@ -150,7 +142,6 @@ def random_FO3_tester(attempts, size):
             successes += return_value
     print(f'{successes}/{attempts} were successful without timing out! That is {100 * successes / attempts}% accuracy')
     return True
-
 
 def test_with_z3(fo3_expression) -> int:
     """ This method uses z3 to test the equivalence of the orginal expression with the result of our fowards and
@@ -193,55 +184,10 @@ def test_with_z3(fo3_expression) -> int:
         # Here's how to get a finite sort of three elements:
         # S, (a, b, c) = z3.EnumSort('round', ['a','b','c'])
 
-
-def look_for_simplification_rules(size):
-    fo3_results = open("FO3_Rules.txt", "r+", encoding="utf8")
-    cor_results = open("COR_Rules.txt", "r+", encoding="utf8")
-    fo3_rules_found_so_far = set(fo3_results.readlines())
-    cor_rules_found_so_far = set(cor_results.readlines())
-
-    for first in generate_all_FO3_formulas(size):
-        for second_size in range(1, size):
-            for second in generate_all_FO3_formulas(second_size):
-                if isinstance(second, Equals) and second.argument1 == second.argument2:
-                    second = tt()  # x=x is always True
-
-                rule = str(first) + " == " + str(second) + "\n"
-                if rule not in fo3_rules_found_so_far: # If we've already found the rule, then move on right away
-                    s = z3.Solver()
-                    s.add(z3.Not(asZ3(first) == asZ3(second)))
-                    s.set("timeout", 500)
-                    z3result = s.check()
-                    if z3result == z3.unsat:
-                        fo3_rules_found_so_far.add(rule)
-                        fo3_results.write(rule)
-
-                        cor_first = str(final_translation(first, 'x', 'y'))
-                        cor_second = str(final_translation(second, 'x', 'y'))
-                        if cor_first != cor_second:
-                            cor_rule = cor_first + " == " + cor_second + "\n"
-                            if cor_rule not in cor_rules_found_so_far and "None" not in cor_rule:
-                                cor_rules_found_so_far.add(cor_rule)
-                                cor_results.write(cor_rule)
-
-    fo3_results.close()
-    cor_results.close()
-
-
-# Allows for searching multiple sizes at once using multiple CPU cores
-class Process(multiprocessing.Process):
-    def __init__(self, size):
-        super(Process, self).__init__()
-        self.size = size        
-    def run(self):
-        print(f"A search for simplification rules of size {self.size} has started")
-        start = default_timer()
-        look_for_simplification_rules(self.size)
-        print(f"The search for simplification rules of size {self.size} finished in {default_timer() - start} seconds!")
-        
-
-# This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    Process(2).start()
-    Process(3).start()
-    Process(4).start()
+    for n in range(1, 25):
+        if random_FO3_tester(n, n):
+            pass
+        else:
+            break
+        
