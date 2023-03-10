@@ -13,16 +13,19 @@ import FO3_Translation_Methods
 # Searches for simplification rules for a given size by utilizing the specified number of cpu cores
 def look_for_simplification_rules(size, cpu_cores):
     print(f"A search for simplification rules of size {size} has started (using {cpu_cores} logical processors)")
-    start = default_timer()
+    start = default_timer()  # Time how long this takes
         
+    # Open the .txt files and read the rules that are already in them
     fo3_results = open("FO3_Rules.txt", "r+", encoding="utf8")
     cor_results = open("COR_Rules.txt", "r+", encoding="utf8")
     fo3_rules_found_so_far = set(fo3_results.readlines())
     cor_rules_found_so_far = set(cor_results.readlines())
     
+    # Generate ALL formulas of the specified size and split this list into equally-sized chunks
     formulas = list(Testing.generate_all_FO3_formulas(size))
     equal_chunks = numpy.array_split(numpy.array(formulas), cpu_cores)  # equal_chunks will be a list of numpy arrays
 
+    # Create our pool of tasks
     with multiprocessing.Pool(cpu_cores) as pool:
         results = []
         for array in equal_chunks:
@@ -30,18 +33,22 @@ def look_for_simplification_rules(size, cpu_cores):
         pool.close()
         pool.join()
 
+    # Construct the sets which will contain the final answers
     final_fo3_result = set()
     final_cor_result = set()
     for result in results:
-        final_fo3_result = final_fo3_result.union(result.get()[0])
-        final_cor_result = final_cor_result.union(result.get()[1])
-    final_fo3_result = final_fo3_result.difference(fo3_rules_found_so_far)
-    final_cor_result = final_cor_result.difference(cor_rules_found_so_far)
+        final_fo3_result = final_fo3_result.union(result.get()[0])  # First part of the tuple is the FO3 results
+        final_cor_result = final_cor_result.union(result.get()[1])  # Second part of the tuple is the COR results
+    final_fo3_result = final_fo3_result.difference(fo3_rules_found_so_far)  # Remove the rules that are already in the file
+    final_cor_result = final_cor_result.difference(cor_rules_found_so_far) # Remove the rules that are already in the file
+    
+    # Write the final answers to the .txt files
     for string in final_fo3_result:
         fo3_results.write(string)  
     for string in final_cor_result:
         cor_results.write(string)
        
+    # Close the files when we are done with them
     fo3_results.close()
     cor_results.close()
     print(f"The search for simplification rules of size {size} finished in {default_timer() - start} seconds!")
