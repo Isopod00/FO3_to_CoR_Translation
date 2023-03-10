@@ -3,11 +3,13 @@
 """ This file is for the random generation of (untyped) FO3 expressions and for automated testing of our translation process using z3! """
 
 import random
+
 import z3  # pip install z3-solver
 
 from FO3_Translation_Methods import *
 
 SortForEverything = z3.DeclareSort('SomeSort')
+
 
 def asZ3(expression):
     """ This method computes the z3 representation of an FO3 formula """
@@ -31,6 +33,7 @@ def asZ3(expression):
             return z3.Not(asZ3(arg))
         case Equals(argument1=arg1, argument2=arg2):
             return z3.Const(arg1, SortForEverything) == z3.Const(arg2, SortForEverything)
+
 
 # size parameter must be >= 1
 def generate_random_FO3(size):
@@ -70,7 +73,8 @@ def generate_random_FO3(size):
             size_other = random.randint(1, size - 1)
             return AND(generate_random_FO3(size_other),
                        generate_random_FO3(size - size_other))
-                      
+
+
 # size parameter must be >= 1
 def generate_all_FO3_formulas(size):
     """ This method generates ALL FO3 expressions with the specified size (depth of expression tree) """
@@ -118,6 +122,7 @@ def generate_all_FO3_formulas(size):
                         for formula2 in generate_all_FO3_formulas(size - size_other):
                             yield AND(formula, formula2)
 
+
 def make_FO3_expression_closed(expression):
     """ This method takes any FO3 expression and makes it closed by applying universal quantifiers (ForAll) to any
      free variables. """
@@ -125,6 +130,7 @@ def make_FO3_expression_closed(expression):
     for variable in expression.free_variables():
         closed_expression = ForAll(variable, closed_expression)
     return closed_expression
+
 
 def random_FO3_tester(attempts, size):
     """ This automated testing method will run the specified number of attempts while counting how many are succesful
@@ -142,6 +148,7 @@ def random_FO3_tester(attempts, size):
             successes += return_value
     print(f'{successes}/{attempts} were successful without timing out! That is {100 * successes / attempts}% accuracy')
     return True
+
 
 def test_with_z3(fo3_expression) -> int:
     """ This method uses z3 to test the equivalence of the orginal expression with the result of our fowards and
@@ -184,10 +191,10 @@ def test_with_z3(fo3_expression) -> int:
         # Here's how to get a finite sort of three elements:
         # S, (a, b, c) = z3.EnumSort('round', ['a','b','c'])
 
+
 if __name__ == "__main__":
     for n in range(1, 25):
         if random_FO3_tester(n, n):
             pass
         else:
             break
-        
