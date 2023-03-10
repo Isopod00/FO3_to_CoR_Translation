@@ -4,7 +4,8 @@
  process using z3! """
 
 import random
-
+import multiprocessing
+from timeit import default_timer
 import z3  # pip install z3-solver
 
 from FO3_Translation_Methods import *
@@ -196,8 +197,8 @@ def test_with_z3(fo3_expression) -> int:
 def look_for_simplification_rules(size):
     fo3_results = open("FO3_Rules.txt", "r+", encoding="utf8")
     cor_results = open("COR_Rules.txt", "r+", encoding="utf8")
-    fo3_rules_found_so_far = fo3_results.readlines()
-    cor_rules_found_so_far = cor_results.readlines()
+    fo3_rules_found_so_far = set(fo3_results.readlines())
+    cor_rules_found_so_far = set(cor_results.readlines())
 
     for first in generate_all_FO3_formulas(size):
         for second_size in range(1, size):
@@ -205,15 +206,14 @@ def look_for_simplification_rules(size):
                 if isinstance(second, Equals) and second.argument1 == second.argument2:
                     second = tt()  # x=x is always True
 
-                s = z3.Solver()
-                s.add(z3.Not(asZ3(first) == asZ3(second)))
-                s.set("timeout", 1000)  # If this returns an error, update the z3 module
-                z3result = s.check()
-                if z3result == z3.unsat:
-                    rule = str(first) + " == " + str(second) + "\n"
-                    if rule not in fo3_rules_found_so_far:
-                        print("Z3 found a new simplification rule:", rule)
-                        fo3_rules_found_so_far.append(rule)
+                rule = str(first) + " == " + str(second) + "\n"
+                if rule not in fo3_rules_found_so_far: # If we've already found the rule, then move on right away
+                    s = z3.Solver()
+                    s.add(z3.Not(asZ3(first) == asZ3(second)))
+                    s.set("timeout", 500)
+                    z3result = s.check()
+                    if z3result == z3.unsat:
+                        fo3_rules_found_so_far.add(rule)
                         fo3_results.write(rule)
 
                         cor_first = str(final_translation(first, 'x', 'y'))
@@ -221,13 +221,27 @@ def look_for_simplification_rules(size):
                         if cor_first != cor_second:
                             cor_rule = cor_first + " == " + cor_second + "\n"
                             if cor_rule not in cor_rules_found_so_far and "None" not in cor_rule:
-                                cor_rules_found_so_far.append(cor_rule)
+                                cor_rules_found_so_far.add(cor_rule)
                                 cor_results.write(cor_rule)
 
     fo3_results.close()
     cor_results.close()
 
 
+# Allows for searching multiple sizes at once using multiple CPU cores
+class Process(multiprocessing.Process):
+    def __init__(self, size):
+        super(Process, self).__init__()
+        self.size = size        
+    def run(self):
+        print(f"A search for simplification rules of size {self.size} has started")
+        start = default_timer()
+        look_for_simplification_rules(self.size)
+        print(f"The search for simplification rules of size {self.size} finished in {default_timer() - start} seconds!")
+        
+
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    look_for_simplification_rules(2)
+    Process(2).start()
+    Process(3).start()
+    Process(4).start()
