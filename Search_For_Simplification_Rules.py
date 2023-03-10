@@ -83,5 +83,7 @@ def compute_chunk(formulas, size):
         
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
+    look_for_simplification_rules(1, 6)
     look_for_simplification_rules(2, 6)
+    look_for_simplification_rules(3, 6)
     
