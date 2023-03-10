@@ -4,6 +4,7 @@
 import multiprocessing
 from timeit import default_timer
 import z3  # pip install z3-solver
+import numpy  # pip install numpy
 
 import Testing
 from FO3_Expressions import *
@@ -20,12 +21,12 @@ def look_for_simplification_rules(size, cpu_cores):
     cor_rules_found_so_far = set(cor_results.readlines())
     
     formulas = list(Testing.generate_all_FO3_formulas(size))
-    length = len(formulas)
+    equal_chunks = numpy.array_split(numpy.array(formulas), cpu_cores)  # equal_chunks will be a list of numpy arrays
 
     with multiprocessing.Pool(cpu_cores) as pool:
         results = []
-        for start_index in range(0, length, (length//cpu_cores)):
-            results.append(pool.apply_async(compute_chunk, args=(formulas[start_index:(start_index+(length//cpu_cores))], size)))
+        for array in equal_chunks:
+            results.append(pool.apply_async(compute_chunk, args=(list(array), size)))  # convert the numpy arrays to lists
         pool.close()
         pool.join()
 
