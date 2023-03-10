@@ -59,31 +59,29 @@ def compute_chunk(formulas, size):
     cor_result = set()
     
     for first in formulas:
-        for second_size in range(1, size):
-            for second in Testing.generate_all_FO3_formulas(second_size):
-                if isinstance(second, Equals) and second.argument1 == second.argument2:
-                    second = tt()  # x=x is always True
+        for second in Testing.generate_all_FO3_formulas(size - 1):
+            if isinstance(second, Equals) and second.argument1 == second.argument2:
+                second = tt()  # x=x is always True
 
-                rule = str(first) + " == " + str(second) + "\n"
-                s = z3.Solver()
-                s.add(z3.Not(Testing.asZ3(first) == Testing.asZ3(second)))
-                s.set("timeout", 500)
-                z3result = s.check()
-                if z3result == z3.unsat:
-                    fo3_result.add(rule)
-                    
-                    cor_first = str(FO3_Translation_Methods.final_translation(first, 'x', 'y'))
-                    cor_second = str(FO3_Translation_Methods.final_translation(second, 'x', 'y'))
-                    if cor_first != cor_second:
-                        cor_rule = cor_first + " == " + cor_second + "\n"
-                        if "None" not in cor_rule:
-                            cor_result.add(cor_rule)
+            rule = str(first) + " == " + str(second) + "\n"
+            s = z3.Solver()
+            s.add(z3.Not(Testing.asZ3(first) == Testing.asZ3(second)))
+            s.set("timeout", 500)
+            z3result = s.check()
+            if z3result == z3.unsat:
+                fo3_result.add(rule)
+                
+                cor_first = str(FO3_Translation_Methods.final_translation(first, 'x', 'y'))
+                cor_second = str(FO3_Translation_Methods.final_translation(second, 'x', 'y'))
+                if cor_first != cor_second:
+                    cor_rule = cor_first + " == " + cor_second + "\n"
+                    if "None" not in cor_rule:
+                        cor_result.add(cor_rule)
             
     return fo3_result, cor_result
         
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    look_for_simplification_rules(1, 6)
     look_for_simplification_rules(2, 6)
     look_for_simplification_rules(3, 6)
     
