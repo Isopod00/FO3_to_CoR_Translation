@@ -123,58 +123,6 @@ def generate_all_FO3_formulas(size):
                             yield AND(formula, formula2)
 
 
-# size parameter must be >= 1
-def generate_filtered_FO3_formulas(size):
-    """ This method generates all FO3 expressions with the specified size that are unique with renaming """
-    if size == 1:
-        # Restrict the choices that can be made to allow our expression to grow to the specified size
-        choices = range(0, 4)
-    elif size == 2:
-        choices = range(4, 7)
-    else:
-        choices = range(4, 8)
-    for choice in choices:
-        match choice:
-            case 0:
-                yield tt()
-            case 1:
-                yield ff()
-            case 2:
-                yield Equals('x', 'y')
-                yield Equals('y', 'x')
-                yield Equals('y', 'z')
-                yield Equals('z', 'y')
-                yield Equals('x', 'x')
-            case 3:
-                for letter_choice in ['A']:
-                    yield Predicate(letter_choice, 'x', 'y')
-                    yield Predicate(letter_choice, 'y', 'x')
-                    yield Predicate(letter_choice, 'y', 'z')
-                    yield Predicate(letter_choice, 'z', 'y')
-                    yield Predicate(letter_choice, 'x', 'x')
-            case 4:
-                for var in ['x', 'y', 'z']:
-                    for formula in generate_filtered_FO3_formulas(size - 1):
-                        yield ForAll(var, formula)
-            case 5:
-                for var in ['x', 'y', 'z']:
-                    for formula in generate_filtered_FO3_formulas(size - 1):
-                        yield ThereExists(var, formula)
-            case 6:
-                for formula in generate_filtered_FO3_formulas(size - 1):
-                    yield Negation(formula)
-            case 7:
-                for size_other in range(1, size):
-                    for formula in generate_filtered_FO3_formulas(size_other):
-                        for formula2 in generate_filtered_FO3_formulas(size - size_other):
-                            yield OR(formula, formula2)
-            case 8:
-                for size_other in range(1, size):
-                    for formula in generate_filtered_FO3_formulas(size_other):
-                        for formula2 in generate_filtered_FO3_formulas(size - size_other):
-                            yield AND(formula, formula2)
-
-
 def make_FO3_expression_closed(expression):
     """ This method takes any FO3 expression and makes it closed by applying universal quantifiers (ForAll) to any
      free variables. """
