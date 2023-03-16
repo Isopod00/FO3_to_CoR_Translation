@@ -111,7 +111,9 @@ def test_typed_with_z3(fo3_expression) -> int:
     print("\nOriginal Expression:   ", fo3_expression)  # Original expression
     nnf = negation_normal(fo3_expression)
     print("Negation Normal Form:  ", nnf)  # Negation Normal Form
-    good = FO3_Translation_Methods.T_Good_Dash(nnf)
+    first_nice = FO3_Translation_Methods.T_Nice(nnf)
+    print("Nice FO3 Translation:", first_nice)
+    good = FO3_Translation_Methods.T_Good_Dash(first_nice)
     print("Good FO3 Translation:  ", good)  # Good FO3 Term
     nice = FO3_Translation_Methods.T_Nice(good)
     print("Nice FO3 Translation:  ", nice)  # Nice FO3 Term
