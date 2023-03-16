@@ -89,7 +89,7 @@ class Typed_Complement:
 
 
 class Typed_Union:
-    """This class describes the union between two typed relations arg1 and arg2 """
+    """ This class describes the union between two typed relations arg1 and arg2 """
 
     def __init__(self, arg1, arg2):
         if arg1.type() != arg2.type():  # Type checking
@@ -109,7 +109,7 @@ class Typed_Union:
 
 
 class Typed_Intersection:
-    """This class describes the intersection between two typed relations arg1 and arg2 """
+    """ This class describes the intersection between two typed relations arg1 and arg2 """
 
     def __init__(self, arg1, arg2):
         if arg1.type() != arg2.type():  # Type checking

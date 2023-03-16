@@ -79,6 +79,7 @@ def is_normal_enough(formula):
     v = formula.depends_on()
     if 'y' in v and 'x' not in v: return False
     if 'z' in v and 'y' not in v: return False
+    # TODO: Filter out formulas that are simplifiable (check the rules we currently know)
     return True
 
 

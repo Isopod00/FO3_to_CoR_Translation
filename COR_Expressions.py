@@ -63,7 +63,7 @@ class Complement:
 
 
 class Union:
-    """This class describes the union between two relations arg1 and arg2, which can be any relations """
+    """ This class describes the union between two relations arg1 and arg2, which can be any relations """
 
     def __init__(self, arg1, arg2):
         self.argument1 = arg1
@@ -77,7 +77,7 @@ class Union:
 
 
 class Intersection:
-    """This class describes the intersection between two relations arg1 and arg2, which can be any relations """
+    """ This class describes the intersection between two relations arg1 and arg2, which can be any relations """
 
     def __init__(self, arg1, arg2):
         self.argument1 = arg1

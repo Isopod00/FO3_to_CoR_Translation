@@ -103,7 +103,7 @@ class ThereExists(Term):
 
 
 class AND(Term):
-    """This class describes a logical AND statement with two arguments, the arguments can be any logical expressions"""
+    """ This class describes a logical AND statement with two arguments, the arguments can be any logical expressions"""
 
     def __init__(self, arg1, arg2):
         self.argument1 = arg1
@@ -131,7 +131,7 @@ class AND(Term):
 
 
 class OR(Term):
-    """This class describes a logical OR statement with two arguments, the arguments can be any logical expressions"""
+    """ This class describes a logical OR statement with two arguments, the arguments can be any logical expressions"""
 
     def __init__(self, arg1, arg2):
         self.argument1 = arg1
