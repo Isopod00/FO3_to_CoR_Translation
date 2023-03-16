@@ -24,7 +24,7 @@ def look_for_simplification_rules(size, cpu_cores):
     cor_rules_found_so_far = set(cor_results.readlines())
 
     # Generate ALL formulas of the specified size and split this list into equally-sized chunks
-    formulas = list(Testing.generate_all_FO3_formulas(size))
+    formulas = list(Testing.generate_all_FO3_formulas_filtered(size))
     equal_chunks = numpy.array_split(numpy.array(formulas), cpu_cores)  # equal_chunks will be a list of numpy arrays
 
     # Create our pool of tasks
@@ -65,7 +65,7 @@ def compute_chunk(formulas, size):
     cor_result = set()
 
     for first in formulas:
-        for second in Testing.generate_all_FO3_formulas(size - 1):
+        for second in Testing.generate_all_FO3_formulas_filtered(size - 1):
             if isinstance(second, Equals) and second.argument1 == second.argument2:
                 second = tt()  # x=x is always True
 

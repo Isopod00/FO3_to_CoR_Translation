@@ -75,6 +75,17 @@ def generate_random_FO3(size):
                        generate_random_FO3(size - size_other))
 
 
+def is_normal_enough(formula):
+    v = formula.depends_on()
+    if 'y' in v and 'x' not in v: return False
+    if 'z' in v and 'y' not in v: return False
+    return True
+
+
+def generate_all_FO3_formulas_filtered(size):
+    return [formula for formula in generate_all_FO3_formulas(size) if is_normal_enough(formula)]
+
+
 # size parameter must be >= 1
 def generate_all_FO3_formulas(size):
     """ This method generates ALL FO3 expressions with the specified size (depth of expression tree) """
