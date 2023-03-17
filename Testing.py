@@ -143,7 +143,7 @@ def generate_all_COR_formulas(size):
         # Restrict the choices that can be made to allow our expression to grow to the specified size
         choices = range(0, 4)
     elif size == 2:
-        choices = range(4, 7)
+        choices = range(4, 6)
     else:
         choices = range(4, 9)
     for choice in choices:
@@ -158,30 +158,30 @@ def generate_all_COR_formulas(size):
                 for letter_choice in ['A', 'B', 'C']:
                     yield Relation(letter_choice)
             case 4:
-                for size_other in range(1, size):
-                    for formula in generate_all_CoR_formulas(size_other):
-                        for formula2 in generate_all_CoR_formulas(size - size_other):
-                            yield Dagger(formula, formula2)
-            case 5:
-                for size_other in range(1, size):
-                    for formula in generate_all_CoR_formulas(size_other):
-                        for formula2 in generate_all_CoR_formulas(size - size_other):
-                            yield Composition(formula, formula2)
-            case 6:
-                for formula in generate_all_CoR_formulas(size - 1):
+                for formula in generate_all_COR_formulas(size - 1):
                     yield Complement(formula)
-            case 7:
-                for formula in generate_all_CoR_formulas(size - 1):
+            case 5:
+                for formula in generate_all_COR_formulas(size - 1):
                     yield Converse(formula)
+            case 6:
+                for size_other in range(1, size):
+                    for formula in generate_all_COR_formulas(size_other):
+                        for formula2 in generate_all_COR_formulas(size - size_other):
+                            yield Dagger(formula, formula2)
+            case 7:
+                for size_other in range(1, size):
+                    for formula in generate_all_COR_formulas(size_other):
+                        for formula2 in generate_all_COR_formulas(size - size_other):
+                            yield Composition(formula, formula2)
             case 8:
                 for size_other in range(1, size):
-                    for formula in generate_all_CoR_formulas(size_other):
-                        for formula2 in generate_all_CoR_formulas(size - size_other):
+                    for formula in generate_all_COR_formulas(size_other):
+                        for formula2 in generate_all_COR_formulas(size - size_other):
                             yield Union(formula, formula2)
             case 9:
                 for size_other in range(1, size):
-                    for formula in generate_all_CoR_formulas(size_other):
-                        for formula2 in generate_all_CoR_formulas(size - size_other):
+                    for formula in generate_all_COR_formulas(size_other):
+                        for formula2 in generate_all_COR_formulas(size - size_other):
                             yield Intersection(formula, formula2)
 
 

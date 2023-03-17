@@ -13,7 +13,7 @@ from FO3_Expressions import *
 
 
 # Searches for simplification rules for a given size by utilizing the specified number of cpu cores
-def look_for_simplification_rules(size, cpu_cores):
+def look_for_simplification_rules(size, cpu_cores, cor=True):
     print(f"A search for simplification rules of size {size} has started (using {cpu_cores} logical processors)")
     start = default_timer()  # Time how long this takes
 
@@ -24,15 +24,20 @@ def look_for_simplification_rules(size, cpu_cores):
     cor_rules_found_so_far = set(cor_results.readlines())
 
     # Generate ALL formulas of the specified size and split this list into equally-sized chunks
-    formulas = list(Testing.generate_all_FO3_formulas_filtered(size))
+    if cor:
+        formulas = list(Testing.generate_all_COR_formulas(size))
+    else:
+        formulas = list(Testing.generate_all_FO3_formulas_filtered(size))
     equal_chunks = numpy.array_split(numpy.array(formulas), cpu_cores)  # equal_chunks will be a list of numpy arrays
 
     # Create our pool of tasks
     with multiprocessing.Pool(cpu_cores) as pool:
         results = []
         for array in equal_chunks:
-            results.append(
-                pool.apply_async(compute_chunk, args=(list(array), size)))  # convert the numpy arrays to lists
+            if cor:
+                results.append(pool.apply_async(compute_chunk_cor, args=(list(array), size)))  # convert the numpy arrays to lists
+            else:
+                results.append(pool.apply_async(compute_chunk, args=(list(array), size)))  # convert the numpy arrays to lists
         pool.close()
         pool.join()
 
@@ -70,12 +75,12 @@ def compute_chunk(formulas, size):
                 if isinstance(second, Equals) and second.argument1 == second.argument2:
                     second = tt()  # x=x is always True
 
-                rule = str(first) + " == " + str(second) + "\n"
                 s = z3.Solver()
                 s.add(z3.Not(Testing.asZ3(first) == Testing.asZ3(second)))
                 s.set("timeout", 500)
                 z3result = s.check()
                 if z3result == z3.unsat:
+                    rule = str(first) + " == " + str(second) + "\n"
                     fo3_result.add(rule)
 
                     cor_first = str(FO3_Translation_Methods.final_translation(first, 'x', 'y'))
@@ -88,7 +93,31 @@ def compute_chunk(formulas, size):
     return fo3_result, cor_result
 
 
+# Processes one chunk of a list of COR formulas and returns two sets: the FO3 simplification rules found and the COR simplification rules found
+def compute_chunk_cor(formulas, size):
+    fo3_result = set()
+    cor_result = set()
+
+    for first in formulas:
+        for second_size in range(1, size):
+            for second in Testing.generate_all_COR_formulas(second_size):
+
+                first_translated = first.translate('x', 'y')
+                second_translated = second.translate('x', 'y')
+
+                s = z3.Solver()
+                s.add(z3.Not(Testing.asZ3(first_translated) == Testing.asZ3(second_translated)))
+                s.set("timeout", 500)
+                z3result = s.check()
+                if z3result == z3.unsat:
+                    rule = str(first_translated) + " == " + str(second_translated) + "\n"
+                    fo3_result.add(rule)
+                    cor_rule = str(first) + " == " + str(second) + "\n"
+                    cor_result.add(cor_rule)
+
+    return fo3_result, cor_result
+
+
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
     look_for_simplification_rules(2, 6)
-    look_for_simplification_rules(3, 6)

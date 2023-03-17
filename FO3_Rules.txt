@@ -141,3 +141,6 @@
 ¬(x = x) == False
 ¬(y = y) == False
 ¬(z = z) == False
+False == False
+True == True
+y = x == x = y
