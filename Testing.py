@@ -136,6 +136,55 @@ def generate_all_FO3_formulas(size):
                             yield AND(formula, formula2)
 
 
+# size parameter must be >= 1
+def generate_all_COR_formulas(size):
+    """ This method generates ALL COR expressions with the specified size (depth of expression tree) """
+    if size == 1:
+        # Restrict the choices that can be made to allow our expression to grow to the specified size
+        choices = range(0, 4)
+    elif size == 2:
+        choices = range(4, 7)
+    else:
+        choices = range(4, 9)
+    for choice in choices:
+        match choice:
+            case 0:
+                yield UniversalRelation()
+            case 1:
+                yield EmptyRelation()
+            case 2:
+                yield IdentityRelation()
+            case 3:
+                for letter_choice in ['A', 'B', 'C']:
+                    yield Relation(letter_choice)
+            case 4:
+                for size_other in range(1, size):
+                    for formula in generate_all_CoR_formulas(size_other):
+                        for formula2 in generate_all_CoR_formulas(size - size_other):
+                            yield Dagger(formula, formula2)
+            case 5:
+                for size_other in range(1, size):
+                    for formula in generate_all_CoR_formulas(size_other):
+                        for formula2 in generate_all_CoR_formulas(size - size_other):
+                            yield Composition(formula, formula2)
+            case 6:
+                for formula in generate_all_CoR_formulas(size - 1):
+                    yield Complement(formula)
+            case 7:
+                for formula in generate_all_CoR_formulas(size - 1):
+                    yield Converse(formula)
+            case 8:
+                for size_other in range(1, size):
+                    for formula in generate_all_CoR_formulas(size_other):
+                        for formula2 in generate_all_CoR_formulas(size - size_other):
+                            yield Union(formula, formula2)
+            case 9:
+                for size_other in range(1, size):
+                    for formula in generate_all_CoR_formulas(size_other):
+                        for formula2 in generate_all_CoR_formulas(size - size_other):
+                            yield Intersection(formula, formula2)
+
+
 def make_FO3_expression_closed(expression):
     """ This method takes any FO3 expression and makes it closed by applying universal quantifiers (ForAll) to any
      free variables. """
