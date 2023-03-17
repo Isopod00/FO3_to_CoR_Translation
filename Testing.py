@@ -4,6 +4,7 @@
 
 import random
 
+from timeit import default_timer
 import z3  # pip install z3-solver
 
 from FO3_Translation_Methods import *
@@ -204,6 +205,16 @@ def test_with_z3(fo3_expression) -> int:
         # TODO: if Z3 times out, we should try with a finite sort instead,
         # Here's how to get a finite sort of three elements:
         # S, (a, b, c) = z3.EnumSort('round', ['a','b','c'])
+
+
+def translation_speed_test(number, size):
+    file = open("translation_timing_test.txt", "w+", encoding="utf8")
+    start = default_timer()  # Time how long this takes
+    for num in range(number):
+        formula = make_FO3_expression_closed(generate_random_FO3(size))
+        translation = final_translation(T_Nice(T_Good_Dash(T_Nice(negation_normal(formula)))), 'x', 'y')
+        file.write(str(formula) + " -> " + str(translation) + "\n")
+    file.write(f"\nThis large translation test of {number} random size={size} FO3 formulas finished in {default_timer() - start} seconds.")
 
 
 if __name__ == "__main__":
