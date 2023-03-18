@@ -67,11 +67,11 @@ def generate_random_FO3(size):
         case 6:
             return Negation(generate_random_FO3(size - 1))
         case 7:
-            size_other = random.randint(1, size - 1)
+            size_other = random.randint(1, size - 2) # endpoint is included
             return OR(generate_random_FO3(size_other),
                       generate_random_FO3(size - size_other))
         case 8:
-            size_other = random.randint(1, size - 1)
+            size_other = random.randint(1, size - 2) # endpoint is included
             return AND(generate_random_FO3(size_other),
                        generate_random_FO3(size - size_other))
 
@@ -125,12 +125,12 @@ def generate_all_FO3_formulas(size):
                 for formula in generate_all_FO3_formulas(size - 1):
                     yield Negation(formula)
             case 7:
-                for size_other in range(1, size):
+                for size_other in range(1, size-1): # endpoint is excluded
                     for formula in generate_all_FO3_formulas(size_other):
                         for formula2 in generate_all_FO3_formulas(size - size_other):
                             yield OR(formula, formula2)
             case 8:
-                for size_other in range(1, size):
+                for size_other in range(1, size-1): # endpoint is excluded
                     for formula in generate_all_FO3_formulas(size_other):
                         for formula2 in generate_all_FO3_formulas(size - size_other):
                             yield AND(formula, formula2)
@@ -164,22 +164,22 @@ def generate_all_COR_formulas(size):
                 for formula in generate_all_COR_formulas(size - 1):
                     yield Converse(formula)
             case 6:
-                for size_other in range(1, size):
+                for size_other in range(1, size-1): # endpoint is excluded
                     for formula in generate_all_COR_formulas(size_other):
                         for formula2 in generate_all_COR_formulas(size - size_other):
                             yield Dagger(formula, formula2)
             case 7:
-                for size_other in range(1, size):
+                for size_other in range(1, size-1): # endpoint is excluded
                     for formula in generate_all_COR_formulas(size_other):
                         for formula2 in generate_all_COR_formulas(size - size_other):
                             yield Composition(formula, formula2)
             case 8:
-                for size_other in range(1, size):
+                for size_other in range(1, size-1): # endpoint is excluded
                     for formula in generate_all_COR_formulas(size_other):
                         for formula2 in generate_all_COR_formulas(size - size_other):
                             yield Union(formula, formula2)
             case 9:
-                for size_other in range(1, size):
+                for size_other in range(1, size-1): # endpoint is excluded
                     for formula in generate_all_COR_formulas(size_other):
                         for formula2 in generate_all_COR_formulas(size - size_other):
                             yield Intersection(formula, formula2)
