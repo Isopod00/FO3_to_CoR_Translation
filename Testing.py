@@ -6,6 +6,7 @@ import random
 
 from timeit import default_timer
 import z3  # pip install z3-solver
+import pickle # save/load python objects from a file
 
 from FO3_Translation_Methods import *
 
@@ -256,14 +257,25 @@ def test_with_z3(fo3_expression) -> int:
         # S, (a, b, c) = z3.EnumSort('round', ['a','b','c'])
 
 
-def translation_speed_test(number, size):
-    file = open("translation_timing_test.txt", "w+", encoding="utf8")
+def translation_speed_test(number, size, generate_new_terms=False):
+    results = open("translation_speed_test_results.txt", "w+", encoding="utf8")
+    
+    # Generate random FO3 terms and save them to a file
+    if generate_new_terms:
+        list = []
+        for num in range(number):
+            list.append(make_FO3_expression_closed(generate_random_FO3(size)))
+        with open('size_20_fo3_formulas.pickle', 'wb') as file:
+            pickle.dump(list, file, protocol=pickle.HIGHEST_PROTOCOL)
+    
+    # Read FO3 terms from a file and translate them
+    with open('size_20_fo3_formulas.pickle', 'rb') as file:
+        formulas = pickle.load(file)
     start = default_timer()  # Time how long this takes
-    for num in range(number):
-        formula = make_FO3_expression_closed(generate_random_FO3(size))
+    for formula in formulas:
         translation = final_translation(T_Nice(T_Good_Dash(T_Nice(negation_normal(formula)))), 'x', 'y')
-        file.write(str(formula) + " -> " + str(translation) + "\n")
-    file.write(f"\nThis large translation test of {number} random size={size} FO3 formulas finished in {default_timer() - start} seconds.")
+        results.write(str(formula) + " -> " + str(translation) + "\n")
+    results.write(f"\nFinished translation {number} random size={size} FO3 formulas in {default_timer() - start} seconds!")
 
 
 if __name__ == "__main__":
