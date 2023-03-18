@@ -81,12 +81,15 @@ def is_normal_enough(formula):
     v = formula.depends_on()
     if 'y' in v and 'x' not in v: return False
     if 'z' in v and 'y' not in v: return False
-    # TODO: Filter out formulas that are simplifiable (check the rules we currently know)
     return True
 
 
 def generate_all_FO3_formulas_filtered(size):
-    return [formula for formula in generate_all_FO3_formulas(size) if is_normal_enough(formula)]
+    # Load the FO3 rule dictionary from file
+    with open('fo3_dict.pickle', 'rb') as file:
+        fo3_dict = pickle.load(file)
+    known_fo3_rules = set(str(formula) for formula in fo3_dict)
+    return [formula for formula in generate_all_FO3_formulas(size) if is_normal_enough(formula) and str(formula) not in known_fo3_rules]
 
 
 # size parameter must be >= 1
