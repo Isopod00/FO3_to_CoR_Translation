@@ -119,22 +119,18 @@ def test_typed_with_z3(fo3_expression) -> int:
     print("Nice FO3 Translation:  ", nice)  # Nice FO3 Term
     final = typed_final_translation(nice, Typed_Variable('x', "Left"), Typed_Variable('y', "Right"))
     print("\nFinal Translation:   ", final)
-    simplified = fully_simplify_Typed_COR(final)
-    print("Simplify Final Translation:", simplified)
-    back = ForAll(Typed_Variable('a', 'A'), ForAll(Typed_Variable('b', 'B'), simplified.translate('a', 'b')))
-    print("\nTranslate back to FO3:", back)
-    final_result = fully_simplify_FO3(FO3_Translation_Methods.T_Nice(negation_normal(back)))
-    print("Something that should be equivalent to the original:", final_result)
+    back = ForAll(Typed_Variable('a', 'A'), ForAll(Typed_Variable('b', 'B'), final.translate('a', 'b')))
+    print("Something that should be equivalent to the original:", back)
     s = z3.Solver()
-    s.add(z3.Not(typed_asZ3(fo3_expression) == typed_asZ3(final_result)))
+    s.add(z3.Not(typed_asZ3(fo3_expression) == typed_asZ3(back)))
     s.set("timeout", 1000)  # If this returns an error, update the z3 module
     z3result = s.check()
     if z3result == z3.sat:
         print("\nZ3 found a bug! (this is bad!)")
         print(s.model())
         print("\nZ3 lhs: ", typed_asZ3(fo3_expression))
-        print("\nZ3 rhs: ", typed_asZ3(final_result))
-        print("\nZ3 constraint: ", z3.Not(typed_asZ3(fo3_expression) == typed_asZ3(final_result)))
+        print("\nZ3 rhs: ", typed_asZ3(back))
+        print("\nZ3 constraint: ", z3.Not(typed_asZ3(fo3_expression) == typed_asZ3(back)))
         return -1
     elif z3result == z3.unsat:
         print("\nZ3 proved that the round-trip returned something equivalent (this is good!)")

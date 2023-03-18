@@ -304,68 +304,6 @@ def negation_normal(argument):
     return argument
 
 
-def fully_simplify_FO3(expression):
-    """ Fully simplifies an FO3 expression """
-    previous_iteration = expression
-    expression = simplify_FO3(expression)
-    while str(previous_iteration) != str(expression):
-        previous_iteration = expression
-        expression = simplify_FO3(expression)
-    return expression
-
-
-def simplify_FO3(expression):
-    """ Simplifies an FO3 expression """
-    match expression:
-        case Negation(argument=arg):
-            match arg:
-                case tt():
-                    return ff()
-                case ff():
-                    return tt()
-                case _:
-                    return Negation(simplify_FO3(arg))
-        case ForAll(argument=arg, variable=v):
-            match arg:
-                case tt() | ff():
-                    return arg
-                case _:
-                    return ForAll(v, simplify_FO3(arg))
-        case ThereExists(argument=arg, variable=v):
-            match arg:
-                case tt() | ff():
-                    return arg
-                case Equals(argument1=arg1, argument2=arg2) if v == arg1 or v == arg2:
-                    return tt()
-                case _:
-                    return ThereExists(v, simplify_FO3(arg))
-        case OR(argument1=arg1, argument2=arg2):
-            if isinstance(arg1, ff):
-                return simplify_FO3(arg2)
-            elif isinstance(arg2, ff):
-                return simplify_FO3(arg1)
-            elif isinstance(arg1, tt) or isinstance(arg2, tt):
-                return tt()
-            else:
-                return OR(simplify_FO3(arg1), simplify_FO3(arg2))
-        case AND(argument1=arg1, argument2=arg2):
-            if isinstance(arg1, tt):
-                return simplify_FO3(arg2)
-            elif isinstance(arg2, tt):
-                return simplify_FO3(arg1)
-            elif isinstance(arg1, ff) or isinstance(arg2, ff):
-                return ff()
-            else:
-                return AND(simplify_FO3(arg1), simplify_FO3(arg2))
-        case Equals(argument1=arg1, argument2=arg2):
-            if arg1 == arg2:
-                return tt()
-            else:
-                return Equals(arg1, arg2)
-        case _:
-            return expression
-
-
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
     test_expression = Negation(
@@ -375,7 +313,6 @@ if __name__ == "__main__":
 
     print("Original Expression: ", test_expression)  # Original expression
     print("Negation Normal Form:", negation_normal(test_expression))  # Negation Normal Form
-    print("Simplified:          ", fully_simplify_FO3(negation_normal(test_expression)))
 
     print()
     x = Typed_Variable('x', 'Q')
@@ -388,4 +325,3 @@ if __name__ == "__main__":
 
     print("Original Expression: ", test_expression)  # Original expression
     print("Negation Normal Form:", negation_normal(test_expression))  # Negation Normal Form
-    print("Simplified:          ", fully_simplify_FO3(negation_normal(test_expression)))
