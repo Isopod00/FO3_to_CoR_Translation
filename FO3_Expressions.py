@@ -50,6 +50,9 @@ class Negation(Term):
 
     def free_variables(self) -> list:
         return self.argument.free_variables()
+    
+    def size(self) -> int:
+        return 1 + self.argument.size()
 
 
 class ForAll(Term):
@@ -75,6 +78,9 @@ class ForAll(Term):
 
     def free_variables(self) -> list:
         return list_difference(self.argument.free_variables(), [self.variable])
+    
+    def size(self) -> int:
+        return 1 + self.argument.size()
 
 
 class ThereExists(Term):
@@ -100,6 +106,9 @@ class ThereExists(Term):
 
     def free_variables(self) -> list:
         return list_difference(self.argument.free_variables(), [self.variable])
+    
+    def size(self) -> int:
+        return 1 + self.argument.size()
 
 
 class AND(Term):
@@ -128,6 +137,9 @@ class AND(Term):
 
     def free_variables(self) -> list:
         return list_union(self.argument1.free_variables(), self.argument2.free_variables())
+    
+    def size(self) -> int:
+        return 1 + self.argument1.size() + self.argument2.size()
 
 
 class OR(Term):
@@ -156,6 +168,9 @@ class OR(Term):
 
     def free_variables(self) -> list:
         return list_union(self.argument1.free_variables(), self.argument2.free_variables())
+    
+    def size(self) -> int:
+        return 1 + self.argument1.size() + self.argument2.size()
 
 
 class Equals(Term):
@@ -180,6 +195,9 @@ class Equals(Term):
 
     def free_variables(self) -> list:
         return [self.argument1, self.argument2] if self.argument1 != self.argument2 else [self.argument1]
+    
+    def size(self) -> int:
+        return 1
 
 
 class tt(Term):
@@ -202,6 +220,9 @@ class tt(Term):
 
     def free_variables(self) -> list:
         return []
+    
+    def size(self) -> int:
+        return 1
 
 
 class ff(Term):
@@ -224,6 +245,9 @@ class ff(Term):
 
     def free_variables(self) -> list:
         return []
+    
+    def size(self) -> int:
+        return 1
 
 
 class Predicate(Term):
@@ -248,6 +272,9 @@ class Predicate(Term):
 
     def free_variables(self) -> list:
         return [self.argument1, self.argument2] if self.argument1 != self.argument2 else [self.argument1]
+    
+    def size(self) -> int:
+        return 1
 
 
 def Implies(a, b) -> OR:

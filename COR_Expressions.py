@@ -13,6 +13,9 @@ class UniversalRelation:
 
     def translate(self, arg1, arg2) -> tt:
         return tt()
+    
+    def size(self) -> int:
+        return 1
 
 
 class EmptyRelation:
@@ -23,6 +26,9 @@ class EmptyRelation:
 
     def translate(self, arg1, arg2) -> ff:
         return ff()
+    
+    def size(self) -> int:
+        return 1
 
 
 class IdentityRelation:
@@ -34,6 +40,9 @@ class IdentityRelation:
     # This is assuming the relations we are discussing contain pairs (arg1, arg2)
     def translate(self, arg1, arg2) -> Equals:
         return Equals(arg1, arg2)
+    
+    def size(self) -> int:
+        return 1
 
 
 class Converse:
@@ -47,6 +56,9 @@ class Converse:
 
     def translate(self, arg1, arg2):
         return self.argument.translate(arg2, arg1)
+    
+    def size(self) -> int:
+        return 1 + self.argument.size()
 
 
 class Complement:
@@ -60,6 +72,9 @@ class Complement:
 
     def translate(self, arg1, arg2) -> Negation:
         return Negation(self.argument.translate(arg1, arg2))
+    
+    def size(self) -> int:
+        return 1 + self.argument.size()
 
 
 class Union:
@@ -74,6 +89,9 @@ class Union:
 
     def translate(self, arg1, arg2) -> OR:
         return make_OR(self.argument1.translate(arg1, arg2), self.argument2.translate(arg1, arg2))
+    
+    def size(self) -> int:
+        return 1 + self.argument1.size() + self.argument2.size()
 
 
 class Intersection:
@@ -88,6 +106,9 @@ class Intersection:
 
     def translate(self, arg1, arg2) -> AND:
         return make_AND(self.argument1.translate(arg1, arg2), self.argument2.translate(arg1, arg2))
+    
+    def size(self) -> int:
+        return 1 + self.argument1.size() + self.argument2.size()
 
 
 class Composition:
@@ -106,6 +127,9 @@ class Composition:
         newvar = fresh.pop()
         return ThereExists(newvar,
                            make_AND(self.argument1.translate(arg1, newvar), self.argument2.translate(newvar, arg2)))
+        
+    def size(self) -> int:
+        return 1 + self.argument1.size() + self.argument2.size()
 
 
 class Dagger:
@@ -123,6 +147,9 @@ class Dagger:
         fresh = [var for var in ['x', 'y', 'z'] if var not in [arg1, arg2]]
         newvar = fresh.pop()
         return ForAll(newvar, make_OR(self.argument1.translate(arg1, newvar), self.argument2.translate(newvar, arg2)))
+    
+    def size(self) -> int:
+        return 1 + self.argument1.size() + self.argument2.size()
 
 
 class Relation:
@@ -137,6 +164,9 @@ class Relation:
     # This is assuming the relations we are discussing contain pairs (arg1, arg2)
     def translate(self, arg1, arg2) -> Predicate:
         return Predicate(self.letter, arg1, arg2)
+    
+    def size(self) -> int:
+        return 1
 
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)

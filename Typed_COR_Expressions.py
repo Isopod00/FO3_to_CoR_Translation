@@ -20,6 +20,9 @@ class Typed_UniversalRelation:
 
     def type(self) -> list:
         return [self.set1, self.set2]
+    
+    def size(self) -> int:
+        return 1
 
 
 class Typed_EmptyRelation:
@@ -37,6 +40,9 @@ class Typed_EmptyRelation:
 
     def type(self) -> list:
         return [self.set1, self.set2]
+    
+    def size(self) -> int:
+        return 1
 
 
 class Typed_IdentityRelation:
@@ -54,6 +60,9 @@ class Typed_IdentityRelation:
 
     def type(self) -> list:
         return [self.set1, self.set2]
+    
+    def size(self) -> int:
+        return 1
 
 
 class Typed_Converse:
@@ -70,6 +79,9 @@ class Typed_Converse:
 
     def translate(self, arg1, arg2):
         return self.argument.translate(arg2, arg1)
+    
+    def size(self) -> int:
+        return 1 + self.argument.size()
 
 
 class Typed_Complement:
@@ -86,6 +98,9 @@ class Typed_Complement:
 
     def type(self) -> list:
         return self.argument.type()
+    
+    def size(self) -> int:
+        return 1 + self.argument.size()
 
 
 class Typed_Union:
@@ -106,6 +121,9 @@ class Typed_Union:
 
     def type(self) -> list:
         return self.argument1.type()
+    
+    def size(self) -> int:
+        return 1 + self.argument1.size() + self.argument2.size()
 
 
 class Typed_Intersection:
@@ -126,6 +144,9 @@ class Typed_Intersection:
 
     def type(self) -> list:
         return self.argument1.type()
+    
+    def size(self) -> int:
+        return 1 + self.argument1.size() + self.argument2.size()
 
 
 class Typed_Composition:
@@ -150,6 +171,9 @@ class Typed_Composition:
         newvar = fresh_var.pop()
         return ThereExists(Typed_Variable(newvar, newset), make_AND(self.argument1.translate(arg1, newvar),
                                                                     self.argument2.translate(newvar, arg2)))
+        
+    def size(self) -> int:
+        return 1 + self.argument1.size() + self.argument2.size()
 
 
 class Typed_Dagger:
@@ -174,6 +198,9 @@ class Typed_Dagger:
         newvar = fresh_var.pop()
         return ForAll(Typed_Variable(newvar, newset),
                       make_OR(self.argument1.translate(arg1, newvar), self.argument2.translate(newvar, arg2)))
+        
+    def size(self) -> int:
+        return 1 + self.argument1.size() + self.argument2.size()
 
 
 class Typed_Relation:
@@ -193,6 +220,9 @@ class Typed_Relation:
 
     def type(self) -> list:
         return [self.set1, self.set2]
+    
+    def size(self) -> int:
+        return 1
 
 
 def make_typed_Composition(arg1, arg2):

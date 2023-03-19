@@ -99,10 +99,11 @@ def compute_chunk(formulas, size, timeout=3600):
 
                     cor_first = FO3_Translation_Methods.final_translation(first, 'x', 'y')
                     cor_second = FO3_Translation_Methods.final_translation(second, 'x', 'y')
-                    first_string = str(cor_first)
-                    second_string = str(cor_second)
-                    if "None" not in first_string and "None" not in second_string and first_string != second_string:
-                        cor_result.add((cor_first, cor_second))
+                    try:
+                        if cor_first.size() > cor_second.size():
+                            cor_result.add((cor_first, cor_second))
+                    except AttributeError: # This means the original FO3 formula wasn't closed
+                        pass
 
     return fo3_result, cor_result
 
@@ -136,7 +137,7 @@ def compute_chunk_cor(formulas, size, timeout=3600):
                 z3result = s.check()
                 if z3result == z3.unsat:
                     cor_result.add((first, second))
-                    if str(first_translated) != str(second_translated):
+                    if first_translated.size() > second_translated.size():
                         fo3_result.add((first_translated, second_translated))
                     
 
@@ -169,5 +170,5 @@ def print_rule_dictionaries(write_to_txt_file=False):
 if __name__ == "__main__":
     look_for_simplification_rules(2, 6)
     look_for_simplification_rules(3, 6)
-    look_for_simplification_rules(4, 6, timeout=60)
+    look_for_simplification_rules(4, 6, timeout=10)
     print_rule_dictionaries(True)
