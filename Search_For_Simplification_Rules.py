@@ -14,7 +14,7 @@ from FO3_Expressions import *
 
 
 # Searches for simplification rules for a given size by utilizing the specified number of cpu cores
-def look_for_simplification_rules(size, cpu_cores, cor=True):
+def look_for_simplification_rules(size, cpu_cores, timeout=3600, cor=True):
     print(f"A search for simplification rules of size {size} has started (using {cpu_cores} logical processors)")
     start = default_timer()  # Time how long this takes
 
@@ -40,9 +40,9 @@ def look_for_simplification_rules(size, cpu_cores, cor=True):
         results = []
         for array in equal_chunks:
             if cor:
-                results.append(pool.apply_async(compute_chunk_cor, args=(list(array), size)))  # convert the numpy arrays to lists
+                results.append(pool.apply_async(compute_chunk_cor, args=(list(array), size, timeout)))  # convert the numpy arrays to lists
             else:
-                results.append(pool.apply_async(compute_chunk, args=(list(array), size)))  # convert the numpy arrays to lists
+                results.append(pool.apply_async(compute_chunk, args=(list(array), size, timeout)))  # convert the numpy arrays to lists
         pool.close()
         pool.join()
 
@@ -71,9 +71,11 @@ def look_for_simplification_rules(size, cpu_cores, cor=True):
 
 
 # Processes one chunk of a list of FO3 formulas and returns two sets: the FO3 simplification rules found and the COR simplification rules found
-def compute_chunk(formulas, size):
+def compute_chunk(formulas, size, timeout=3600):
     fo3_result = set()
     cor_result = set()
+    
+    start = default_timer()
     
     # Load the rule dictionary from file
     with open('fo3_dict.pickle', 'rb') as file:
@@ -83,6 +85,10 @@ def compute_chunk(formulas, size):
     for first in formulas:
         for second_size in range(1, size):
             for second in [formula for formula in Testing.generate_all_FO3_formulas_filtered(second_size) if str(formula) not in known_fo3_rules]:
+                
+                # Return what we've found if we've been searching for longer than the timeout
+                if default_timer() - start >= timeout:
+                    return fo3_result, cor_result
 
                 s = z3.Solver()
                 s.add(z3.Not(Testing.asZ3(first) == Testing.asZ3(second)))
@@ -102,9 +108,11 @@ def compute_chunk(formulas, size):
 
 
 # Processes one chunk of a list of COR formulas and returns two sets: the FO3 simplification rules found and the COR simplification rules found
-def compute_chunk_cor(formulas, size):
+def compute_chunk_cor(formulas, size, timeout=3600):
     fo3_result = set()
     cor_result = set()
+    
+    start = default_timer()
     
     # Load the rule dictionary from file
     with open('fo3_dict.pickle', 'rb') as file:
@@ -114,6 +122,10 @@ def compute_chunk_cor(formulas, size):
     for first in formulas:
         for second_size in range(1, size):
             for second in [formula for formula in Testing.generate_all_COR_formulas(second_size) if str(formula) not in known_cor_rules]:
+                
+                # Return what we've found if we've been searching for longer than the timeout
+                if default_timer() - start >= timeout:
+                    return fo3_result, cor_result
 
                 first_translated = first.translate('x', 'y')
                 second_translated = second.translate('x', 'y')
@@ -157,5 +169,5 @@ def print_rule_dictionaries(write_to_txt_file=False):
 if __name__ == "__main__":
     look_for_simplification_rules(2, 6)
     look_for_simplification_rules(3, 6)
-    look_for_simplification_rules(4, 6)
+    look_for_simplification_rules(4, 6, timeout=60)
     print_rule_dictionaries(True)
