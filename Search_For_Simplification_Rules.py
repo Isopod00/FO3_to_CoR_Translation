@@ -74,7 +74,6 @@ def look_for_simplification_rules(size, cpu_cores, timeout=3600, cor=True):
 # Processes one chunk of a list of FO3 formulas and returns two sets: the FO3 simplification rules found and the COR simplification rules found
 def compute_chunk(formulas, size, timeout=3600):
     fo3_result = set()
-    cor_result = set()
     
     start = default_timer()
     
@@ -89,7 +88,7 @@ def compute_chunk(formulas, size, timeout=3600):
                 
                 # Return what we've found if we've been searching for longer than the timeout
                 if default_timer() - start >= timeout:
-                    return fo3_result, cor_result
+                    return fo3_result, set()
 
                 s = z3.Solver()
                 s.add(z3.Not(Testing.asZ3(first) == Testing.asZ3(second)))
@@ -103,7 +102,6 @@ def compute_chunk(formulas, size, timeout=3600):
 
 # Processes one chunk of a list of COR formulas and returns two sets: the FO3 simplification rules found and the COR simplification rules found
 def compute_chunk_cor(formulas, size, timeout=3600):
-    fo3_result = set()
     cor_result = set()
     
     start = default_timer()
@@ -119,7 +117,7 @@ def compute_chunk_cor(formulas, size, timeout=3600):
                 
                 # Return what we've found if we've been searching for longer than the timeout
                 if default_timer() - start >= timeout:
-                    return fo3_result, cor_result
+                    return set(), cor_result
 
                 first_translated = first.translate('x', 'y')
                 second_translated = second.translate('x', 'y')
@@ -228,8 +226,8 @@ def generate_code_from_cor_rules():
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    #look_for_simplification_rules(2, 6)
-    #look_for_simplification_rules(3, 6)
+    look_for_simplification_rules(2, 6)
+    look_for_simplification_rules(3, 6)
     #look_for_simplification_rules(4, 6, timeout=10)
     #print_rule_dictionaries(True)
     generate_code_from_cor_rules()
