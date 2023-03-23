@@ -184,10 +184,10 @@ def generate_code_from_cor_rules():
     python_code = open("Simplify.py", "w+", encoding="utf_8")
     python_code.write("import COR_Expressions" + "\n")
     python_code.write("def simplify(expression):" + "\n\t")
-    python_code.write("match expression:")
     for first in cor_dict:
         second = cor_dict[first]
-        python_code.write(f'\n\t\t# {first} = {second}')
+        python_code.write(f'\n\t# {first} = {second}')
+        python_code.write("\n\tmatch expression:")
         python_code.write(generate_helper(first, "expression", "", "return " + second.object_representation(), 2))
     python_code.write("\n\t\tcase _:\n\t\t\treturn expression") # Case for if the expression cannot be simplified
     # Close the file when done
@@ -196,8 +196,8 @@ def generate_code_from_cor_rules():
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    look_for_simplification_rules(2, 6)
-    look_for_simplification_rules(3, 6)
-    look_for_simplification_rules(4, 6)
-    print_rule_dictionary(True)
+    # look_for_simplification_rules(2, 6)
+    # look_for_simplification_rules(3, 6)
+    # look_for_simplification_rules(4, 6)
+    # print_rule_dictionary(True)
     generate_code_from_cor_rules()
