@@ -25,7 +25,7 @@ def look_for_simplification_rules(size, cpu_cores, timeout=3600):
     known_cor_rules = set(str(formula) for formula in cor_dict)
 
     # Generate ALL formulas of the specified size and split this list into equally-sized chunks
-    formulas = [formula for formula in list(Testing.generate_all_COR_formulas(size)) if str(formula) not in known_cor_rules]
+    formulas = [formula for formula in list(Testing.generate_all_COR_formulas(size)) if not is_already_simplifiable(formula, known_cor_rules)]
     print(f"Searching {len(formulas)} formulas of this size.")
     equal_chunks = numpy.array_split(numpy.array(formulas), cpu_cores)  # equal_chunks will be a list of numpy arrays
 
@@ -42,16 +42,40 @@ def look_for_simplification_rules(size, cpu_cores, timeout=3600):
     for result in results:
         final_cor_result = final_cor_result.union(result.get())
 
-    # Add the final answers to the rule dictionaries
+    # Add the final answers to the rule dictionary
     for rule in final_cor_result:
         if str(rule[0]) not in known_cor_rules:
             cor_dict[rule[0]] = rule[1]
         
-    # Save the rule dictionaries to files
+    # Save the rule dictionary to file
     with open('cor_dict.pickle', 'wb') as file:
         pickle.dump(cor_dict, file, protocol=pickle.HIGHEST_PROTOCOL)
 
     print(f"The search for simplification rules of size {size} finished in {default_timer() - start} seconds!")
+
+
+def is_already_simplifiable(expression, known_rules):
+    match expression:
+        case COR_Expressions.Relation(letter=l):
+            return False
+        case COR_Expressions.UniversalRelation():
+            return False
+        case COR_Expressions.EmptyRelation():
+            return False
+        case COR_Expressions.IdentityRelation():
+            return False
+        case COR_Expressions.Complement(argument=arg):
+            return str(expression) in known_rules or is_already_simplifiable(arg, known_rules)
+        case COR_Expressions.Converse(argument=arg):
+            return str(expression) in known_rules or is_already_simplifiable(arg, known_rules)
+        case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+            return str(expression) in known_rules or is_already_simplifiable(arg1, known_rules) or is_already_simplifiable(arg2, known_rules)
+        case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+            return str(expression) in known_rules or is_already_simplifiable(arg1, known_rules) or is_already_simplifiable(arg2, known_rules)
+        case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+            return str(expression) in known_rules or is_already_simplifiable(arg1, known_rules) or is_already_simplifiable(arg2, known_rules)
+        case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+            return str(expression) in known_rules or is_already_simplifiable(arg1, known_rules) or is_already_simplifiable(arg2, known_rules)
 
 
 # Processes one chunk of a list of formulas and returns a set of the COR simplification rules found
@@ -67,7 +91,7 @@ def compute_chunk(formulas, size, timeout=3600):
 
     for first in formulas:
         for second_size in range(1, size):
-            for second in [formula for formula in Testing.generate_all_COR_formulas(second_size) if str(formula) not in known_cor_rules]:
+            for second in [formula for formula in Testing.generate_all_COR_formulas(second_size) if not is_already_simplifiable(formula, known_cor_rules)]:
                 
                 # Return what we've found if we've been searching for longer than the timeout
                 if default_timer() - start >= timeout:
@@ -86,7 +110,7 @@ def compute_chunk(formulas, size, timeout=3600):
     return cor_result
 
 
-def print_rule_dictionaries(write_to_txt_file=False):
+def print_rule_dictionary(write_to_txt_file=False):
     # Load the rule dictionary from file
     with open('cor_dict.pickle', 'rb') as file:
         cor_dict = pickle.load(file)
@@ -174,7 +198,6 @@ def generate_code_from_cor_rules():
 if __name__ == "__main__":
     look_for_simplification_rules(2, 6)
     look_for_simplification_rules(3, 6)
-    #look_for_simplification_rules(4, 6, timeout=10)
-    print_rule_dictionaries(True)
+    look_for_simplification_rules(4, 6)
+    print_rule_dictionary(True)
     generate_code_from_cor_rules()
-
