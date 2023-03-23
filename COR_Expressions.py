@@ -16,6 +16,9 @@ class UniversalRelation:
     
     def size(self) -> int:
         return 1
+    
+    def object_representation(self) -> str:
+        return "COR_Expressions.UniversalRelation()"
 
 
 class EmptyRelation:
@@ -29,6 +32,9 @@ class EmptyRelation:
     
     def size(self) -> int:
         return 1
+    
+    def object_representation(self) -> str:
+        return "COR_Expressions.EmptyRelation()"
 
 
 class IdentityRelation:
@@ -43,6 +49,9 @@ class IdentityRelation:
     
     def size(self) -> int:
         return 1
+    
+    def object_representation(self) -> str:
+        return "COR_Expressions.IdentityRelation()"
 
 
 class Converse:
@@ -59,6 +68,9 @@ class Converse:
     
     def size(self) -> int:
         return 1 + self.argument.size()
+    
+    def object_representation(self) -> str:
+        return f"COR_Expressions.Converse({self.argument.object_representation()})"
 
 
 class Complement:
@@ -75,6 +87,9 @@ class Complement:
     
     def size(self) -> int:
         return 1 + self.argument.size()
+    
+    def object_representation(self) -> str:
+        return f"COR_Expressions.Complement({self.argument.object_representation()})"
 
 
 class Union:
@@ -92,6 +107,9 @@ class Union:
     
     def size(self) -> int:
         return 1 + self.argument1.size() + self.argument2.size()
+    
+    def object_representation(self) -> str:
+        return f"COR_Expressions.Union({self.argument1.object_representation()}, {self.argument2.object_representation()})"
 
 
 class Intersection:
@@ -109,6 +127,9 @@ class Intersection:
     
     def size(self) -> int:
         return 1 + self.argument1.size() + self.argument2.size()
+    
+    def object_representation(self) -> str:
+        return f"COR_Expressions.Intersection({self.argument1.object_representation()}, {self.argument2.object_representation()})"
 
 
 class Composition:
@@ -130,6 +151,9 @@ class Composition:
         
     def size(self) -> int:
         return 1 + self.argument1.size() + self.argument2.size()
+    
+    def object_representation(self) -> str:
+        return f"COR_Expressions.Composition({self.argument1.object_representation()}, {self.argument2.object_representation()})"
 
 
 class Dagger:
@@ -150,6 +174,9 @@ class Dagger:
     
     def size(self) -> int:
         return 1 + self.argument1.size() + self.argument2.size()
+    
+    def object_representation(self) -> str:
+        return f"COR_Expressions.Dagger({self.argument1.object_representation()}, {self.argument2.object_representation()})"
 
 
 class Relation:
@@ -167,6 +194,9 @@ class Relation:
     
     def size(self) -> int:
         return 1
+    
+    def object_representation(self) -> str:
+        return f"{self.letter}"
 
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)

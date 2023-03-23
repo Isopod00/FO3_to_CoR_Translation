@@ -11,6 +11,7 @@ import pickle # save/load python objects from a file
 import FO3_Translation_Methods
 import Testing
 from FO3_Expressions import *
+import COR_Expressions
 
 
 # Searches for simplification rules for a given size by utilizing the specified number of cpu cores
@@ -97,15 +98,7 @@ def compute_chunk(formulas, size, timeout=3600):
                 if z3result == z3.unsat:
                     fo3_result.add((first, second))
 
-                    cor_first = FO3_Translation_Methods.final_translation(first, 'x', 'y')
-                    cor_second = FO3_Translation_Methods.final_translation(second, 'x', 'y')
-                    try:
-                        if cor_first.size() > cor_second.size():
-                            cor_result.add((cor_first, cor_second))
-                    except AttributeError: # This means the original FO3 formula wasn't closed
-                        pass
-
-    return fo3_result, cor_result
+    return fo3_result, set()
 
 
 # Processes one chunk of a list of COR formulas and returns two sets: the FO3 simplification rules found and the COR simplification rules found
@@ -137,11 +130,8 @@ def compute_chunk_cor(formulas, size, timeout=3600):
                 z3result = s.check()
                 if z3result == z3.unsat:
                     cor_result.add((first, second))
-                    if first_translated.size() > second_translated.size():
-                        fo3_result.add((first_translated, second_translated))
-                    
 
-    return fo3_result, cor_result
+    return set(), cor_result
 
 
 def print_rule_dictionaries(write_to_txt_file=False):
@@ -165,10 +155,82 @@ def print_rule_dictionaries(write_to_txt_file=False):
         fo3_rules = open("FO3_Rules.txt", "w+", encoding="utf_8")
         for key in fo3_dict:
             fo3_rules.write(str(key) + " -> " + str(fo3_dict[key]) + "\n")
+            
+            
+def add_tabs_to_string(string, tab_level):
+    return ("\n" + ("\t" * tab_level) + string)
+            
+            
+def generate_helper(first, me, accumulator, returnval, tab_level) -> str:
+    """ Creates Python code for a single cor rule and returns it as a string """
+    match first:
+        case COR_Expressions.Relation(letter=l):
+            accumulator += add_tabs_to_string(f"case _:", tab_level)
+            accumulator += add_tabs_to_string(f"{l} = {me}", tab_level+1)
+            return accumulator + add_tabs_to_string(returnval, tab_level+1)
+        case COR_Expressions.UniversalRelation():
+            accumulator += add_tabs_to_string("case COR_Expressions.UniversalRelation():", tab_level)
+            return accumulator + add_tabs_to_string(returnval, tab_level+1)
+        case COR_Expressions.EmptyRelation():
+            accumulator += add_tabs_to_string("case COR_Expressions.EmptyRelation():", tab_level)
+            return accumulator + add_tabs_to_string(returnval, tab_level+1)
+        case COR_Expressions.IdentityRelation():
+            accumulator += add_tabs_to_string("case COR_Expressions.IdentityRelation:", tab_level)
+            return accumulator + add_tabs_to_string(returnval, tab_level+1)
+        case COR_Expressions.Complement(argument=arg):
+            accumulator += add_tabs_to_string("case COR_Expressions.Complement(argument=arg):", tab_level)
+            accumulator += add_tabs_to_string("match arg:", tab_level+1)
+            return generate_helper(arg,'arg', accumulator, returnval, tab_level+2)
+        case COR_Expressions.Converse(argument=arg):
+            accumulator += add_tabs_to_string("case COR_Expressions.Converse(argument=arg):", tab_level)
+            accumulator += add_tabs_to_string("match arg:", tab_level+1)
+            return generate_helper(arg,'arg', accumulator, returnval, tab_level+2)
+        case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+            accumulator += add_tabs_to_string("case COR_Expressions.Union(argument1=arg1, argument2=arg2):", tab_level)
+            accumulator += add_tabs_to_string("match arg1:", tab_level+1)
+            returnval = generate_helper(arg2,'arg2','match arg2:',returnval,tab_level+4)
+            return generate_helper(arg1,'arg1', accumulator, returnval, tab_level+2)
+        case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+            accumulator += add_tabs_to_string("case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):", tab_level)
+            accumulator += add_tabs_to_string("match arg1:", tab_level+1)
+            returnval = generate_helper(arg2,'arg2','match arg2:',returnval,tab_level+4)
+            return generate_helper(arg1,'arg1', accumulator, returnval, tab_level+2)
+        case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+            accumulator += add_tabs_to_string("case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):", tab_level)
+            accumulator += add_tabs_to_string("match arg1:", tab_level+1)
+            returnval = generate_helper(arg2,'arg2','match arg2:',returnval,tab_level+4)
+            return generate_helper(arg1,'arg1', accumulator, returnval, tab_level+2)
+        case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+            accumulator += add_tabs_to_string("case COR_Expressions.Composition(argument1=arg1, argument2=arg2):", tab_level)
+            accumulator += add_tabs_to_string("match arg1:", tab_level+1)
+            returnval = generate_helper(arg2,'arg2','match arg2:',returnval,tab_level+4)
+            return generate_helper(arg1,'arg1', accumulator, returnval, tab_level+2)
+    
+            
+def generate_code_from_cor_rules():
+    """ Generates Python code from a dictionary of cor rules """
+    # Load the COR Rules dictionary
+    with open('cor_dict.pickle', 'rb') as file:
+        cor_dict = pickle.load(file)
+    # Create a new .py file to write to
+    python_code = open("Simplify.py", "w+", encoding="utf_8")
+    python_code.write("import COR_Expressions" + "\n")
+    python_code.write("def simplify(expression):" + "\n\t")
+    python_code.write("match expression:")
+    for first in cor_dict:
+        second = cor_dict[first]
+        python_code.write(f'\n\t\t# {first} = {second}')
+        python_code.write(generate_helper(first, "expression", "", "return " + second.object_representation(), 2))
+    python_code.write("\n\t\tcase _:\n\t\t\treturn expression") # Case for if the expression cannot be simplified
+    # Close the file when done
+    python_code.close()
+    
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    look_for_simplification_rules(2, 6)
-    look_for_simplification_rules(3, 6)
-    look_for_simplification_rules(4, 6, timeout=10)
-    print_rule_dictionaries(True)
+    #look_for_simplification_rules(2, 6)
+    #look_for_simplification_rules(3, 6)
+    #look_for_simplification_rules(4, 6, timeout=10)
+    #print_rule_dictionaries(True)
+    generate_code_from_cor_rules()
+
