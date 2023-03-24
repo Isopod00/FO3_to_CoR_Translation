@@ -1,6 +1,6 @@
 import COR_Expressions
+
 def simplify(expression):
-	
 	# (T)⁻ = 𝟎
 	match expression:
 		case COR_Expressions.Complement(argument=arg):
@@ -618,11 +618,11 @@ def simplify(expression):
 						case _:
 							B = arg
 							match arg2:
-						case COR_Expressions.Complement(argument=arg):
-							match arg:
-								case _:
-									B = arg
-									return COR_Expressions.Complement(B)
+								case COR_Expressions.Complement(argument=arg):
+									match arg:
+										case _:
+											B = arg
+											return COR_Expressions.Complement(B)
 	# (𝟎) ∘ ((𝟏) ∪ ((C)⁻)) = 𝟎
 	match expression:
 		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
@@ -1092,11 +1092,11 @@ def simplify(expression):
 					match arg:
 						case COR_Expressions.IdentityRelation:
 							match arg2:
-						case COR_Expressions.Complement(argument=arg):
-							match arg:
-								case _:
-									A = arg
-									return COR_Expressions.Complement(A)
+								case COR_Expressions.Complement(argument=arg):
+									match arg:
+										case _:
+											A = arg
+											return COR_Expressions.Complement(A)
 	# (T) ∘ ((T) ∘ ((C)⁻)) = (T) ∘ ((C)⁻)
 	match expression:
 		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
@@ -2432,11 +2432,11 @@ def simplify(expression):
 					match arg:
 						case COR_Expressions.IdentityRelation:
 							match arg2:
-						case COR_Expressions.Complement(argument=arg):
-							match arg:
-								case _:
-									C = arg
-									return COR_Expressions.Complement(C)
+								case COR_Expressions.Complement(argument=arg):
+									match arg:
+										case _:
+											C = arg
+											return COR_Expressions.Complement(C)
 	# (𝟎) ∘ (((A)⁻)⁻¹) = 𝟎
 	match expression:
 		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
@@ -2907,10 +2907,10 @@ def simplify(expression):
 						case _:
 							B = arg
 							match arg2:
-						case COR_Expressions.Complement(argument=arg):
-							match arg:
-								case COR_Expressions.IdentityRelation:
-									return COR_Expressions.Union(B, COR_Expressions.Complement(COR_Expressions.IdentityRelation()))
+								case COR_Expressions.Complement(argument=arg):
+									match arg:
+										case COR_Expressions.IdentityRelation:
+											return COR_Expressions.Union(B, COR_Expressions.Complement(COR_Expressions.IdentityRelation()))
 	# (𝟎) ∘ ((B) † ((C)⁻)) = 𝟎
 	match expression:
 		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
@@ -3099,11 +3099,11 @@ def simplify(expression):
 					match arg:
 						case COR_Expressions.IdentityRelation:
 							match arg2:
-						case COR_Expressions.Complement(argument=arg):
-							match arg:
-								case _:
-									B = arg
-									return COR_Expressions.Complement(B)
+								case COR_Expressions.Complement(argument=arg):
+									match arg:
+										case _:
+											B = arg
+											return COR_Expressions.Complement(B)
 	# (𝟎) ∪ (((B)⁻)⁻¹) = ((B)⁻¹)⁻
 	match expression:
 		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
@@ -3605,11 +3605,11 @@ def simplify(expression):
 						case _:
 							C = arg
 							match arg2:
-						case COR_Expressions.Complement(argument=arg):
-							match arg:
-								case _:
-									C = arg
-									return COR_Expressions.Complement(C)
+								case COR_Expressions.Complement(argument=arg):
+									match arg:
+										case _:
+											C = arg
+											return COR_Expressions.Complement(C)
 	# (𝟎) ∪ ((𝟏) ∪ ((C)⁻)) = (𝟏) ∪ ((C)⁻)
 	match expression:
 		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
@@ -3857,10 +3857,10 @@ def simplify(expression):
 					match arg:
 						case COR_Expressions.IdentityRelation:
 							match arg2:
-						case COR_Expressions.Complement(argument=arg):
-							match arg:
-								case COR_Expressions.IdentityRelation:
-									return COR_Expressions.Complement(COR_Expressions.IdentityRelation())
+								case COR_Expressions.Complement(argument=arg):
+									match arg:
+										case COR_Expressions.IdentityRelation:
+											return COR_Expressions.Complement(COR_Expressions.IdentityRelation())
 	# (𝟏) ∘ ((𝟏) ∪ ((A)⁻¹)) = (𝟏) ∪ ((A)⁻¹)
 	match expression:
 		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
@@ -3931,11 +3931,11 @@ def simplify(expression):
 						case _:
 							C = arg
 							match arg2:
-						case COR_Expressions.Converse(argument=arg):
-							match arg:
-								case _:
-									C = arg
-									return COR_Expressions.Converse(C)
+								case COR_Expressions.Converse(argument=arg):
+									match arg:
+										case _:
+											C = arg
+											return COR_Expressions.Converse(C)
 	# (T) † ((𝟏) † ((C)⁻)) = T
 	match expression:
 		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
@@ -4680,11 +4680,11 @@ def simplify(expression):
 					match arg:
 						case COR_Expressions.IdentityRelation:
 							match arg2:
-						case COR_Expressions.Converse(argument=arg):
-							match arg:
-								case _:
-									C = arg
-									return COR_Expressions.Union(C, COR_Expressions.Complement(COR_Expressions.IdentityRelation()))
+								case COR_Expressions.Converse(argument=arg):
+									match arg:
+										case _:
+											C = arg
+											return COR_Expressions.Union(C, COR_Expressions.Complement(COR_Expressions.IdentityRelation()))
 	# (C) ∪ ((C) ∪ ((A)⁻)) = (C) ∪ ((A)⁻)
 	match expression:
 		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
@@ -4915,11 +4915,11 @@ def simplify(expression):
 						case _:
 							A = arg
 							match arg2:
-						case COR_Expressions.Converse(argument=arg):
-							match arg:
-								case _:
-									A = arg
-									return COR_Expressions.Converse(A)
+								case COR_Expressions.Converse(argument=arg):
+									match arg:
+										case _:
+											A = arg
+											return COR_Expressions.Converse(A)
 	# (T) † ((A) ∪ ((C)⁻)) = T
 	match expression:
 		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
@@ -5233,10 +5233,10 @@ def simplify(expression):
 						case _:
 							B = arg
 							match arg2:
-						case COR_Expressions.Complement(argument=arg):
-							match arg:
-								case COR_Expressions.IdentityRelation:
-									return COR_Expressions.Converse(B)
+								case COR_Expressions.Complement(argument=arg):
+									match arg:
+										case COR_Expressions.IdentityRelation:
+											return COR_Expressions.Converse(B)
 	# (T) ∪ ((B) † ((C)⁻)) = T
 	match expression:
 		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
@@ -5674,11 +5674,11 @@ def simplify(expression):
 					match arg:
 						case COR_Expressions.IdentityRelation:
 							match arg2:
-						case COR_Expressions.Converse(argument=arg):
-							match arg:
-								case _:
-									C = arg
-									return COR_Expressions.Converse(C)
+								case COR_Expressions.Converse(argument=arg):
+									match arg:
+										case _:
+											C = arg
+											return COR_Expressions.Converse(C)
 	# ((A) ∘ ((C)⁻¹))⁻¹ = (C) ∘ ((A)⁻¹)
 	match expression:
 		case COR_Expressions.Converse(argument=arg):
@@ -6806,10 +6806,10 @@ def simplify(expression):
 						case _:
 							C = arg
 							match arg2:
-						case COR_Expressions.Complement(argument=arg):
-							match arg:
-								case COR_Expressions.IdentityRelation:
-									return COR_Expressions.Union(C, COR_Expressions.Complement(COR_Expressions.IdentityRelation()))
+								case COR_Expressions.Complement(argument=arg):
+									match arg:
+										case COR_Expressions.IdentityRelation:
+											return COR_Expressions.Union(C, COR_Expressions.Complement(COR_Expressions.IdentityRelation()))
 	# (T) † ((C) ∪ ((B)⁻)) = T
 	match expression:
 		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
@@ -6960,11 +6960,11 @@ def simplify(expression):
 						case _:
 							B = arg
 							match arg2:
-						case COR_Expressions.Converse(argument=arg):
-							match arg:
-								case _:
-									B = arg
-									return COR_Expressions.Converse(B)
+								case COR_Expressions.Converse(argument=arg):
+									match arg:
+										case _:
+											B = arg
+											return COR_Expressions.Converse(B)
 	# ((𝟏)⁻) † ((𝟏)⁻) = (𝟏)⁻
 	match expression:
 		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
@@ -6973,10 +6973,10 @@ def simplify(expression):
 					match arg:
 						case COR_Expressions.IdentityRelation:
 							match arg2:
-						case COR_Expressions.Complement(argument=arg):
-							match arg:
-								case COR_Expressions.IdentityRelation:
-									return COR_Expressions.Complement(COR_Expressions.IdentityRelation())
+								case COR_Expressions.Complement(argument=arg):
+									match arg:
+										case COR_Expressions.IdentityRelation:
+											return COR_Expressions.Complement(COR_Expressions.IdentityRelation())
 	# ((B)⁻) † ((𝟏)⁻) = (B)⁻
 	match expression:
 		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
@@ -6986,10 +6986,10 @@ def simplify(expression):
 						case _:
 							B = arg
 							match arg2:
-						case COR_Expressions.Complement(argument=arg):
-							match arg:
-								case COR_Expressions.IdentityRelation:
-									return COR_Expressions.Complement(B)
+								case COR_Expressions.Complement(argument=arg):
+									match arg:
+										case COR_Expressions.IdentityRelation:
+											return COR_Expressions.Complement(B)
 	# (𝟏) ∘ ((C) ∪ ((A)⁻)) = (C) ∪ ((A)⁻)
 	match expression:
 		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
@@ -7248,10 +7248,10 @@ def simplify(expression):
 						case _:
 							A = arg
 							match arg2:
-						case COR_Expressions.Complement(argument=arg):
-							match arg:
-								case COR_Expressions.IdentityRelation:
-									return COR_Expressions.Union(A, COR_Expressions.Complement(COR_Expressions.IdentityRelation()))
+								case COR_Expressions.Complement(argument=arg):
+									match arg:
+										case COR_Expressions.IdentityRelation:
+											return COR_Expressions.Union(A, COR_Expressions.Complement(COR_Expressions.IdentityRelation()))
 	# ((A)⁻¹) † ((𝟏)⁻) = (A)⁻¹
 	match expression:
 		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
@@ -7261,10 +7261,10 @@ def simplify(expression):
 						case _:
 							A = arg
 							match arg2:
-						case COR_Expressions.Complement(argument=arg):
-							match arg:
-								case COR_Expressions.IdentityRelation:
-									return COR_Expressions.Converse(A)
+								case COR_Expressions.Complement(argument=arg):
+									match arg:
+										case COR_Expressions.IdentityRelation:
+											return COR_Expressions.Converse(A)
 	# (𝟎) ∘ ((B) ∘ ((A)⁻¹)) = 𝟎
 	match expression:
 		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
@@ -7445,11 +7445,11 @@ def simplify(expression):
 					match arg:
 						case COR_Expressions.IdentityRelation:
 							match arg2:
-						case COR_Expressions.Converse(argument=arg):
-							match arg:
-								case _:
-									A = arg
-									return COR_Expressions.Converse(A)
+								case COR_Expressions.Converse(argument=arg):
+									match arg:
+										case _:
+											A = arg
+											return COR_Expressions.Converse(A)
 	# (T) ∪ ((B) † ((A)⁻)) = T
 	match expression:
 		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
@@ -7683,11 +7683,11 @@ def simplify(expression):
 					match arg:
 						case COR_Expressions.IdentityRelation:
 							match arg2:
-						case COR_Expressions.Converse(argument=arg):
-							match arg:
-								case _:
-									B = arg
-									return COR_Expressions.Union(B, COR_Expressions.Complement(COR_Expressions.IdentityRelation()))
+								case COR_Expressions.Converse(argument=arg):
+									match arg:
+										case _:
+											B = arg
+											return COR_Expressions.Union(B, COR_Expressions.Complement(COR_Expressions.IdentityRelation()))
 	# ((A) † ((A)⁻¹))⁻¹ = (A) † ((A)⁻¹)
 	match expression:
 		case COR_Expressions.Converse(argument=arg):
@@ -7741,11 +7741,11 @@ def simplify(expression):
 					match arg:
 						case COR_Expressions.IdentityRelation:
 							match arg2:
-						case COR_Expressions.Converse(argument=arg):
-							match arg:
-								case _:
-									A = arg
-									return COR_Expressions.Union(A, COR_Expressions.Complement(COR_Expressions.IdentityRelation()))
+								case COR_Expressions.Converse(argument=arg):
+									match arg:
+										case _:
+											A = arg
+											return COR_Expressions.Union(A, COR_Expressions.Complement(COR_Expressions.IdentityRelation()))
 	# (T) † ((𝟏) ∪ ((A)⁻¹)) = T
 	match expression:
 		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
@@ -8508,11 +8508,11 @@ def simplify(expression):
 					match arg:
 						case COR_Expressions.IdentityRelation:
 							match arg2:
-						case COR_Expressions.Converse(argument=arg):
-							match arg:
-								case _:
-									B = arg
-									return COR_Expressions.Converse(B)
+								case COR_Expressions.Converse(argument=arg):
+									match arg:
+										case _:
+											B = arg
+											return COR_Expressions.Converse(B)
 	# (T) † ((B) † ((A)⁻)) = T
 	match expression:
 		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
@@ -8601,10 +8601,10 @@ def simplify(expression):
 						case _:
 							C = arg
 							match arg2:
-						case COR_Expressions.Complement(argument=arg):
-							match arg:
-								case COR_Expressions.IdentityRelation:
-									return COR_Expressions.Converse(C)
+								case COR_Expressions.Complement(argument=arg):
+									match arg:
+										case COR_Expressions.IdentityRelation:
+											return COR_Expressions.Converse(C)
 	# (𝟎) ∪ ((𝟏) ∪ ((A)⁻)) = (𝟏) ∪ ((A)⁻)
 	match expression:
 		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
@@ -8796,10 +8796,10 @@ def simplify(expression):
 						case _:
 							A = arg
 							match arg2:
-						case COR_Expressions.Complement(argument=arg):
-							match arg:
-								case COR_Expressions.IdentityRelation:
-									return COR_Expressions.Complement(A)
+								case COR_Expressions.Complement(argument=arg):
+									match arg:
+										case COR_Expressions.IdentityRelation:
+											return COR_Expressions.Complement(A)
 	# (T) ∪ ((T) ∘ ((C)⁻)) = T
 	match expression:
 		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
@@ -8995,11 +8995,11 @@ def simplify(expression):
 						case _:
 							A = arg
 							match arg2:
-						case COR_Expressions.Complement(argument=arg):
-							match arg:
-								case _:
-									A = arg
-									return COR_Expressions.Complement(A)
+								case COR_Expressions.Complement(argument=arg):
+									match arg:
+										case _:
+											A = arg
+											return COR_Expressions.Complement(A)
 	# (T) † (((A)⁻¹)⁻) = T
 	match expression:
 		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
@@ -9414,10 +9414,10 @@ def simplify(expression):
 						case _:
 							C = arg
 							match arg2:
-						case COR_Expressions.Complement(argument=arg):
-							match arg:
-								case COR_Expressions.IdentityRelation:
-									return COR_Expressions.Complement(C)
+								case COR_Expressions.Complement(argument=arg):
+									match arg:
+										case COR_Expressions.IdentityRelation:
+											return COR_Expressions.Complement(C)
 	# (A) ∪ ((𝟏) ∪ ((A)⁻)) = T
 	match expression:
 		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
@@ -9511,5 +9511,4 @@ def simplify(expression):
 												case _:
 													A = arg
 													return COR_Expressions.UniversalRelation()
-		case _:
-			return expression
+	return expression # The given expression was unable to be simplified

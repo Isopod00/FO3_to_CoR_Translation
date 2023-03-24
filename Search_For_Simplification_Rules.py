@@ -12,6 +12,7 @@ import Testing
 from FO3_Expressions import *
 import COR_Expressions
 
+import Simplify
 
 # Searches for simplification rules for a given size by utilizing the specified number of cpu cores
 def look_for_simplification_rules(size, cpu_cores, timeout=3600):
@@ -76,6 +77,31 @@ def is_already_simplifiable(expression, known_rules):
             return str(expression) in known_rules or is_already_simplifiable(arg1, known_rules) or is_already_simplifiable(arg2, known_rules)
         case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
             return str(expression) in known_rules or is_already_simplifiable(arg1, known_rules) or is_already_simplifiable(arg2, known_rules)
+        
+        
+def simplify(expression):
+    match expression:
+        case COR_Expressions.Relation(letter=l):
+            return expression
+        case COR_Expressions.UniversalRelation():
+            return expression
+        case COR_Expressions.EmptyRelation():
+            return expression
+        case COR_Expressions.IdentityRelation():
+            return expression
+        case COR_Expressions.Complement(argument=arg):
+            return Simplify.simplify(COR_Expressions.Complement(Simplify.simplify(arg)))
+        case COR_Expressions.Converse(argument=arg):
+            return Simplify.simplify(COR_Expressions.Converse(Simplify.simplify(arg)))
+        case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+            return Simplify.simplify(COR_Expressions.Union(simplify(arg1), simplify(arg2)))
+        case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+            return Simplify.simplify(COR_Expressions.Intersection(simplify(arg1), simplify(arg2)))
+        case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+            return Simplify.simplify(COR_Expressions.Dagger(simplify(arg1), simplify(arg2)))
+        case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+            return Simplify.simplify(COR_Expressions.Composition(simplify(arg1), simplify(arg2)))
+        
 
 
 # Processes one chunk of a list of formulas and returns a set of the COR simplification rules found
@@ -129,50 +155,58 @@ def add_tabs_to_string(string, tab_level):
     return ("\n" + ("\t" * tab_level) + string)
             
             
-def generate_helper(first, me, accumulator, returnval, tab_level) -> str:
+def generate_helper(first, second, me, accumulator, tab_level, second_arg=False, arg2=None) -> str:
     """ Creates Python code for a single cor rule and returns it as a string """
     match first:
         case COR_Expressions.Relation(letter=l):
             accumulator += add_tabs_to_string(f"case _:", tab_level)
             accumulator += add_tabs_to_string(f"{l} = {me}", tab_level+1)
-            return accumulator + add_tabs_to_string(returnval, tab_level+1)
+            if not second_arg:
+                return accumulator + add_tabs_to_string("return " + second.object_representation(), tab_level+1) 
+            else:
+                return accumulator + add_tabs_to_string("match arg2:", tab_level+1) + generate_helper(arg2, second, 'arg2', "", tab_level+2)
         case COR_Expressions.UniversalRelation():
             accumulator += add_tabs_to_string("case COR_Expressions.UniversalRelation():", tab_level)
-            return accumulator + add_tabs_to_string(returnval, tab_level+1)
+            if not second_arg:
+                return accumulator + add_tabs_to_string("return " + second.object_representation(), tab_level+1) 
+            else:
+                return accumulator + add_tabs_to_string("match arg2:", tab_level+1) + generate_helper(arg2, second, 'arg2', "", tab_level+2)
         case COR_Expressions.EmptyRelation():
             accumulator += add_tabs_to_string("case COR_Expressions.EmptyRelation():", tab_level)
-            return accumulator + add_tabs_to_string(returnval, tab_level+1)
+            if not second_arg:
+                return accumulator + add_tabs_to_string("return " + second.object_representation(), tab_level+1) 
+            else:
+                return accumulator + add_tabs_to_string("match arg2:", tab_level+1) + generate_helper(arg2, second, 'arg2', "", tab_level+2)
         case COR_Expressions.IdentityRelation():
             accumulator += add_tabs_to_string("case COR_Expressions.IdentityRelation:", tab_level)
-            return accumulator + add_tabs_to_string(returnval, tab_level+1)
+            if not second_arg:
+                return accumulator + add_tabs_to_string("return " + second.object_representation(), tab_level+1) 
+            else:
+                return accumulator + add_tabs_to_string("match arg2:", tab_level+1) + generate_helper(arg2, second, 'arg2', "", tab_level+2)
         case COR_Expressions.Complement(argument=arg):
             accumulator += add_tabs_to_string("case COR_Expressions.Complement(argument=arg):", tab_level)
             accumulator += add_tabs_to_string("match arg:", tab_level+1)
-            return generate_helper(arg,'arg', accumulator, returnval, tab_level+2)
+            return generate_helper(arg,second,'arg', accumulator, tab_level+2, second_arg, arg2)
         case COR_Expressions.Converse(argument=arg):
             accumulator += add_tabs_to_string("case COR_Expressions.Converse(argument=arg):", tab_level)
             accumulator += add_tabs_to_string("match arg:", tab_level+1)
-            return generate_helper(arg,'arg', accumulator, returnval, tab_level+2)
+            return generate_helper(arg,second,'arg', accumulator, tab_level+2, second_arg, arg2)
         case COR_Expressions.Union(argument1=arg1, argument2=arg2):
             accumulator += add_tabs_to_string("case COR_Expressions.Union(argument1=arg1, argument2=arg2):", tab_level)
             accumulator += add_tabs_to_string("match arg1:", tab_level+1)
-            returnval = generate_helper(arg2,'arg2','match arg2:',returnval,tab_level+4)
-            return generate_helper(arg1,'arg1', accumulator, returnval, tab_level+2)
+            return generate_helper(arg1,second, 'arg1', accumulator, tab_level+2, True, arg2)
         case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
             accumulator += add_tabs_to_string("case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):", tab_level)
             accumulator += add_tabs_to_string("match arg1:", tab_level+1)
-            returnval = generate_helper(arg2,'arg2','match arg2:',returnval,tab_level+4)
-            return generate_helper(arg1,'arg1', accumulator, returnval, tab_level+2)
+            return generate_helper(arg1, second, 'arg1', accumulator, tab_level+2, True, arg2)
         case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
             accumulator += add_tabs_to_string("case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):", tab_level)
             accumulator += add_tabs_to_string("match arg1:", tab_level+1)
-            returnval = generate_helper(arg2,'arg2','match arg2:',returnval,tab_level+4)
-            return generate_helper(arg1,'arg1', accumulator, returnval, tab_level+2)
+            return generate_helper(arg1, second, 'arg1', accumulator, tab_level+2, True, arg2)
         case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
             accumulator += add_tabs_to_string("case COR_Expressions.Composition(argument1=arg1, argument2=arg2):", tab_level)
             accumulator += add_tabs_to_string("match arg1:", tab_level+1)
-            returnval = generate_helper(arg2,'arg2','match arg2:',returnval,tab_level+4)
-            return generate_helper(arg1,'arg1', accumulator, returnval, tab_level+2)
+            return generate_helper(arg1, second, 'arg1', accumulator, tab_level+2, True, arg2)
     
             
 def generate_code_from_cor_rules():
@@ -183,13 +217,13 @@ def generate_code_from_cor_rules():
     # Create a new .py file to write to
     python_code = open("Simplify.py", "w+", encoding="utf_8")
     python_code.write("import COR_Expressions" + "\n")
-    python_code.write("def simplify(expression):" + "\n\t")
+    python_code.write("\ndef simplify(expression):")
     for first in cor_dict:
         second = cor_dict[first]
         python_code.write(f'\n\t# {first} = {second}')
         python_code.write("\n\tmatch expression:")
-        python_code.write(generate_helper(first, "expression", "", "return " + second.object_representation(), 2))
-    python_code.write("\n\t\tcase _:\n\t\t\treturn expression") # Case for if the expression cannot be simplified
+        python_code.write(generate_helper(first, second, "expression", "", 2))
+    python_code.write("\n\treturn expression # The given expression was unable to be simplified")
     # Close the file when done
     python_code.close()
     
