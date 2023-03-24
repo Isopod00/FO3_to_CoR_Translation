@@ -9511,4 +9511,799 @@ def simplify(expression):
 												case _:
 													A = arg
 													return COR_Expressions.UniversalRelation()
+	# (((A) † ((B)⁻¹))⁻)⁻ = (A) † ((B)⁻¹)
+	match expression:
+		case COR_Expressions.Complement(argument=arg):
+			match arg:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+							match arg1:
+								case _:
+									A = arg1
+									match arg2:
+										case COR_Expressions.Converse(argument=arg):
+											match arg:
+												case _:
+													B = arg
+													return COR_Expressions.Dagger(A, COR_Expressions.Converse(B))
+	# (𝟏) ∘ ((T) ∘ ((C) † ((B)⁻¹))) = (T) ∘ ((C) † ((B)⁻¹))
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.UniversalRelation():
+									match arg2:
+										case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+											match arg1:
+												case _:
+													C = arg1
+													match arg2:
+														case COR_Expressions.Converse(argument=arg):
+															match arg:
+																case _:
+																	B = arg
+																	return COR_Expressions.Composition(COR_Expressions.UniversalRelation(), COR_Expressions.Dagger(C, COR_Expressions.Converse(B)))
+	# (((𝟎) † ((B)⁻¹))⁻)⁻ = (𝟎) † ((B)⁻¹)
+	match expression:
+		case COR_Expressions.Complement(argument=arg):
+			match arg:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.EmptyRelation():
+									match arg2:
+										case COR_Expressions.Converse(argument=arg):
+											match arg:
+												case _:
+													B = arg
+													return COR_Expressions.Dagger(COR_Expressions.EmptyRelation(), COR_Expressions.Converse(B))
+	# (((𝟎) † ((C)⁻))⁻)⁻ = (𝟎) † ((C)⁻)
+	match expression:
+		case COR_Expressions.Complement(argument=arg):
+			match arg:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.EmptyRelation():
+									match arg2:
+										case COR_Expressions.Complement(argument=arg):
+											match arg:
+												case _:
+													C = arg
+													return COR_Expressions.Dagger(COR_Expressions.EmptyRelation(), COR_Expressions.Complement(C))
+	# (𝟏) ∘ ((T) ∘ ((B) ∘ ((A)⁻¹))) = (T) ∘ ((B) ∘ ((A)⁻¹))
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.UniversalRelation():
+									match arg2:
+										case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+											match arg1:
+												case _:
+													B = arg1
+													match arg2:
+														case COR_Expressions.Converse(argument=arg):
+															match arg:
+																case _:
+																	A = arg
+																	return COR_Expressions.Composition(COR_Expressions.UniversalRelation(), COR_Expressions.Composition(B, COR_Expressions.Converse(A)))
+	# (((A) † ((A)⁻¹))⁻)⁻ = (A) † ((A)⁻¹)
+	match expression:
+		case COR_Expressions.Complement(argument=arg):
+			match arg:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+							match arg1:
+								case _:
+									A = arg1
+									match arg2:
+										case COR_Expressions.Converse(argument=arg):
+											match arg:
+												case _:
+													A = arg
+													return COR_Expressions.Dagger(A, COR_Expressions.Converse(A))
+	# (((𝟏) † ((B)⁻))⁻)⁻ = (𝟏) † ((B)⁻)
+	match expression:
+		case COR_Expressions.Complement(argument=arg):
+			match arg:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.IdentityRelation:
+									match arg2:
+										case COR_Expressions.Complement(argument=arg):
+											match arg:
+												case _:
+													B = arg
+													return COR_Expressions.Dagger(COR_Expressions.IdentityRelation(), COR_Expressions.Complement(B))
+	# (𝟏) ∘ ((T) ∘ ((B) ∘ ((A)⁻))) = (T) ∘ ((B) ∘ ((A)⁻))
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.UniversalRelation():
+									match arg2:
+										case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+											match arg1:
+												case _:
+													B = arg1
+													match arg2:
+														case COR_Expressions.Complement(argument=arg):
+															match arg:
+																case _:
+																	A = arg
+																	return COR_Expressions.Composition(COR_Expressions.UniversalRelation(), COR_Expressions.Composition(B, COR_Expressions.Complement(A)))
+	# (A) ∪ ((𝟎) † ((A) ∪ ((𝟏)⁻))) = (A) † ((A) ∪ ((𝟏)⁻))
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					A = arg1
+					match arg2:
+						case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.EmptyRelation():
+									match arg2:
+										case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+											match arg1:
+												case _:
+													A = arg1
+													match arg2:
+														case COR_Expressions.Complement(argument=arg):
+															match arg:
+																case COR_Expressions.IdentityRelation:
+																	return COR_Expressions.Dagger(A, COR_Expressions.Union(A, COR_Expressions.Complement(COR_Expressions.IdentityRelation())))
+	# (𝟏) ∘ ((T) ∘ ((A) ∘ ((B)⁻))) = (T) ∘ ((A) ∘ ((B)⁻))
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.UniversalRelation():
+									match arg2:
+										case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+											match arg1:
+												case _:
+													A = arg1
+													match arg2:
+														case COR_Expressions.Complement(argument=arg):
+															match arg:
+																case _:
+																	B = arg
+																	return COR_Expressions.Composition(COR_Expressions.UniversalRelation(), COR_Expressions.Composition(A, COR_Expressions.Complement(B)))
+	# (((𝟎) † ((C)⁻¹))⁻)⁻ = (𝟎) † ((C)⁻¹)
+	match expression:
+		case COR_Expressions.Complement(argument=arg):
+			match arg:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.EmptyRelation():
+									match arg2:
+										case COR_Expressions.Converse(argument=arg):
+											match arg:
+												case _:
+													C = arg
+													return COR_Expressions.Dagger(COR_Expressions.EmptyRelation(), COR_Expressions.Converse(C))
+	# ((A)⁻¹) ∘ ((𝟎) † ((A)⁻¹)) = (𝟎) † ((A)⁻¹)
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Converse(argument=arg):
+					match arg:
+						case _:
+							A = arg
+							match arg2:
+								case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+									match arg1:
+										case COR_Expressions.EmptyRelation():
+											match arg2:
+												case COR_Expressions.Converse(argument=arg):
+													match arg:
+														case _:
+															A = arg
+															return COR_Expressions.Dagger(COR_Expressions.EmptyRelation(), COR_Expressions.Converse(A))
+	# (((B) † ((A)⁻))⁻)⁻ = (B) † ((A)⁻)
+	match expression:
+		case COR_Expressions.Complement(argument=arg):
+			match arg:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+							match arg1:
+								case _:
+									B = arg1
+									match arg2:
+										case COR_Expressions.Complement(argument=arg):
+											match arg:
+												case _:
+													A = arg
+													return COR_Expressions.Dagger(B, COR_Expressions.Complement(A))
+	# (𝟏) ∘ ((T) ∘ ((C) † ((B)⁻))) = (T) ∘ ((C) † ((B)⁻))
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.UniversalRelation():
+									match arg2:
+										case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+											match arg1:
+												case _:
+													C = arg1
+													match arg2:
+														case COR_Expressions.Complement(argument=arg):
+															match arg:
+																case _:
+																	B = arg
+																	return COR_Expressions.Composition(COR_Expressions.UniversalRelation(), COR_Expressions.Dagger(C, COR_Expressions.Complement(B)))
+	# (A) ∪ ((𝟎) † ((B) ∪ ((𝟏)⁻))) = (A) † ((B) ∪ ((𝟏)⁻))
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					A = arg1
+					match arg2:
+						case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.EmptyRelation():
+									match arg2:
+										case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+											match arg1:
+												case _:
+													B = arg1
+													match arg2:
+														case COR_Expressions.Complement(argument=arg):
+															match arg:
+																case COR_Expressions.IdentityRelation:
+																	return COR_Expressions.Dagger(A, COR_Expressions.Union(B, COR_Expressions.Complement(COR_Expressions.IdentityRelation())))
+	# (𝟏) ∘ ((T) ∘ ((A) ∘ ((A)⁻))) = (T) ∘ ((A) ∘ ((A)⁻))
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.UniversalRelation():
+									match arg2:
+										case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+											match arg1:
+												case _:
+													A = arg1
+													match arg2:
+														case COR_Expressions.Complement(argument=arg):
+															match arg:
+																case _:
+																	A = arg
+																	return COR_Expressions.Composition(COR_Expressions.UniversalRelation(), COR_Expressions.Composition(A, COR_Expressions.Complement(A)))
+	# (((𝟏) † ((B)⁻¹))⁻)⁻ = (𝟏) † ((B)⁻¹)
+	match expression:
+		case COR_Expressions.Complement(argument=arg):
+			match arg:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.IdentityRelation:
+									match arg2:
+										case COR_Expressions.Converse(argument=arg):
+											match arg:
+												case _:
+													B = arg
+													return COR_Expressions.Dagger(COR_Expressions.IdentityRelation(), COR_Expressions.Converse(B))
+	# (𝟏) ∘ ((T) ∘ ((A) ∘ ((C)⁻))) = (T) ∘ ((A) ∘ ((C)⁻))
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.UniversalRelation():
+									match arg2:
+										case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+											match arg1:
+												case _:
+													A = arg1
+													match arg2:
+														case COR_Expressions.Complement(argument=arg):
+															match arg:
+																case _:
+																	C = arg
+																	return COR_Expressions.Composition(COR_Expressions.UniversalRelation(), COR_Expressions.Composition(A, COR_Expressions.Complement(C)))
+	# (𝟏) ∘ ((T) ∘ ((A) ∘ ((𝟏)⁻))) = (T) ∘ ((A) ∘ ((𝟏)⁻))
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.UniversalRelation():
+									match arg2:
+										case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+											match arg1:
+												case _:
+													A = arg1
+													match arg2:
+														case COR_Expressions.Complement(argument=arg):
+															match arg:
+																case COR_Expressions.IdentityRelation:
+																	return COR_Expressions.Composition(COR_Expressions.UniversalRelation(), COR_Expressions.Composition(A, COR_Expressions.Complement(COR_Expressions.IdentityRelation())))
+	# (𝟏) ∘ ((T) ∘ ((B) ∘ ((B)⁻))) = (T) ∘ ((B) ∘ ((B)⁻))
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.UniversalRelation():
+									match arg2:
+										case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+											match arg1:
+												case _:
+													B = arg1
+													match arg2:
+														case COR_Expressions.Complement(argument=arg):
+															match arg:
+																case _:
+																	B = arg
+																	return COR_Expressions.Composition(COR_Expressions.UniversalRelation(), COR_Expressions.Composition(B, COR_Expressions.Complement(B)))
+	# (((A) † ((A)⁻))⁻)⁻ = (A) † ((A)⁻)
+	match expression:
+		case COR_Expressions.Complement(argument=arg):
+			match arg:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+							match arg1:
+								case _:
+									A = arg1
+									match arg2:
+										case COR_Expressions.Complement(argument=arg):
+											match arg:
+												case _:
+													A = arg
+													return COR_Expressions.Dagger(A, COR_Expressions.Complement(A))
+	# (𝟏) ∘ ((T) ∘ ((B) ∘ ((𝟏)⁻))) = (T) ∘ ((B) ∘ ((𝟏)⁻))
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.UniversalRelation():
+									match arg2:
+										case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+											match arg1:
+												case _:
+													B = arg1
+													match arg2:
+														case COR_Expressions.Complement(argument=arg):
+															match arg:
+																case COR_Expressions.IdentityRelation:
+																	return COR_Expressions.Composition(COR_Expressions.UniversalRelation(), COR_Expressions.Composition(B, COR_Expressions.Complement(COR_Expressions.IdentityRelation())))
+	# (((A) † ((C)⁻))⁻)⁻ = (A) † ((C)⁻)
+	match expression:
+		case COR_Expressions.Complement(argument=arg):
+			match arg:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+							match arg1:
+								case _:
+									A = arg1
+									match arg2:
+										case COR_Expressions.Complement(argument=arg):
+											match arg:
+												case _:
+													C = arg
+													return COR_Expressions.Dagger(A, COR_Expressions.Complement(C))
+	# (𝟏) ∘ ((T) ∘ ((C) ∘ ((A)⁻))) = (T) ∘ ((C) ∘ ((A)⁻))
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.UniversalRelation():
+									match arg2:
+										case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+											match arg1:
+												case _:
+													C = arg1
+													match arg2:
+														case COR_Expressions.Complement(argument=arg):
+															match arg:
+																case _:
+																	A = arg
+																	return COR_Expressions.Composition(COR_Expressions.UniversalRelation(), COR_Expressions.Composition(C, COR_Expressions.Complement(A)))
+	# (𝟏) ∘ ((T) ∘ ((A) ∘ ((C)⁻¹))) = (T) ∘ ((A) ∘ ((C)⁻¹))
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.UniversalRelation():
+									match arg2:
+										case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+											match arg1:
+												case _:
+													A = arg1
+													match arg2:
+														case COR_Expressions.Converse(argument=arg):
+															match arg:
+																case _:
+																	C = arg
+																	return COR_Expressions.Composition(COR_Expressions.UniversalRelation(), COR_Expressions.Composition(A, COR_Expressions.Converse(C)))
+	# (𝟏) ∘ ((T) ∘ ((C) † ((C)⁻¹))) = (T) ∘ ((C) † ((C)⁻¹))
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.UniversalRelation():
+									match arg2:
+										case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+											match arg1:
+												case _:
+													C = arg1
+													match arg2:
+														case COR_Expressions.Converse(argument=arg):
+															match arg:
+																case _:
+																	C = arg
+																	return COR_Expressions.Composition(COR_Expressions.UniversalRelation(), COR_Expressions.Dagger(C, COR_Expressions.Converse(C)))
+	# (((B) † ((A)⁻¹))⁻)⁻ = (B) † ((A)⁻¹)
+	match expression:
+		case COR_Expressions.Complement(argument=arg):
+			match arg:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+							match arg1:
+								case _:
+									B = arg1
+									match arg2:
+										case COR_Expressions.Converse(argument=arg):
+											match arg:
+												case _:
+													A = arg
+													return COR_Expressions.Dagger(B, COR_Expressions.Converse(A))
+	# (((𝟎) † ((A)⁻))⁻)⁻ = (𝟎) † ((A)⁻)
+	match expression:
+		case COR_Expressions.Complement(argument=arg):
+			match arg:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.EmptyRelation():
+									match arg2:
+										case COR_Expressions.Complement(argument=arg):
+											match arg:
+												case _:
+													A = arg
+													return COR_Expressions.Dagger(COR_Expressions.EmptyRelation(), COR_Expressions.Complement(A))
+	# (((A) † ((C)⁻¹))⁻)⁻ = (A) † ((C)⁻¹)
+	match expression:
+		case COR_Expressions.Complement(argument=arg):
+			match arg:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+							match arg1:
+								case _:
+									A = arg1
+									match arg2:
+										case COR_Expressions.Converse(argument=arg):
+											match arg:
+												case _:
+													C = arg
+													return COR_Expressions.Dagger(A, COR_Expressions.Converse(C))
+	# (((A) † ((B)⁻))⁻)⁻ = (A) † ((B)⁻)
+	match expression:
+		case COR_Expressions.Complement(argument=arg):
+			match arg:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+							match arg1:
+								case _:
+									A = arg1
+									match arg2:
+										case COR_Expressions.Complement(argument=arg):
+											match arg:
+												case _:
+													B = arg
+													return COR_Expressions.Dagger(A, COR_Expressions.Complement(B))
+	# (𝟏) ∘ ((T) ∘ ((C) † ((C)⁻))) = (T) ∘ ((C) † ((C)⁻))
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.UniversalRelation():
+									match arg2:
+										case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+											match arg1:
+												case _:
+													C = arg1
+													match arg2:
+														case COR_Expressions.Complement(argument=arg):
+															match arg:
+																case _:
+																	C = arg
+																	return COR_Expressions.Composition(COR_Expressions.UniversalRelation(), COR_Expressions.Dagger(C, COR_Expressions.Complement(C)))
+	# (((𝟎) † ((B)⁻))⁻)⁻ = (𝟎) † ((B)⁻)
+	match expression:
+		case COR_Expressions.Complement(argument=arg):
+			match arg:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.EmptyRelation():
+									match arg2:
+										case COR_Expressions.Complement(argument=arg):
+											match arg:
+												case _:
+													B = arg
+													return COR_Expressions.Dagger(COR_Expressions.EmptyRelation(), COR_Expressions.Complement(B))
+	# (𝟏) ∘ ((T) ∘ ((B) ∘ ((C)⁻))) = (T) ∘ ((B) ∘ ((C)⁻))
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.UniversalRelation():
+									match arg2:
+										case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+											match arg1:
+												case _:
+													B = arg1
+													match arg2:
+														case COR_Expressions.Complement(argument=arg):
+															match arg:
+																case _:
+																	C = arg
+																	return COR_Expressions.Composition(COR_Expressions.UniversalRelation(), COR_Expressions.Composition(B, COR_Expressions.Complement(C)))
+	# (((𝟏) † ((C)⁻))⁻)⁻ = (𝟏) † ((C)⁻)
+	match expression:
+		case COR_Expressions.Complement(argument=arg):
+			match arg:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.IdentityRelation:
+									match arg2:
+										case COR_Expressions.Complement(argument=arg):
+											match arg:
+												case _:
+													C = arg
+													return COR_Expressions.Dagger(COR_Expressions.IdentityRelation(), COR_Expressions.Complement(C))
+	# (𝟏) ∘ ((T) ∘ ((C) ∘ ((𝟏)⁻))) = (T) ∘ ((C) ∘ ((𝟏)⁻))
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.UniversalRelation():
+									match arg2:
+										case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+											match arg1:
+												case _:
+													C = arg1
+													match arg2:
+														case COR_Expressions.Complement(argument=arg):
+															match arg:
+																case COR_Expressions.IdentityRelation:
+																	return COR_Expressions.Composition(COR_Expressions.UniversalRelation(), COR_Expressions.Composition(C, COR_Expressions.Complement(COR_Expressions.IdentityRelation())))
+	# (𝟏) ∘ ((T) ∘ ((C) ∘ ((B)⁻))) = (T) ∘ ((C) ∘ ((B)⁻))
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.UniversalRelation():
+									match arg2:
+										case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+											match arg1:
+												case _:
+													C = arg1
+													match arg2:
+														case COR_Expressions.Complement(argument=arg):
+															match arg:
+																case _:
+																	B = arg
+																	return COR_Expressions.Composition(COR_Expressions.UniversalRelation(), COR_Expressions.Composition(C, COR_Expressions.Complement(B)))
+	# (𝟏) ∘ ((T) ∘ ((C) † ((A)⁻¹))) = (T) ∘ ((C) † ((A)⁻¹))
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.UniversalRelation():
+									match arg2:
+										case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+											match arg1:
+												case _:
+													C = arg1
+													match arg2:
+														case COR_Expressions.Converse(argument=arg):
+															match arg:
+																case _:
+																	A = arg
+																	return COR_Expressions.Composition(COR_Expressions.UniversalRelation(), COR_Expressions.Dagger(C, COR_Expressions.Converse(A)))
+	# (((𝟎) † ((A)⁻¹))⁻)⁻ = (𝟎) † ((A)⁻¹)
+	match expression:
+		case COR_Expressions.Complement(argument=arg):
+			match arg:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.EmptyRelation():
+									match arg2:
+										case COR_Expressions.Converse(argument=arg):
+											match arg:
+												case _:
+													A = arg
+													return COR_Expressions.Dagger(COR_Expressions.EmptyRelation(), COR_Expressions.Converse(A))
+	# (𝟏) ∘ ((T) ∘ ((A) ∘ ((B)⁻¹))) = (T) ∘ ((A) ∘ ((B)⁻¹))
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.UniversalRelation():
+									match arg2:
+										case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+											match arg1:
+												case _:
+													A = arg1
+													match arg2:
+														case COR_Expressions.Converse(argument=arg):
+															match arg:
+																case _:
+																	B = arg
+																	return COR_Expressions.Composition(COR_Expressions.UniversalRelation(), COR_Expressions.Composition(A, COR_Expressions.Converse(B)))
+	# (((𝟏) † ((A)⁻¹))⁻)⁻ = (𝟏) † ((A)⁻¹)
+	match expression:
+		case COR_Expressions.Complement(argument=arg):
+			match arg:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.IdentityRelation:
+									match arg2:
+										case COR_Expressions.Converse(argument=arg):
+											match arg:
+												case _:
+													A = arg
+													return COR_Expressions.Dagger(COR_Expressions.IdentityRelation(), COR_Expressions.Converse(A))
+	# (((B) † ((C)⁻))⁻)⁻ = (B) † ((C)⁻)
+	match expression:
+		case COR_Expressions.Complement(argument=arg):
+			match arg:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+							match arg1:
+								case _:
+									B = arg1
+									match arg2:
+										case COR_Expressions.Complement(argument=arg):
+											match arg:
+												case _:
+													C = arg
+													return COR_Expressions.Dagger(B, COR_Expressions.Complement(C))
+	# (((B) † ((B)⁻))⁻)⁻ = (B) † ((B)⁻)
+	match expression:
+		case COR_Expressions.Complement(argument=arg):
+			match arg:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+							match arg1:
+								case _:
+									B = arg1
+									match arg2:
+										case COR_Expressions.Complement(argument=arg):
+											match arg:
+												case _:
+													B = arg
+													return COR_Expressions.Dagger(B, COR_Expressions.Complement(B))
+	# (((𝟏) † ((C)⁻¹))⁻)⁻ = (𝟏) † ((C)⁻¹)
+	match expression:
+		case COR_Expressions.Complement(argument=arg):
+			match arg:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.IdentityRelation:
+									match arg2:
+										case COR_Expressions.Converse(argument=arg):
+											match arg:
+												case _:
+													C = arg
+													return COR_Expressions.Dagger(COR_Expressions.IdentityRelation(), COR_Expressions.Converse(C))
+	# (𝟏) ∘ ((T) ∘ ((B) ∘ ((C)⁻¹))) = (T) ∘ ((B) ∘ ((C)⁻¹))
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.UniversalRelation():
+									match arg2:
+										case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+											match arg1:
+												case _:
+													B = arg1
+													match arg2:
+														case COR_Expressions.Converse(argument=arg):
+															match arg:
+																case _:
+																	C = arg
+																	return COR_Expressions.Composition(COR_Expressions.UniversalRelation(), COR_Expressions.Composition(B, COR_Expressions.Converse(C)))
+	# (((𝟏) † ((A)⁻))⁻)⁻ = (𝟏) † ((A)⁻)
+	match expression:
+		case COR_Expressions.Complement(argument=arg):
+			match arg:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+							match arg1:
+								case COR_Expressions.IdentityRelation:
+									match arg2:
+										case COR_Expressions.Complement(argument=arg):
+											match arg:
+												case _:
+													A = arg
+													return COR_Expressions.Dagger(COR_Expressions.IdentityRelation(), COR_Expressions.Complement(A))
 	return expression # The given expression was unable to be simplified
