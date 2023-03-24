@@ -196,7 +196,7 @@ class Relation:
         return 1
     
     def object_representation(self) -> str:
-        return f"{self.letter}"
+        return self.letter
 
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
