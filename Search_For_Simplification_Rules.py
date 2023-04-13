@@ -155,75 +155,109 @@ def add_tabs_to_string(string, tab_level):
     return ("\n" + ("\t" * tab_level) + string)
             
             
-def generate_helper(first, second, me, accumulator, tab_level, second_arg=False, arg2=None) -> str:
+def generate_helper(first, second, me, boundVars, accumulator, tab_level, arg2=[]) -> str:
     """ Creates Python code for a single cor rule and returns it as a string """
     match first:
         case COR_Expressions.Relation(letter=l):
-            accumulator += add_tabs_to_string(f"case _:", tab_level)
-            accumulator += add_tabs_to_string(f"{l} = {me}", tab_level+1)
-            if not second_arg:
+            if l in boundVars:
+                accumulator += add_tabs_to_string(f"case _ if str({l})==str({me}):", tab_level)
+            else:
+                accumulator += add_tabs_to_string(f"case _:", tab_level)
+                accumulator += add_tabs_to_string(f"{l} = {me}", tab_level+1)
+            if len(arg2) == 0:
                 return accumulator + add_tabs_to_string("return " + second.object_representation(), tab_level+1) 
             else:
-                return accumulator + add_tabs_to_string("match arg2:", tab_level+1) + generate_helper(arg2, second, 'arg2', "", tab_level+2)
+                arg = arg2.pop()
+                return accumulator + add_tabs_to_string(f"match arg{len(arg2)+2}:", tab_level+1) + generate_helper(arg, second, f'arg{len(arg2)+2}', boundVars + [l], "", tab_level+2,arg2)
         case COR_Expressions.UniversalRelation():
             accumulator += add_tabs_to_string("case COR_Expressions.UniversalRelation():", tab_level)
-            if not second_arg:
+            if len(arg2) == 0:
                 return accumulator + add_tabs_to_string("return " + second.object_representation(), tab_level+1) 
             else:
-                return accumulator + add_tabs_to_string("match arg2:", tab_level+1) + generate_helper(arg2, second, 'arg2', "", tab_level+2)
+                arg = arg2.pop()
+                return accumulator + add_tabs_to_string(f"match arg{len(arg2)+2}:", tab_level+1) + generate_helper(arg, second, f'arg{len(arg2)+2}', boundVars, "", tab_level+2,arg2)
         case COR_Expressions.EmptyRelation():
             accumulator += add_tabs_to_string("case COR_Expressions.EmptyRelation():", tab_level)
-            if not second_arg:
+            if len(arg2) == 0:
                 return accumulator + add_tabs_to_string("return " + second.object_representation(), tab_level+1) 
             else:
-                return accumulator + add_tabs_to_string("match arg2:", tab_level+1) + generate_helper(arg2, second, 'arg2', "", tab_level+2)
+                arg = arg2.pop()
+                return accumulator + add_tabs_to_string(f"match arg{len(arg2)+2}:", tab_level+1) + generate_helper(arg, second, f'arg{len(arg2)+2}', boundVars, "", tab_level+2,arg2)
         case COR_Expressions.IdentityRelation():
             accumulator += add_tabs_to_string("case COR_Expressions.IdentityRelation:", tab_level)
-            if not second_arg:
+            if len(arg2) == 0:
                 return accumulator + add_tabs_to_string("return " + second.object_representation(), tab_level+1) 
             else:
-                return accumulator + add_tabs_to_string("match arg2:", tab_level+1) + generate_helper(arg2, second, 'arg2', "", tab_level+2)
+                arg = arg2.pop()
+                return accumulator + add_tabs_to_string(f"match arg{len(arg2)+2}:", tab_level+1) + generate_helper(arg, second, f'arg{len(arg2)+2}', boundVars, "", tab_level+2,arg2)
         case COR_Expressions.Complement(argument=arg):
             accumulator += add_tabs_to_string("case COR_Expressions.Complement(argument=arg):", tab_level)
             accumulator += add_tabs_to_string("match arg:", tab_level+1)
-            return generate_helper(arg,second,'arg', accumulator, tab_level+2, second_arg, arg2)
+            return generate_helper(arg,second,'arg', boundVars, accumulator, tab_level+2, arg2)
         case COR_Expressions.Converse(argument=arg):
             accumulator += add_tabs_to_string("case COR_Expressions.Converse(argument=arg):", tab_level)
             accumulator += add_tabs_to_string("match arg:", tab_level+1)
-            return generate_helper(arg,second,'arg', accumulator, tab_level+2, second_arg, arg2)
-        case COR_Expressions.Union(argument1=arg1, argument2=arg2):
-            accumulator += add_tabs_to_string("case COR_Expressions.Union(argument1=arg1, argument2=arg2):", tab_level)
+            return generate_helper(arg,second,'arg', boundVars, accumulator, tab_level+2, arg2)
+        case COR_Expressions.Union(argument1=arg1, argument2=argLater):
+            accumulator += add_tabs_to_string(f"case COR_Expressions.Union(argument1=arg1, argument2=arg{len(arg2)+2}):", tab_level)
             accumulator += add_tabs_to_string("match arg1:", tab_level+1)
-            return generate_helper(arg1,second, 'arg1', accumulator, tab_level+2, True, arg2)
-        case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
-            accumulator += add_tabs_to_string("case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):", tab_level)
+            return generate_helper(arg1,second, 'arg1', boundVars, accumulator, tab_level+2, arg2+[argLater])
+        case COR_Expressions.Intersection(argument1=arg1, argument2=argLater):
+            accumulator += add_tabs_to_string(f"case COR_Expressions.Intersection(argument1=arg1, argument2=arg{len(arg2)+2}):", tab_level)
             accumulator += add_tabs_to_string("match arg1:", tab_level+1)
-            return generate_helper(arg1, second, 'arg1', accumulator, tab_level+2, True, arg2)
-        case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
-            accumulator += add_tabs_to_string("case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):", tab_level)
+            return generate_helper(arg1, second, 'arg1', boundVars, accumulator, tab_level+2, arg2+[argLater])
+        case COR_Expressions.Dagger(argument1=arg1, argument2=argLater):
+            accumulator += add_tabs_to_string(f"case COR_Expressions.Dagger(argument1=arg1, argument2=arg{len(arg2)+2}):", tab_level)
             accumulator += add_tabs_to_string("match arg1:", tab_level+1)
-            return generate_helper(arg1, second, 'arg1', accumulator, tab_level+2, True, arg2)
-        case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
-            accumulator += add_tabs_to_string("case COR_Expressions.Composition(argument1=arg1, argument2=arg2):", tab_level)
+            return generate_helper(arg1, second, 'arg1', boundVars, accumulator, tab_level+2, arg2+[argLater])
+        case COR_Expressions.Composition(argument1=arg1, argument2=argLater):
+            accumulator += add_tabs_to_string(f"case COR_Expressions.Composition(argument1=arg1, argument2=arg{len(arg2)+2}):", tab_level)
             accumulator += add_tabs_to_string("match arg1:", tab_level+1)
-            return generate_helper(arg1, second, 'arg1', accumulator, tab_level+2, True, arg2)
+            return generate_helper(arg1, second, 'arg1', boundVars, accumulator, tab_level+2, arg2+[argLater])
     
-            
-def generate_code_from_cor_rules():
+def group_by_prefix(lst):
+    groups = {}
+    for item in lst:
+        prefix, remainder = (item[0],item[1:])
+        if prefix in groups:
+            groups[prefix].append(remainder)
+        else:
+            groups[prefix]=[remainder]
+    for group in groups:
+        if len(groups[group])>1: groups[group]=group_by_prefix(groups[group])
+        else: groups[group] = groups[group][0]
+    return groups
+def write_grouped_code(python_code, groups):
+    for group in groups:
+        if group[-2:] == '_:': continue
+        python_code.write(group+'\n')
+        if isinstance(groups[group], dict):
+            write_grouped_code(python_code, groups[group])
+        else:
+            for line in groups[group]:
+                python_code.write(line+'\n')
+    for group in groups:
+        if group[-2:] != '_:': continue
+        python_code.write(group+'\n')
+        if isinstance(groups[group], dict):
+            write_grouped_code(python_code, groups[group])
+        else:
+            for line in groups[group]:
+                python_code.write(line+'\n')
+def generate_code_from_cor_rules(cor_dict):
     """ Generates Python code from a dictionary of cor rules """
-    # Load the COR Rules dictionary
-    with open('cor_dict.pickle', 'rb') as file:
-        cor_dict = pickle.load(file)
     # Create a new .py file to write to
     python_code = open("Simplify.py", "w+", encoding="utf_8")
-    python_code.write("import COR_Expressions" + "\n")
-    python_code.write("\ndef simplify(expression):")
+    code = []
     for first in cor_dict:
         second = cor_dict[first]
-        python_code.write(f'\n\t# {first} = {second}')
-        python_code.write("\n\tmatch expression:")
-        python_code.write(generate_helper(first, second, "expression", "", 2))
-    python_code.write("\n\treturn expression # The given expression was unable to be simplified")
+        code.append(generate_helper(first, second, "expression", [], "\n\tmatch expression:", 2).split('\n'))
+    code = group_by_prefix(code)
+    python_code.write("import COR_Expressions" + "\n")
+    python_code.write("\ndef simplify(expression):")
+    write_grouped_code(python_code, code)
+    # python_code.write(f'\n\t# {first} = {second}')
+    python_code.write("\n\treturn None # The given expression was unable to be simplified")
     # Close the file when done
     python_code.close()
     
@@ -233,5 +267,9 @@ if __name__ == "__main__":
     # look_for_simplification_rules(2, 6)
     # look_for_simplification_rules(3, 6)
     # look_for_simplification_rules(4, 6)
-    # print_rule_dictionary(True)
-    generate_code_from_cor_rules()
+    
+    print_rule_dictionary(True)
+    
+    with open('cor_dict.pickle', 'rb') as file:
+        cor_dict = pickle.load(file)
+    generate_code_from_cor_rules(cor_dict)
