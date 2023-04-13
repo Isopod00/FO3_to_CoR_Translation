@@ -9,6 +9,7 @@ import z3  # pip install z3-solver
 import pickle # save/load python objects from a file
 
 from FO3_Translation_Methods import *
+import Simplify
 
 SortForEverything = z3.DeclareSort('SomeSort')
 
@@ -170,22 +171,22 @@ def generate_all_COR_formulas(size):
             case 6:
                 for size_other in range(1, size-1): # endpoint is excluded
                     for formula in generate_all_COR_formulas(size_other):
-                        for formula2 in generate_all_COR_formulas(size - size_other):
+                        for formula2 in generate_all_COR_formulas(size-1 - size_other):
                             yield Dagger(formula, formula2)
             case 7:
                 for size_other in range(1, size-1): # endpoint is excluded
                     for formula in generate_all_COR_formulas(size_other):
-                        for formula2 in generate_all_COR_formulas(size - size_other):
+                        for formula2 in generate_all_COR_formulas(size-1 - size_other):
                             yield Composition(formula, formula2)
             case 8:
                 for size_other in range(1, size-1): # endpoint is excluded
                     for formula in generate_all_COR_formulas(size_other):
-                        for formula2 in generate_all_COR_formulas(size - size_other):
+                        for formula2 in generate_all_COR_formulas(size-1 - size_other):
                             yield Union(formula, formula2)
             case 9:
                 for size_other in range(1, size-1): # endpoint is excluded
                     for formula in generate_all_COR_formulas(size_other):
-                        for formula2 in generate_all_COR_formulas(size - size_other):
+                        for formula2 in generate_all_COR_formulas(size-1 - size_other):
                             yield Intersection(formula, formula2)
 
 

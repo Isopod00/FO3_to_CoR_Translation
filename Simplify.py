@@ -10306,4 +10306,496 @@ def simplify(expression):
 												case _:
 													A = arg
 													return COR_Expressions.Dagger(COR_Expressions.IdentityRelation(), COR_Expressions.Complement(A))
+	# (𝟎) ∪ (C) = C
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case _:
+							C = arg2
+							return C
+	# (𝟏) ∘ (T) = T
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.UniversalRelation():
+							return COR_Expressions.UniversalRelation()
+	# (𝟏) ∪ (T) = T
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.UniversalRelation():
+							return COR_Expressions.UniversalRelation()
+	# (𝟏) ∘ (B) = B
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case _:
+							B = arg2
+							return B
+	# (T) ∪ (𝟏) = T
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case COR_Expressions.IdentityRelation:
+							return COR_Expressions.UniversalRelation()
+	# (B) ∘ (𝟏) = B
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					B = arg1
+					match arg2:
+						case COR_Expressions.IdentityRelation:
+							return B
+	# (𝟏) ∪ (𝟎) = 𝟏
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.EmptyRelation():
+							return COR_Expressions.IdentityRelation()
+	# (𝟎) † (T) = T
+	match expression:
+		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case COR_Expressions.UniversalRelation():
+							return COR_Expressions.UniversalRelation()
+	# (T) ∘ (𝟏) = T
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case COR_Expressions.IdentityRelation:
+							return COR_Expressions.UniversalRelation()
+	# (A) † (T) = T
+	match expression:
+		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					A = arg1
+					match arg2:
+						case COR_Expressions.UniversalRelation():
+							return COR_Expressions.UniversalRelation()
+	# (A) ∘ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					A = arg1
+					match arg2:
+						case COR_Expressions.EmptyRelation():
+							return COR_Expressions.EmptyRelation()
+	# (𝟏) ∘ (C) = C
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case _:
+							C = arg2
+							return C
+	# (T) ∘ (T) = T
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case COR_Expressions.UniversalRelation():
+							return COR_Expressions.UniversalRelation()
+	# (𝟎) ∪ (𝟏) = 𝟏
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case COR_Expressions.IdentityRelation:
+							return COR_Expressions.IdentityRelation()
+	# (T) ∪ (C) = T
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case _:
+							C = arg2
+							return COR_Expressions.UniversalRelation()
+	# (𝟏) ∘ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.EmptyRelation():
+							return COR_Expressions.EmptyRelation()
+	# (T) † (𝟎) = T
+	match expression:
+		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case COR_Expressions.EmptyRelation():
+							return COR_Expressions.UniversalRelation()
+	# (B) ∘ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					B = arg1
+					match arg2:
+						case COR_Expressions.EmptyRelation():
+							return COR_Expressions.EmptyRelation()
+	# (T) ∪ (T) = T
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case COR_Expressions.UniversalRelation():
+							return COR_Expressions.UniversalRelation()
+	# (𝟎) ∘ (B) = 𝟎
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case _:
+							B = arg2
+							return COR_Expressions.EmptyRelation()
+	# (𝟏) ∪ (𝟏) = 𝟏
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.IdentityRelation:
+							return COR_Expressions.IdentityRelation()
+	# (C) ∪ (T) = T
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					C = arg1
+					match arg2:
+						case COR_Expressions.UniversalRelation():
+							return COR_Expressions.UniversalRelation()
+	# (T) ∘ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case COR_Expressions.EmptyRelation():
+							return COR_Expressions.EmptyRelation()
+	# (B) † (T) = T
+	match expression:
+		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					B = arg1
+					match arg2:
+						case COR_Expressions.UniversalRelation():
+							return COR_Expressions.UniversalRelation()
+	# (A) ∪ (A) = A
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					A = arg1
+					match arg2:
+						case _:
+							A = arg2
+							return A
+	# (B) ∪ (𝟎) = B
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					B = arg1
+					match arg2:
+						case COR_Expressions.EmptyRelation():
+							return B
+	# (A) ∪ (T) = T
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					A = arg1
+					match arg2:
+						case COR_Expressions.UniversalRelation():
+							return COR_Expressions.UniversalRelation()
+	# (𝟎) ∘ (C) = 𝟎
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case _:
+							C = arg2
+							return COR_Expressions.EmptyRelation()
+	# (T) † (𝟏) = T
+	match expression:
+		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case COR_Expressions.IdentityRelation:
+							return COR_Expressions.UniversalRelation()
+	# (T) ∪ (B) = T
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case _:
+							B = arg2
+							return COR_Expressions.UniversalRelation()
+	# (T) † (C) = T
+	match expression:
+		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case _:
+							C = arg2
+							return COR_Expressions.UniversalRelation()
+	# (𝟎) ∪ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case COR_Expressions.EmptyRelation():
+							return COR_Expressions.EmptyRelation()
+	# (𝟎) ∘ (A) = 𝟎
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case _:
+							A = arg2
+							return COR_Expressions.EmptyRelation()
+	# (𝟏) ∘ (A) = A
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case _:
+							A = arg2
+							return A
+	# (A) ∘ (𝟏) = A
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					A = arg1
+					match arg2:
+						case COR_Expressions.IdentityRelation:
+							return A
+	# (𝟎) ∪ (A) = A
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case _:
+							A = arg2
+							return A
+	# (𝟏) † (T) = T
+	match expression:
+		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.UniversalRelation():
+							return COR_Expressions.UniversalRelation()
+	# (B) ∪ (B) = B
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					B = arg1
+					match arg2:
+						case _:
+							B = arg2
+							return B
+	# (T) † (T) = T
+	match expression:
+		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case COR_Expressions.UniversalRelation():
+							return COR_Expressions.UniversalRelation()
+	# (𝟏) ∘ (𝟏) = 𝟏
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.IdentityRelation:
+							return COR_Expressions.IdentityRelation()
+	# (𝟎) ∘ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case COR_Expressions.EmptyRelation():
+							return COR_Expressions.EmptyRelation()
+	# (B) ∪ (T) = T
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					B = arg1
+					match arg2:
+						case COR_Expressions.UniversalRelation():
+							return COR_Expressions.UniversalRelation()
+	# (C) ∘ (𝟏) = C
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					C = arg1
+					match arg2:
+						case COR_Expressions.IdentityRelation:
+							return C
+	# (𝟎) ∪ (B) = B
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case _:
+							B = arg2
+							return B
+	# (C) † (T) = T
+	match expression:
+		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					C = arg1
+					match arg2:
+						case COR_Expressions.UniversalRelation():
+							return COR_Expressions.UniversalRelation()
+	# (𝟎) ∘ (T) = 𝟎
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case COR_Expressions.UniversalRelation():
+							return COR_Expressions.EmptyRelation()
+	# (𝟎) ∪ (T) = T
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case COR_Expressions.UniversalRelation():
+							return COR_Expressions.UniversalRelation()
+	# (C) ∘ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					C = arg1
+					match arg2:
+						case COR_Expressions.EmptyRelation():
+							return COR_Expressions.EmptyRelation()
+	# (T) ∪ (𝟎) = T
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case COR_Expressions.EmptyRelation():
+							return COR_Expressions.UniversalRelation()
+	# (T) † (A) = T
+	match expression:
+		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case _:
+							A = arg2
+							return COR_Expressions.UniversalRelation()
+	# (T) ∪ (A) = T
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case _:
+							A = arg2
+							return COR_Expressions.UniversalRelation()
+	# (C) ∪ (C) = C
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					C = arg1
+					match arg2:
+						case _:
+							C = arg2
+							return C
+	# (A) ∪ (𝟎) = A
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					A = arg1
+					match arg2:
+						case COR_Expressions.EmptyRelation():
+							return A
+	# (𝟎) † (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case COR_Expressions.EmptyRelation():
+							return COR_Expressions.EmptyRelation()
+	# (T) † (B) = T
+	match expression:
+		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case _:
+							B = arg2
+							return COR_Expressions.UniversalRelation()
+	# (𝟎) ∘ (𝟏) = 𝟎
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case COR_Expressions.IdentityRelation:
+							return COR_Expressions.EmptyRelation()
+	# (C) ∪ (𝟎) = C
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					C = arg1
+					match arg2:
+						case COR_Expressions.EmptyRelation():
+							return C
 	return expression # The given expression was unable to be simplified
