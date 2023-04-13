@@ -9,7 +9,7 @@ import z3  # pip install z3-solver
 import pickle # save/load python objects from a file
 
 from FO3_Translation_Methods import *
-import Simplify
+import Search_For_Simplification_Rules
 
 SortForEverything = z3.DeclareSort('SomeSort')
 
@@ -233,9 +233,8 @@ def test_with_z3(fo3_expression) -> int:
     print("Nice FO3 Translation:", nice)  # Nice FO3 Term
     final = final_translation(nice, 'x', 'y')
     print("Final Translation:   ", final)
-    simplified = Simplify.simplify(final)
+    simplified = Search_For_Simplification_Rules.fully_simplify(final)
     print("Simplified:", simplified)
-    if simplified == None: simplified = final
     back = T_Nice(ForAll('a', ForAll('b', simplified.translate('a', 'b'))))
     print("Something that should be equivalent to the original:", back)
     s = z3.Solver()
