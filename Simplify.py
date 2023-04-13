@@ -10798,4 +10798,1251 @@ def simplify(expression):
 					match arg2:
 						case COR_Expressions.EmptyRelation():
 							return C
+	# (T) ∩ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case COR_Expressions.EmptyRelation():
+							return COR_Expressions.EmptyRelation()
+	# (𝟏) ∩ (𝟏) = 𝟏
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.IdentityRelation:
+							return COR_Expressions.IdentityRelation()
+	# (𝟎) ∩ (T) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case COR_Expressions.UniversalRelation():
+							return COR_Expressions.EmptyRelation()
+	# (𝟎) ∩ (B) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case _:
+							B = arg2
+							return COR_Expressions.EmptyRelation()
+	# (𝟎) ∩ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case COR_Expressions.EmptyRelation():
+							return COR_Expressions.EmptyRelation()
+	# (C) ∩ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					C = arg1
+					match arg2:
+						case COR_Expressions.EmptyRelation():
+							return COR_Expressions.EmptyRelation()
+	# (T) ∩ (𝟏) = 𝟏
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case COR_Expressions.IdentityRelation:
+							return COR_Expressions.IdentityRelation()
+	# (C) ∩ (C) = C
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					C = arg1
+					match arg2:
+						case _:
+							C = arg2
+							return C
+	# (T) ∩ (A) = A
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case _:
+							A = arg2
+							return A
+	# (A) ∩ (A) = A
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					A = arg1
+					match arg2:
+						case _:
+							A = arg2
+							return A
+	# (B) ∩ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					B = arg1
+					match arg2:
+						case COR_Expressions.EmptyRelation():
+							return COR_Expressions.EmptyRelation()
+	# (A) ∩ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					A = arg1
+					match arg2:
+						case COR_Expressions.EmptyRelation():
+							return COR_Expressions.EmptyRelation()
+	# (B) ∩ (T) = B
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					B = arg1
+					match arg2:
+						case COR_Expressions.UniversalRelation():
+							return B
+	# (𝟎) ∩ (𝟏) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case COR_Expressions.IdentityRelation:
+							return COR_Expressions.EmptyRelation()
+	# (𝟏) ∩ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.EmptyRelation():
+							return COR_Expressions.EmptyRelation()
+	# (𝟏) ∩ (T) = 𝟏
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.UniversalRelation():
+							return COR_Expressions.IdentityRelation()
+	# (A) ∩ (T) = A
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					A = arg1
+					match arg2:
+						case COR_Expressions.UniversalRelation():
+							return A
+	# (T) ∩ (T) = T
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case COR_Expressions.UniversalRelation():
+							return COR_Expressions.UniversalRelation()
+	# (𝟎) ∩ (A) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case _:
+							A = arg2
+							return COR_Expressions.EmptyRelation()
+	# (T) ∩ (B) = B
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case _:
+							B = arg2
+							return B
+	# (𝟎) ∩ (C) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case _:
+							C = arg2
+							return COR_Expressions.EmptyRelation()
+	# (T) ∩ (C) = C
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case _:
+							C = arg2
+							return C
+	# (B) ∩ (B) = B
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					B = arg1
+					match arg2:
+						case _:
+							B = arg2
+							return B
+	# (C) ∩ (T) = C
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					C = arg1
+					match arg2:
+						case COR_Expressions.UniversalRelation():
+							return C
+	# ((C)⁻) ∩ (C) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							C = arg
+							match arg2:
+								case _:
+									C = arg2
+									return COR_Expressions.EmptyRelation()
+	# ((𝟏) ∩ (C))⁻¹ = (C) ∩ (𝟏)
+	match expression:
+		case COR_Expressions.Converse(argument=arg):
+			match arg:
+				case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+					match arg1:
+						case COR_Expressions.IdentityRelation:
+							match arg2:
+								case _:
+									C = arg2
+									return COR_Expressions.Intersection(C, COR_Expressions.IdentityRelation())
+	# ((𝟏) † (𝟎))⁻¹ = (𝟎) † (𝟏)
+	match expression:
+		case COR_Expressions.Converse(argument=arg):
+			match arg:
+				case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+					match arg1:
+						case COR_Expressions.IdentityRelation:
+							match arg2:
+								case COR_Expressions.EmptyRelation():
+									return COR_Expressions.Dagger(COR_Expressions.EmptyRelation(), COR_Expressions.IdentityRelation())
+	# ((A) ∩ (𝟏))⁻¹ = (𝟏) ∩ (A)
+	match expression:
+		case COR_Expressions.Converse(argument=arg):
+			match arg:
+				case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+					match arg1:
+						case _:
+							A = arg1
+							match arg2:
+								case COR_Expressions.IdentityRelation:
+									return COR_Expressions.Intersection(COR_Expressions.IdentityRelation(), A)
+	# ((C)⁻¹) † (T) = T
+	match expression:
+		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Converse(argument=arg):
+					match arg:
+						case _:
+							C = arg
+							match arg2:
+								case COR_Expressions.UniversalRelation():
+									return COR_Expressions.UniversalRelation()
+	# (𝟎) ∩ ((C)⁻) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case COR_Expressions.Complement(argument=arg):
+							match arg:
+								case _:
+									C = arg
+									return COR_Expressions.EmptyRelation()
+	# ((B)⁻) † (T) = T
+	match expression:
+		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							B = arg
+							match arg2:
+								case COR_Expressions.UniversalRelation():
+									return COR_Expressions.UniversalRelation()
+	# (T) ∩ ((B)⁻¹) = (B)⁻¹
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case COR_Expressions.Converse(argument=arg):
+							match arg:
+								case _:
+									B = arg
+									return COR_Expressions.Converse(B)
+	# ((C)⁻) ∪ (𝟎) = (C)⁻
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							C = arg
+							match arg2:
+								case COR_Expressions.EmptyRelation():
+									return COR_Expressions.Complement(C)
+	# (𝟎) ∩ ((A)⁻¹) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case COR_Expressions.Converse(argument=arg):
+							match arg:
+								case _:
+									A = arg
+									return COR_Expressions.EmptyRelation()
+	# ((𝟏) † (𝟏))⁻¹ = (𝟏) † (𝟏)
+	match expression:
+		case COR_Expressions.Converse(argument=arg):
+			match arg:
+				case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+					match arg1:
+						case COR_Expressions.IdentityRelation:
+							match arg2:
+								case COR_Expressions.IdentityRelation:
+									return COR_Expressions.Dagger(COR_Expressions.IdentityRelation(), COR_Expressions.IdentityRelation())
+	# ((B)⁻¹) ∪ (T) = T
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Converse(argument=arg):
+					match arg:
+						case _:
+							B = arg
+							match arg2:
+								case COR_Expressions.UniversalRelation():
+									return COR_Expressions.UniversalRelation()
+	# ((𝟏)⁻) † (T) = T
+	match expression:
+		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.IdentityRelation:
+							match arg2:
+								case COR_Expressions.UniversalRelation():
+									return COR_Expressions.UniversalRelation()
+	# ((B)⁻¹) ∩ (T) = (B)⁻¹
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Converse(argument=arg):
+					match arg:
+						case _:
+							B = arg
+							match arg2:
+								case COR_Expressions.UniversalRelation():
+									return COR_Expressions.Converse(B)
+	# ((C)⁻) ∩ (T) = (C)⁻
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							C = arg
+							match arg2:
+								case COR_Expressions.UniversalRelation():
+									return COR_Expressions.Complement(C)
+	# (𝟎) ∩ ((A)⁻) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case COR_Expressions.Complement(argument=arg):
+							match arg:
+								case _:
+									A = arg
+									return COR_Expressions.EmptyRelation()
+	# ((A)⁻¹) ∘ (𝟏) = (A)⁻¹
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Converse(argument=arg):
+					match arg:
+						case _:
+							A = arg
+							match arg2:
+								case COR_Expressions.IdentityRelation:
+									return COR_Expressions.Converse(A)
+	# ((A)⁻¹) ∪ (T) = T
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Converse(argument=arg):
+					match arg:
+						case _:
+							A = arg
+							match arg2:
+								case COR_Expressions.UniversalRelation():
+									return COR_Expressions.UniversalRelation()
+	# (𝟏) ∩ ((A)⁻¹) = (𝟏) ∩ (A)
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.Converse(argument=arg):
+							match arg:
+								case _:
+									A = arg
+									return COR_Expressions.Intersection(COR_Expressions.IdentityRelation(), A)
+	# ((𝟏)⁻) † (B) = B
+	match expression:
+		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.IdentityRelation:
+							match arg2:
+								case _:
+									B = arg2
+									return B
+	# ((C)⁻) ∪ (C) = T
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							C = arg
+							match arg2:
+								case _:
+									C = arg2
+									return COR_Expressions.UniversalRelation()
+	# (𝟏) ∩ ((𝟏)⁻) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.Complement(argument=arg):
+							match arg:
+								case COR_Expressions.IdentityRelation:
+									return COR_Expressions.EmptyRelation()
+	# (T) ∩ ((𝟏)⁻) = (𝟏)⁻
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case COR_Expressions.Complement(argument=arg):
+							match arg:
+								case COR_Expressions.IdentityRelation:
+									return COR_Expressions.Complement(COR_Expressions.IdentityRelation())
+	# (B) ∩ ((B)⁻) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					B = arg1
+					match arg2:
+						case COR_Expressions.Complement(argument=arg):
+							match arg:
+								case _:
+									B = arg
+									return COR_Expressions.EmptyRelation()
+	# ((A)⁻¹) ∘ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Converse(argument=arg):
+					match arg:
+						case _:
+							A = arg
+							match arg2:
+								case COR_Expressions.EmptyRelation():
+									return COR_Expressions.EmptyRelation()
+	# ((A)⁻¹) ∩ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Converse(argument=arg):
+					match arg:
+						case _:
+							A = arg
+							match arg2:
+								case COR_Expressions.EmptyRelation():
+									return COR_Expressions.EmptyRelation()
+	# (𝟎) ∩ ((𝟏)⁻) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case COR_Expressions.Complement(argument=arg):
+							match arg:
+								case COR_Expressions.IdentityRelation:
+									return COR_Expressions.EmptyRelation()
+	# (𝟎) ∩ ((B)⁻¹) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case COR_Expressions.Converse(argument=arg):
+							match arg:
+								case _:
+									B = arg
+									return COR_Expressions.EmptyRelation()
+	# ((C)⁻¹) ∩ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Converse(argument=arg):
+					match arg:
+						case _:
+							C = arg
+							match arg2:
+								case COR_Expressions.EmptyRelation():
+									return COR_Expressions.EmptyRelation()
+	# ((B)⁻¹) ∘ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Converse(argument=arg):
+					match arg:
+						case _:
+							B = arg
+							match arg2:
+								case COR_Expressions.EmptyRelation():
+									return COR_Expressions.EmptyRelation()
+	# ((B)⁻¹) ∘ (𝟏) = (B)⁻¹
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Converse(argument=arg):
+					match arg:
+						case _:
+							B = arg
+							match arg2:
+								case COR_Expressions.IdentityRelation:
+									return COR_Expressions.Converse(B)
+	# ((A)⁻¹) ∪ (𝟎) = (A)⁻¹
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Converse(argument=arg):
+					match arg:
+						case _:
+							A = arg
+							match arg2:
+								case COR_Expressions.EmptyRelation():
+									return COR_Expressions.Converse(A)
+	# ((C)⁻¹) ∪ (T) = T
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Converse(argument=arg):
+					match arg:
+						case _:
+							C = arg
+							match arg2:
+								case COR_Expressions.UniversalRelation():
+									return COR_Expressions.UniversalRelation()
+	# ((C)⁻) ∘ (𝟏) = (C)⁻
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							C = arg
+							match arg2:
+								case COR_Expressions.IdentityRelation:
+									return COR_Expressions.Complement(C)
+	# (𝟏) ∩ ((B)⁻¹) = (B) ∩ (𝟏)
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.Converse(argument=arg):
+							match arg:
+								case _:
+									B = arg
+									return COR_Expressions.Intersection(B, COR_Expressions.IdentityRelation())
+	# ((C)⁻¹) ∩ (𝟏) = (C) ∩ (𝟏)
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Converse(argument=arg):
+					match arg:
+						case _:
+							C = arg
+							match arg2:
+								case COR_Expressions.IdentityRelation:
+									return COR_Expressions.Intersection(C, COR_Expressions.IdentityRelation())
+	# ((C)⁻¹) ∪ (𝟎) = (C)⁻¹
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Converse(argument=arg):
+					match arg:
+						case _:
+							C = arg
+							match arg2:
+								case COR_Expressions.EmptyRelation():
+									return COR_Expressions.Converse(C)
+	# ((𝟏)⁻) † (A) = A
+	match expression:
+		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.IdentityRelation:
+							match arg2:
+								case _:
+									A = arg2
+									return A
+	# ((B)⁻) ∪ (T) = T
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							B = arg
+							match arg2:
+								case COR_Expressions.UniversalRelation():
+									return COR_Expressions.UniversalRelation()
+	# ((B)⁻) ∘ (𝟏) = (B)⁻
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							B = arg
+							match arg2:
+								case COR_Expressions.IdentityRelation:
+									return COR_Expressions.Complement(B)
+	# (T) ∩ ((A)⁻) = (A)⁻
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case COR_Expressions.Complement(argument=arg):
+							match arg:
+								case _:
+									A = arg
+									return COR_Expressions.Complement(A)
+	# ((B)⁻) ∪ (B) = T
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							B = arg
+							match arg2:
+								case _:
+									B = arg2
+									return COR_Expressions.UniversalRelation()
+	# ((𝟎) † (𝟏))⁻¹ = (𝟎) † (𝟏)
+	match expression:
+		case COR_Expressions.Converse(argument=arg):
+			match arg:
+				case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+					match arg1:
+						case COR_Expressions.EmptyRelation():
+							match arg2:
+								case COR_Expressions.IdentityRelation:
+									return COR_Expressions.Dagger(COR_Expressions.EmptyRelation(), COR_Expressions.IdentityRelation())
+	# ((C)⁻) ∘ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							C = arg
+							match arg2:
+								case COR_Expressions.EmptyRelation():
+									return COR_Expressions.EmptyRelation()
+	# ((A)⁻) † (T) = T
+	match expression:
+		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							A = arg
+							match arg2:
+								case COR_Expressions.UniversalRelation():
+									return COR_Expressions.UniversalRelation()
+	# ((C)⁻) ∪ (T) = T
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							C = arg
+							match arg2:
+								case COR_Expressions.UniversalRelation():
+									return COR_Expressions.UniversalRelation()
+	# ((B)⁻) ∩ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							B = arg
+							match arg2:
+								case COR_Expressions.EmptyRelation():
+									return COR_Expressions.EmptyRelation()
+	# ((𝟏) ∩ (A))⁻¹ = (𝟏) ∩ (A)
+	match expression:
+		case COR_Expressions.Converse(argument=arg):
+			match arg:
+				case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+					match arg1:
+						case COR_Expressions.IdentityRelation:
+							match arg2:
+								case _:
+									A = arg2
+									return COR_Expressions.Intersection(COR_Expressions.IdentityRelation(), A)
+	# (T) ∩ ((A)⁻¹) = (A)⁻¹
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case COR_Expressions.Converse(argument=arg):
+							match arg:
+								case _:
+									A = arg
+									return COR_Expressions.Converse(A)
+	# ((𝟏)⁻) ∩ (T) = (𝟏)⁻
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.IdentityRelation:
+							match arg2:
+								case COR_Expressions.UniversalRelation():
+									return COR_Expressions.Complement(COR_Expressions.IdentityRelation())
+	# ((A)⁻) ∩ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							A = arg
+							match arg2:
+								case COR_Expressions.EmptyRelation():
+									return COR_Expressions.EmptyRelation()
+	# ((𝟏)⁻) † (𝟏) = 𝟏
+	match expression:
+		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.IdentityRelation:
+							match arg2:
+								case COR_Expressions.IdentityRelation:
+									return COR_Expressions.IdentityRelation()
+	# (T) ∩ ((B)⁻) = (B)⁻
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case COR_Expressions.Complement(argument=arg):
+							match arg:
+								case _:
+									B = arg
+									return COR_Expressions.Complement(B)
+	# ((𝟏)⁻) † (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.IdentityRelation:
+							match arg2:
+								case COR_Expressions.EmptyRelation():
+									return COR_Expressions.EmptyRelation()
+	# (𝟎) ∩ ((B)⁻) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case COR_Expressions.Complement(argument=arg):
+							match arg:
+								case _:
+									B = arg
+									return COR_Expressions.EmptyRelation()
+	# (C) ∩ ((C)⁻) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					C = arg1
+					match arg2:
+						case COR_Expressions.Complement(argument=arg):
+							match arg:
+								case _:
+									C = arg
+									return COR_Expressions.EmptyRelation()
+	# ((C) ∩ (𝟏))⁻¹ = (𝟏) ∩ (C)
+	match expression:
+		case COR_Expressions.Converse(argument=arg):
+			match arg:
+				case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+					match arg1:
+						case _:
+							C = arg1
+							match arg2:
+								case COR_Expressions.IdentityRelation:
+									return COR_Expressions.Intersection(COR_Expressions.IdentityRelation(), C)
+	# (𝟏) ∩ ((C)⁻¹) = (𝟏) ∩ (C)
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.IdentityRelation:
+					match arg2:
+						case COR_Expressions.Converse(argument=arg):
+							match arg:
+								case _:
+									C = arg
+									return COR_Expressions.Intersection(COR_Expressions.IdentityRelation(), C)
+	# ((A)⁻) ∘ (𝟏) = (A)⁻
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							A = arg
+							match arg2:
+								case COR_Expressions.IdentityRelation:
+									return COR_Expressions.Complement(A)
+	# ((A)⁻¹) ∩ (T) = (A)⁻¹
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Converse(argument=arg):
+					match arg:
+						case _:
+							A = arg
+							match arg2:
+								case COR_Expressions.UniversalRelation():
+									return COR_Expressions.Converse(A)
+	# ((B)⁻) ∘ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							B = arg
+							match arg2:
+								case COR_Expressions.EmptyRelation():
+									return COR_Expressions.EmptyRelation()
+	# ((B)⁻¹) ∪ (𝟎) = (B)⁻¹
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Converse(argument=arg):
+					match arg:
+						case _:
+							B = arg
+							match arg2:
+								case COR_Expressions.EmptyRelation():
+									return COR_Expressions.Converse(B)
+	# ((𝟏)⁻) † (C) = C
+	match expression:
+		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.IdentityRelation:
+							match arg2:
+								case _:
+									C = arg2
+									return C
+	# ((A)⁻) ∩ (T) = (A)⁻
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							A = arg
+							match arg2:
+								case COR_Expressions.UniversalRelation():
+									return COR_Expressions.Complement(A)
+	# ((B)⁻) ∩ (T) = (B)⁻
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							B = arg
+							match arg2:
+								case COR_Expressions.UniversalRelation():
+									return COR_Expressions.Complement(B)
+	# ((C)⁻¹) ∩ (T) = (C)⁻¹
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Converse(argument=arg):
+					match arg:
+						case _:
+							C = arg
+							match arg2:
+								case COR_Expressions.UniversalRelation():
+									return COR_Expressions.Converse(C)
+	# ((𝟏)⁻) ∘ (𝟏) = (𝟏)⁻
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.IdentityRelation:
+							match arg2:
+								case COR_Expressions.IdentityRelation:
+									return COR_Expressions.Complement(COR_Expressions.IdentityRelation())
+	# ((A)⁻) ∪ (A) = T
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							A = arg
+							match arg2:
+								case _:
+									A = arg2
+									return COR_Expressions.UniversalRelation()
+	# ((𝟏)⁻) ∪ (𝟏) = T
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.IdentityRelation:
+							match arg2:
+								case COR_Expressions.IdentityRelation:
+									return COR_Expressions.UniversalRelation()
+	# ((B)⁻¹) ∩ (𝟏) = (B) ∩ (𝟏)
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Converse(argument=arg):
+					match arg:
+						case _:
+							B = arg
+							match arg2:
+								case COR_Expressions.IdentityRelation:
+									return COR_Expressions.Intersection(B, COR_Expressions.IdentityRelation())
+	# (𝟎) ∩ ((C)⁻¹) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.EmptyRelation():
+					match arg2:
+						case COR_Expressions.Converse(argument=arg):
+							match arg:
+								case _:
+									C = arg
+									return COR_Expressions.EmptyRelation()
+	# ((𝟏) ∩ (B))⁻¹ = (𝟏) ∩ (B)
+	match expression:
+		case COR_Expressions.Converse(argument=arg):
+			match arg:
+				case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+					match arg1:
+						case COR_Expressions.IdentityRelation:
+							match arg2:
+								case _:
+									B = arg2
+									return COR_Expressions.Intersection(COR_Expressions.IdentityRelation(), B)
+	# ((A)⁻¹) ∩ (𝟏) = (A) ∩ (𝟏)
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Converse(argument=arg):
+					match arg:
+						case _:
+							A = arg
+							match arg2:
+								case COR_Expressions.IdentityRelation:
+									return COR_Expressions.Intersection(A, COR_Expressions.IdentityRelation())
+	# ((A)⁻) ∘ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							A = arg
+							match arg2:
+								case COR_Expressions.EmptyRelation():
+									return COR_Expressions.EmptyRelation()
+	# ((𝟏)⁻) ∘ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.IdentityRelation:
+							match arg2:
+								case COR_Expressions.EmptyRelation():
+									return COR_Expressions.EmptyRelation()
+	# ((B) ∩ (𝟏))⁻¹ = (𝟏) ∩ (B)
+	match expression:
+		case COR_Expressions.Converse(argument=arg):
+			match arg:
+				case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+					match arg1:
+						case _:
+							B = arg1
+							match arg2:
+								case COR_Expressions.IdentityRelation:
+									return COR_Expressions.Intersection(COR_Expressions.IdentityRelation(), B)
+	# (T) ∩ ((C)⁻¹) = (C)⁻¹
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case COR_Expressions.Converse(argument=arg):
+							match arg:
+								case _:
+									C = arg
+									return COR_Expressions.Converse(C)
+	# ((C)⁻) ∩ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							C = arg
+							match arg2:
+								case COR_Expressions.EmptyRelation():
+									return COR_Expressions.EmptyRelation()
+	# ((A)⁻) ∩ (A) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							A = arg
+							match arg2:
+								case _:
+									A = arg2
+									return COR_Expressions.EmptyRelation()
+	# ((C)⁻) † (T) = T
+	match expression:
+		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							C = arg
+							match arg2:
+								case COR_Expressions.UniversalRelation():
+									return COR_Expressions.UniversalRelation()
+	# ((𝟏)⁻) ∪ (T) = T
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.IdentityRelation:
+							match arg2:
+								case COR_Expressions.UniversalRelation():
+									return COR_Expressions.UniversalRelation()
+	# ((B)⁻) ∪ (𝟎) = (B)⁻
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							B = arg
+							match arg2:
+								case COR_Expressions.EmptyRelation():
+									return COR_Expressions.Complement(B)
+	# ((𝟏)⁻) ∩ (𝟏) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.IdentityRelation:
+							match arg2:
+								case COR_Expressions.IdentityRelation:
+									return COR_Expressions.EmptyRelation()
+	# ((A)⁻¹) † (T) = T
+	match expression:
+		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Converse(argument=arg):
+					match arg:
+						case _:
+							A = arg
+							match arg2:
+								case COR_Expressions.UniversalRelation():
+									return COR_Expressions.UniversalRelation()
+	# (A) ∩ ((A)⁻) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case _:
+					A = arg1
+					match arg2:
+						case COR_Expressions.Complement(argument=arg):
+							match arg:
+								case _:
+									A = arg
+									return COR_Expressions.EmptyRelation()
+	# ((𝟏)⁻) ∪ (𝟎) = (𝟏)⁻
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.IdentityRelation:
+							match arg2:
+								case COR_Expressions.EmptyRelation():
+									return COR_Expressions.Complement(COR_Expressions.IdentityRelation())
+	# ((A)⁻) ∪ (𝟎) = (A)⁻
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							A = arg
+							match arg2:
+								case COR_Expressions.EmptyRelation():
+									return COR_Expressions.Complement(A)
+	# ((B)⁻) ∩ (B) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							B = arg
+							match arg2:
+								case _:
+									B = arg2
+									return COR_Expressions.EmptyRelation()
+	# ((B)⁻¹) ∩ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Converse(argument=arg):
+					match arg:
+						case _:
+							B = arg
+							match arg2:
+								case COR_Expressions.EmptyRelation():
+									return COR_Expressions.EmptyRelation()
+	# ((C)⁻¹) ∘ (𝟏) = (C)⁻¹
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Converse(argument=arg):
+					match arg:
+						case _:
+							C = arg
+							match arg2:
+								case COR_Expressions.IdentityRelation:
+									return COR_Expressions.Converse(C)
+	# ((C)⁻¹) ∘ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Converse(argument=arg):
+					match arg:
+						case _:
+							C = arg
+							match arg2:
+								case COR_Expressions.EmptyRelation():
+									return COR_Expressions.EmptyRelation()
+	# ((B)⁻¹) † (T) = T
+	match expression:
+		case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Converse(argument=arg):
+					match arg:
+						case _:
+							B = arg
+							match arg2:
+								case COR_Expressions.UniversalRelation():
+									return COR_Expressions.UniversalRelation()
+	# ((𝟏)⁻) ∩ (𝟎) = 𝟎
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case COR_Expressions.IdentityRelation:
+							match arg2:
+								case COR_Expressions.EmptyRelation():
+									return COR_Expressions.EmptyRelation()
+	# ((A)⁻) ∪ (T) = T
+	match expression:
+		case COR_Expressions.Union(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.Complement(argument=arg):
+					match arg:
+						case _:
+							A = arg
+							match arg2:
+								case COR_Expressions.UniversalRelation():
+									return COR_Expressions.UniversalRelation()
+	# (T) ∩ ((C)⁻) = (C)⁻
+	match expression:
+		case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
+			match arg1:
+				case COR_Expressions.UniversalRelation():
+					match arg2:
+						case COR_Expressions.Complement(argument=arg):
+							match arg:
+								case _:
+									C = arg
+									return COR_Expressions.Complement(C)
 	return expression # The given expression was unable to be simplified

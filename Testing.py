@@ -43,11 +43,11 @@ def generate_random_FO3(size):
     """ This method generates a random FO3 expression with the specified size (depth of expression tree) """
     if size == 1:
         # Restrict the choices that can be made to allow our expression to grow to the specified size
-        choice = random.randint(0, 3)
+        choice = random.randint(0, 3)  # endpoint is included
     elif size == 2:
-        choice = random.randint(4, 6)
+        choice = random.randint(4, 6)  # endpoint is included
     else:
-        choice = random.randint(4, 8)
+        choice = random.randint(4, 8)  # endpoint is included
     match choice:
         case 0:
             return tt()
@@ -71,11 +71,11 @@ def generate_random_FO3(size):
         case 7:
             size_other = random.randint(1, size - 2) # endpoint is included
             return OR(generate_random_FO3(size_other),
-                      generate_random_FO3(size - size_other))
+                      generate_random_FO3(size-1 - size_other))
         case 8:
             size_other = random.randint(1, size - 2) # endpoint is included
             return AND(generate_random_FO3(size_other),
-                       generate_random_FO3(size - size_other))
+                       generate_random_FO3(size-1 - size_other))
 
 
 def is_normal_enough(formula):
@@ -98,11 +98,11 @@ def generate_all_FO3_formulas(size):
     """ This method generates ALL FO3 expressions with the specified size (depth of expression tree) """
     if size == 1:
         # Restrict the choices that can be made to allow our expression to grow to the specified size
-        choices = range(0, 4)
+        choices = range(0, 3+1)  # endpoint is excluded
     elif size == 2:
-        choices = range(4, 7)
+        choices = range(4, 6+1)  # endpoint is excluded
     else:
-        choices = range(4, 8)
+        choices = range(4, 8+1)  # endpoint is excluded
     for choice in choices:
         match choice:
             case 0:
@@ -132,12 +132,12 @@ def generate_all_FO3_formulas(size):
             case 7:
                 for size_other in range(1, size-1): # endpoint is excluded
                     for formula in generate_all_FO3_formulas(size_other):
-                        for formula2 in generate_all_FO3_formulas(size - size_other):
+                        for formula2 in generate_all_FO3_formulas(size-1 - size_other):
                             yield OR(formula, formula2)
             case 8:
                 for size_other in range(1, size-1): # endpoint is excluded
                     for formula in generate_all_FO3_formulas(size_other):
-                        for formula2 in generate_all_FO3_formulas(size - size_other):
+                        for formula2 in generate_all_FO3_formulas(size-1 - size_other):
                             yield AND(formula, formula2)
 
 
@@ -146,11 +146,11 @@ def generate_all_COR_formulas(size):
     """ This method generates ALL COR expressions with the specified size (depth of expression tree) """
     if size == 1:
         # Restrict the choices that can be made to allow our expression to grow to the specified size
-        choices = range(0, 4)
+        choices = range(0, 3+1)  # endpoint is excluded
     elif size == 2:
-        choices = range(4, 6)
+        choices = range(4, 5+1)  # endpoint is excluded
     else:
-        choices = range(4, 9)
+        choices = range(4, 9+1)  # endpoint is excluded
     for choice in choices:
         match choice:
             case 0:
