@@ -233,7 +233,7 @@ def test_with_z3(fo3_expression) -> int:
     print("Nice FO3 Translation:", nice)  # Nice FO3 Term
     final = final_translation(nice, 'x', 'y')
     print("Final Translation:   ", final)
-    back = ForAll('a', ForAll('b', final.translate('a', 'b')))
+    back = T_Nice(ForAll('a', ForAll('b', final.translate('a', 'b'))))
     print("Something that should be equivalent to the original:", back)
     s = z3.Solver()
     s.add(z3.Not(asZ3(fo3_expression) == asZ3(back)))

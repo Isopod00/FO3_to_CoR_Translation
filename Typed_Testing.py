@@ -119,7 +119,7 @@ def test_typed_with_z3(fo3_expression) -> int:
     print("Nice FO3 Translation:  ", nice)  # Nice FO3 Term
     final = typed_final_translation(nice, Typed_Variable('x', "Left"), Typed_Variable('y', "Right"))
     print("\nFinal Translation:   ", final)
-    back = ForAll(Typed_Variable('a', 'A'), ForAll(Typed_Variable('b', 'B'), final.translate('a', 'b')))
+    back = FO3_Translation_Methods.T_Nice(ForAll(Typed_Variable('a', 'A'), ForAll(Typed_Variable('b', 'B'), final.translate('a', 'b'))))
     print("Something that should be equivalent to the original:", back)
     s = z3.Solver()
     s.add(z3.Not(typed_asZ3(fo3_expression) == typed_asZ3(back)))
