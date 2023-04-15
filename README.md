@@ -34,3 +34,5 @@ Contributors: Anthony Brogni (brogn002@umn.edu) and Sebastiaan J. C. Joosten (sj
  -Simplify.py : Python code generated from our simplification rules for simplifying CoR expressions
  
  -List_Methods.py : Helper methods for treating lists as if they were sets
+ 
+ (We plan to merge the homogeneous and hetergeneous tools together very soon, which should simplify a lot of this and reduce the number of files)
