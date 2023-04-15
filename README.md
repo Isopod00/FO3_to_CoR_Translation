@@ -35,4 +35,4 @@ Contributors: Anthony Brogni (brogn002@umn.edu) and Sebastiaan J. C. Joosten (sj
  
  -List_Methods.py : Helper methods for treating lists as if they were sets
  
- (We plan to merge the homogeneous and hetergeneous tools together very soon, which should simplify a lot of this and reduce the number of files)
+ (Don't worry, we plan to merge the homogeneous and hetergeneous tools together very soon, which should reduce the number of files this tool needs)
