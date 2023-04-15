@@ -3,10 +3,7 @@ The goal of this project is to translate First-Order 3-variable (FO3) predicate 
 
 Contributors: Anthony Brogni (brogn002@umn.edu), Sebastiaan J. C. Joosten (sjoosten@umn.edu)
 
-
-
-
-Our project currently supports:
+## Our project currently supports:
 
 -FO3 Expressions (including terms with repeated arguments and formulas with typed arguments)
 
