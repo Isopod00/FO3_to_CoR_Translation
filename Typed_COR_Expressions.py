@@ -1,12 +1,12 @@
 # Authors: Sebastiaan J. C. Joosten, Anthony Brogni
 # Last Changed: March 2023
-""" This file contains everything you need to build typed mathematical COR objects in Python! """
+""" This file contains everything you need to build object representations of heterogeneous/typed COR formulas in Python! """
 
 from FO3_Expressions import *
 
 
 class Typed_UniversalRelation:
-    """ This class describes the COR mathematical symbol T (universal relation) on two sets: s1 and s2 """
+    """ This class describes the universal relation on two sets: s1 and s2 """
 
     def __init__(self, s1, s2):
         self.set1 = s1
@@ -26,7 +26,7 @@ class Typed_UniversalRelation:
 
 
 class Typed_EmptyRelation:
-    """ This class describes the COR mathematical symbol 𝟎 (empty relation) on two sets: s1 and s2 """
+    """ This class describes the empty relation on two sets: s1 and s2 """
 
     def __init__(self, s1, s2):
         self.set1 = s1
@@ -46,7 +46,7 @@ class Typed_EmptyRelation:
 
 
 class Typed_IdentityRelation:
-    """ This class describes the COR mathematical symbol 𝟏 (identity relation) on two sets: s1 and s2 """
+    """ This class describes the identity relation on two sets: s1 and s2 """
 
     def __init__(self, s1, s2):
         self.set1 = s1
@@ -66,7 +66,7 @@ class Typed_IdentityRelation:
 
 
 class Typed_Converse:
-    """ This class describes the converse of a typed RELATION (R⁻¹), which is all (b, a) such that (a, b) ∈ R """
+    """ This class describes the converse of a typed relation (R⁻¹), which is all (b, a) such that (a, b) ∈ R """
 
     def __init__(self, arg):
         self.argument = arg
@@ -204,7 +204,7 @@ class Typed_Dagger:
 
 
 class Typed_Relation:
-    """ This class represents a relation on two sets: s1 and s2 """
+    """ This class represents a heterogeneous/typed relation on two sets: s1 and s2 """
 
     def __init__(self, letter, s1, s2):
         self.letter = letter
@@ -226,6 +226,7 @@ class Typed_Relation:
 
 
 def make_typed_Composition(arg1, arg2):
+    """ This helper function makes it easier to create simpler typed composition objects """
     if isinstance(arg1, Typed_IdentityRelation):
         return arg2
     elif isinstance(arg2, Typed_IdentityRelation):
@@ -235,6 +236,7 @@ def make_typed_Composition(arg1, arg2):
 
 
 def make_typed_Union(arg1, arg2):
+    """ This helper function makes it easier to create simpler typed union objects """
     if isinstance(arg1, Typed_EmptyRelation):
         return arg2
     elif isinstance(arg2, Typed_EmptyRelation):
@@ -244,6 +246,7 @@ def make_typed_Union(arg1, arg2):
 
 
 def make_typed_Intersection(arg1, arg2):
+    """ This helper function makes it easier to create simpler typed intersection objects """
     if isinstance(arg1, Typed_UniversalRelation):
         return arg2
     elif isinstance(arg2, Typed_UniversalRelation):

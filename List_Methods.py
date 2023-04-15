@@ -15,5 +15,5 @@ def list_union(list1, list2) -> list:
 
 
 def list_difference(list1, list2) -> list:
-    """ Computes the mathematically 'difference' of two python lists """
+    """ Computes the mathematical 'difference' of two python lists """
     return [term for term in list1 if term not in list2]

@@ -1,5 +1,6 @@
 # Author: Anthony Brogni
-# Last Changed: March 2023
+# Last Changed: May 2023
+""" The code in this file is for finding all possible COR simplification rules up to a specified size. We utilize multiprocessing across multiple cores to make the search faster. """
 
 import multiprocessing
 from timeit import default_timer
@@ -14,8 +15,9 @@ import COR_Expressions
 
 import Simplify
 
-# Searches for simplification rules for a given size by utilizing the specified number of cpu cores
 def look_for_simplification_rules(size, cpu_cores, timeout=3600):
+    """ This method searches for simplification rules of a given size by utilizing the specified number of cpu cores """
+    
     print(f"A search for simplification rules of size {size} has started (using {cpu_cores} logical processors)")
     start = default_timer()  # Time how long this takes
 
@@ -53,14 +55,17 @@ def look_for_simplification_rules(size, cpu_cores, timeout=3600):
 
 
 def is_already_simplifiable(formula) -> bool:
+    """ If a formula is already simplifiable, then we don't need to consider it again. """
     return not (str(fully_simplify(formula)) == str(formula))
         
         
 def simplify_subformula(subformula):
+    """ This is just a helper function for the next method. """
     return Simplify.simplify(simplify(subformula))
         
         
 def simplify(expression):
+    """ Simplify a COR expression using the code we have geenrated in Simplify.py """
     match expression:
         case COR_Expressions.Complement(argument=arg):
             return Simplify.simplify(COR_Expressions.Complement(simplify_subformula(arg)))
@@ -79,6 +84,7 @@ def simplify(expression):
         
 
 def fully_simplify(expression):
+    """ This FULLY simplifies a COR expression by continuing to call simplify() until it cannot be simplified any further. """
     while True:
         possibly_simplified = simplify(expression)
         if str(possibly_simplified) == str(expression):
@@ -90,6 +96,7 @@ def fully_simplify(expression):
 
 # Processes one chunk of a list of formulas and returns a set of the COR simplification rules found
 def compute_chunk(formulas, size, timeout=3600):
+    """ This is simply a helper function for enabling multiprocessing. """
     cor_result = set()
     
     start = default_timer()
@@ -116,6 +123,8 @@ def compute_chunk(formulas, size, timeout=3600):
 
 
 def print_rule_dictionary(write_to_txt_file=False):
+    """ This will print out the dictionary of stored rules. Set the parameter to True for printing to a .txt or False for printing to the terminal. """
+    
     # Load the rule dictionary from file
     with open('cor_dict.pickle', 'rb') as file:
         cor_dict = pickle.load(file)
@@ -131,11 +140,12 @@ def print_rule_dictionary(write_to_txt_file=False):
             
             
 def add_tabs_to_string(string, tab_level):
+    """ This is a helper function for adding a newline and the specified number of tabs to a string. """
     return ("\n" + ("\t" * tab_level) + string)
             
             
 def generate_helper(first, second, me, boundVars, accumulator, tab_level, arg2=[]) -> str:
-    """ Creates Python code for a single cor rule and returns it as a string """
+    """ Generates Python code for a simplification rule and returns it as a string """
     match first:
         case COR_Expressions.Relation(letter=l):
             if l in boundVars:
@@ -194,6 +204,7 @@ def generate_helper(first, second, me, boundVars, accumulator, tab_level, arg2=[
     
     
 def group_by_prefix(lst):
+    """ This method helps us generate prettier code by grouping rules with similar prefixes. """
     groups = {}
     for item in lst:
         prefix, remainder = (item[0],item[1:])
@@ -208,6 +219,7 @@ def group_by_prefix(lst):
 
 
 def write_grouped_code(python_code, groups):
+    """ This method helps us generate prettier code by grouping rules with similar prefixes. """
     for group in groups:
         if group[-2:] == '_:': continue
         python_code.write(group+'\n')
@@ -227,7 +239,7 @@ def write_grouped_code(python_code, groups):
                 
                 
 def generate_code_from_cor_rules(cor_dict):
-    """ Generates Python code from a dictionary of cor rules """
+    """ Generates Python code in the file Simplify.py from a dictionary of simplification rules """
     # Create a new .py file to write to
     python_code = open("Simplify.py", "w+", encoding="utf_8")
     code = []

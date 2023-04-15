@@ -1,12 +1,12 @@
 # Authors: Sebastiaan J. C. Joosten, Anthony Brogni
 # Last Changed: March 2023
-""" This file contains everything you need to build (untyped) mathematical COR objects in Python. """
+""" This file contains everything you need to build (homogeneous/untyped) object representations of COR/RA expressions in Python. """
 
 from FO3_Expressions import *
 
 
 class UniversalRelation:
-    """ This class describes the COR mathematical symbol T (universal relation) """
+    """ This class defines the universal relation """
 
     def __str__(self) -> str:
         return 'T'
@@ -22,7 +22,7 @@ class UniversalRelation:
 
 
 class EmptyRelation:
-    """ This class describes the COR mathematical symbol 𝟎 (empty relation) """
+    """ This class defines the empty relation """
 
     def __str__(self) -> str:
         return '𝟎'
@@ -38,7 +38,7 @@ class EmptyRelation:
 
 
 class IdentityRelation:
-    """ This class describes the COR mathematical symbol 𝟏 (identity relation) """
+    """ This class defines the identity relation """
 
     def __str__(self) -> str:
         return '𝟏'
@@ -55,7 +55,7 @@ class IdentityRelation:
 
 
 class Converse:
-    """ This class describes the converse of a relation (R⁻¹), which is all (b, a) such that (a, b) ∈ R """
+    """ This class defines the converse of a relation (R⁻¹), which is all (b, a) such that (a, b) ∈ R """
 
     def __init__(self, arg):
         self.argument = arg
@@ -74,7 +74,7 @@ class Converse:
 
 
 class Complement:
-    """ This class describes the complement of a relation (R⁻ ) which is all (a, b) not in R """
+    """ This class defines the complement of a relation (R⁻ ) which is all (a, b) not in R """
 
     def __init__(self, arg):
         self.argument = arg
@@ -93,7 +93,7 @@ class Complement:
 
 
 class Union:
-    """ This class describes the union between two relations arg1 and arg2, which can be any relations """
+    """ This class defines the union between two relations arg1 and arg2, which can be any relations """
 
     def __init__(self, arg1, arg2):
         self.argument1 = arg1
@@ -113,7 +113,7 @@ class Union:
 
 
 class Intersection:
-    """ This class describes the intersection between two relations arg1 and arg2, which can be any relations """
+    """ This class defines the intersection between two relations arg1 and arg2, which can be any relations """
 
     def __init__(self, arg1, arg2):
         self.argument1 = arg1
@@ -133,7 +133,7 @@ class Intersection:
 
 
 class Composition:
-    """ This class describes the composition operation arg1 ∘ arg2 = {(x, y) | (x, z) ∈ arg1 ∧ (z, y) ∈ arg2} """
+    """ This class defines the composition operation arg1 ∘ arg2 = {(x, y) | (x, z) ∈ arg1 ∧ (z, y) ∈ arg2} """
 
     def __init__(self, arg1, arg2):
         self.argument1 = arg1
@@ -157,7 +157,7 @@ class Composition:
 
 
 class Dagger:
-    """ This class describes the dagger operation arg1 † arg2 = {(x, y) | (x, z) ∈ arg1 ∨ (z, y) ∈ arg2} """
+    """ This class defines the dagger operation arg1 † arg2 = {(x, y) | (x, z) ∈ arg1 ∨ (z, y) ∈ arg2} """
 
     def __init__(self, arg1, arg2):
         self.argument1 = arg1
@@ -180,7 +180,7 @@ class Dagger:
 
 
 class Relation:
-    """ This class represents a single relation denoted by the letter argument """
+    """ This class represents a binary relation denoted by the letter argument """
 
     def __init__(self, letter):
         self.letter = letter

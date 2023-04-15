@@ -1,6 +1,6 @@
 # Authors: Anthony Brogni, Sebastiaan J. C. Joosten
 # Last Changed: January 2023
-""" This file stores the final_translation method for translating typed FO3 expressions into COR. """
+""" This file stores the final_translation method for translating heterogeneous/typed FO3 expressions into COR. """
 
 import FO3_Translation_Methods
 
@@ -9,7 +9,7 @@ from Typed_COR_Expressions import *
 
 # For this method, var1 and var2 are Typed_Variable objects
 def typed_final_translation(expression, var1, var2):
-    """ This method computes the final step of the translation from (typed) FO3 into COR! """
+    """ This method computes the final step of the translation from (heterogeneous/typed) FO3 into COR! """
     match expression:
         case Predicate(letter=l, argument1=arg1, argument2=arg2) if arg1 == var1 and arg2 == arg1:
             return make_typed_Composition(make_typed_Intersection(Typed_Relation(l, arg1.set, arg2.set),

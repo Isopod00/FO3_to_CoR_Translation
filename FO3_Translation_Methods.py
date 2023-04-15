@@ -1,8 +1,8 @@
 # Authors: Sebastiaan J. C. Joosten, Anthony Brogni
 # Last Changed: January 2023
 """ This file contains all the various translation methods/steps for translating FO3 expressions into COR! The same
- 'good' and 'nice' methods can be used for buth typed and untype FO3 expressions, but for typed FO3 expressions a
- seperate final_translation method is provided in its own file (Typed_FO3_Translation.py) """
+ 'good' and 'nice' methods can be used for both heterogeneous/typed and homogeneous/untype FO3 expressions, but for heterogeneous/typed 
+ FO3 expressions a seperate final_translation method is provided in its own file (Typed_FO3_Translation.py) """
 
 from COR_Expressions import *
 from FO3_Expressions import *
@@ -10,7 +10,7 @@ from List_Methods import *
 
 
 def T_Good_Dash(expression):
-    """ Translation function for translating FO3 terms in negation normal form into "good" FO3 terms """
+    """ Translation function for translating FO3 terms in negation normal form into "good" FO3 terms. Call this directly! """
     match expression:
         case ForAll(argument=arg, variable=var):
             lists = T_Good_ForAll(arg)
@@ -27,7 +27,7 @@ def T_Good_Dash(expression):
 
 
 def T_Good_ThereExists(expression):
-    """ Translation function for translating FO3 terms in negation normal form into "good" FO3 terms """
+    """ This should never need to be called directly. """
     match expression:
         case ForAll(argument=arg, variable=var):
             lists = T_Good_ForAll(arg)
@@ -48,7 +48,7 @@ def T_Good_ThereExists(expression):
 
 
 def T_Good_ForAll(expression):
-    """ Translation function for translating FO3 terms in negation normal form into "good" FO3 terms """
+    """ This should never need to be called directly. """
     match expression:
         case ForAll(argument=arg, variable=var):
             lists = T_Good_ForAll(arg)
@@ -69,7 +69,7 @@ def T_Good_ForAll(expression):
 
 
 def T_Nice(expression):
-    """ Translation function for translating "good" FO3 terms into "nice" FO3 terms """
+    """ Translation function for translating "good" FO3 terms into "nice" FO3 terms. Call this directly! """
     match expression:
         case ff() | tt():
             return expression
@@ -112,7 +112,7 @@ def n_ary_OR(expressions_list):
 
 
 def final_translation(expression, var1, var2):
-    """ This method computes the final step of the translation from FO3 into COR """
+    """ This method computes the final step of the translation from untyped/homogeneous FO3 into COR """
     match expression:
         case Predicate(letter=l, argument1=arg1, argument2=arg2) if arg1 == var1 and arg2 == arg1:
             return Composition(Intersection(Relation(l), IdentityRelation()), UniversalRelation())

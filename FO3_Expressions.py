@@ -1,11 +1,12 @@
 # Authors: Sebastiaan J. C. Joosten, Anthony Brogni
 # Last Changed: March 2023
-""" This file contains everything you need to build mathematical FO3 objects in Python, even typed FO3 objects! """
+""" This file contains everything you need to build object representations of FO3 formulas in Python """
+
 from List_Methods import *
 
 
 class Term:
-    """ This is a super class that other FO3 expression classes inherit from. """
+    """ This is a parent class that other FO3 expression classes inherit from. """
 
     def getAsAndList(self):
         return [self]
@@ -15,7 +16,7 @@ class Term:
 
 
 class Typed_Variable:
-    """ This class represents a typed variable from a specific set. """
+    """ This class represents a typed variable from a specific set. (used in heterogeneous formulas) """
 
     def __init__(self, v, s):
         self.var = v
@@ -175,7 +176,7 @@ class OR(Term):
 
 class Equals(Term):
     """ This class describes two arguments being equal to each other.
-    The two arguments (arg1 and arg2) should be strings """
+    The two arguments (arg1 and arg2) should be strings or typed variable objects"""
 
     def __init__(self, arg1, arg2):
         self.argument1 = arg1
@@ -251,7 +252,7 @@ class ff(Term):
 
 
 class Predicate(Term):
-    """ This class represents a single predicate denoted by the letter argument, with variables arg1 and arg2 """
+    """ This class represents a binary predicate denoted by the letter argument, with variables arg1 and arg2 """
 
     def __init__(self, letter, arg1, arg2):
         self.argument1 = arg1
@@ -278,7 +279,7 @@ class Predicate(Term):
 
 
 def Implies(a, b) -> OR:
-    """ Create a new OR object using the mathematical definition of implies -> """
+    """ Create an object using the mathematical definition of implies -> """
     return OR(Negation(a), b)
 
 
@@ -303,7 +304,7 @@ def make_AND(arg1, arg2):
 
 
 def make_ThereExists(variable, argument):
-    """ This method helps improve/simplify the creation of mathematical ThereExists objects """
+    """ This method helps improve/simplify the creation of existential quantifiers """
     match argument:
         case tt() | ff():
             return argument
@@ -312,7 +313,7 @@ def make_ThereExists(variable, argument):
 
 
 def make_ForAll(variable, argument):
-    """ This method helps improve/simplify the creation of mathematical ForAll objects """
+    """ This method helps improve/simplify the creation of universal quantifiers """
     match argument:
         case tt() | ff():
             return argument
@@ -321,8 +322,7 @@ def make_ForAll(variable, argument):
 
 
 def negation_normal(argument):
-    """ The reason for this method is that I discovered a bug in which some expressions need multiple iterations to be
-     put into negation normal form correctly. """
+    """ The reason for this method is that some expressions need multiple iterations to be put into negation normal form. """
     previous_iteration = argument
     argument = argument.negation_normal_form()
     while str(previous_iteration) != str(argument):
