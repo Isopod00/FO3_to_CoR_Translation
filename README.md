@@ -3,10 +3,10 @@ The goal of this project is to translate First-Order 3-variable (FO3) predicate 
 
 Contributors: Anthony Brogni (brogn002@umn.edu), Sebastiaan J. C. Joosten (sjoosten@umn.edu)
 
-Our project currently supports:
+## Our project currently supports:
 
--FO3 Expressions (including terms with repeated arguments, such as the predicate R(x, x))
+-FO3 Expressions (including terms with repeated arguments and formulas with typed arguments)
 
--COR Expressions (both typed and untyped)
+-CoR Expressions (both homogeneous and heterogeneous)
 
 -Automated testing with the z3-solver Python library
