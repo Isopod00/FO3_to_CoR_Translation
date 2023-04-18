@@ -15,7 +15,7 @@ import COR_Expressions
 
 import Simplify
 
-def look_for_simplification_rules(size, cpu_cores, timeout=3600):
+def look_for_simplification_rules(size, cpu_cores, general, timeout=3600):
     """ This method searches for simplification rules of a given size by utilizing the specified number of cpu cores """
     
     print(f"A search for simplification rules of size {size} has started (using {cpu_cores} logical processors)")
@@ -26,7 +26,7 @@ def look_for_simplification_rules(size, cpu_cores, timeout=3600):
         cor_dict = pickle.load(file)
         
     # Generate ALL formulas of the specified size and split this list into equally-sized chunks
-    formulas = [formula for formula in list(Testing.generate_all_COR_formulas(size)) if not is_already_simplifiable(formula)]
+    formulas = [formula for formula in list(Testing.generate_all_COR_formulas(size, general)) if not is_already_simplifiable(formula)]
     print(f"Searching {len(formulas)} formulas of this size.")
     equal_chunks = numpy.array_split(numpy.array(formulas), cpu_cores)  # equal_chunks will be a list of numpy arrays
 
@@ -34,7 +34,7 @@ def look_for_simplification_rules(size, cpu_cores, timeout=3600):
     with multiprocessing.Pool(cpu_cores) as pool:
         results = []
         for array in equal_chunks:
-            results.append(pool.apply_async(compute_chunk, args=(list(array), size, timeout)))  # convert the numpy arrays to lists
+            results.append(pool.apply_async(compute_chunk, args=(list(array), size, general, timeout)))  # convert the numpy arrays to lists
         pool.close()
         pool.join()
 
@@ -95,7 +95,7 @@ def fully_simplify(expression):
 
 
 # Processes one chunk of a list of formulas and returns a set of the COR simplification rules found
-def compute_chunk(formulas, size, timeout=3600):
+def compute_chunk(formulas, size, general, timeout=3600):
     """ This is simply a helper function for enabling multiprocessing. """
     cor_result = set()
     
@@ -103,7 +103,7 @@ def compute_chunk(formulas, size, timeout=3600):
 
     for first in formulas:
         for second_size in range(1, size):
-            for second in [formula for formula in Testing.generate_all_COR_formulas(second_size) if not is_already_simplifiable(formula)]:
+            for second in [formula for formula in Testing.generate_all_COR_formulas(second_size, general) if not is_already_simplifiable(formula)]:
                 
                 # Return what we've found if we've been searching for longer than the timeout
                 if default_timer() - start >= timeout:
@@ -257,9 +257,12 @@ def generate_code_from_cor_rules(cor_dict):
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    # look_for_simplification_rules(2, 6)
-    # look_for_simplification_rules(3, 6)
-    # look_for_simplification_rules(4, 6)
+    #look_for_simplification_rules(2, 6, True)
+    #look_for_simplification_rules(2, 6, False)
+    #look_for_simplification_rules(3, 6, True)
+    #look_for_simplification_rules(3, 6, False)
+    #look_for_simplification_rules(4, 6, True)
+    #look_for_simplification_rules(4, 6, False)
     
     print_rule_dictionary(True)
     

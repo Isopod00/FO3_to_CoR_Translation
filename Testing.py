@@ -142,11 +142,13 @@ def generate_all_FO3_formulas(size):
 
 
 # size parameter must be >= 1
-def generate_all_COR_formulas(size):
+def generate_all_COR_formulas(size, general):
     """ This method generates ALL COR expressions with the specified size (depth of expression tree) """
     if size == 1:
-        # Restrict the choices that can be made to allow our expression to grow to the specified size
-        choices = range(0, 3+1)  # endpoint is excluded
+        if general:
+            choices = [0]
+        else:
+            choices = range(0, 3+1)  # endpoint is excluded
     elif size == 2:
         choices = range(4, 5+1)  # endpoint is excluded
     else:
@@ -154,39 +156,39 @@ def generate_all_COR_formulas(size):
     for choice in choices:
         match choice:
             case 0:
-                yield UniversalRelation()
+                for letter_choice in ['A', 'B', 'C']:
+                    yield Relation(letter_choice)
             case 1:
                 yield EmptyRelation()
             case 2:
                 yield IdentityRelation()
             case 3:
-                for letter_choice in ['A', 'B', 'C']:
-                    yield Relation(letter_choice)
+                yield UniversalRelation()
             case 4:
-                for formula in generate_all_COR_formulas(size - 1):
+                for formula in generate_all_COR_formulas(size - 1, general):
                     yield Complement(formula)
             case 5:
-                for formula in generate_all_COR_formulas(size - 1):
+                for formula in generate_all_COR_formulas(size - 1, general):
                     yield Converse(formula)
             case 6:
                 for size_other in range(1, size-1): # endpoint is excluded
-                    for formula in generate_all_COR_formulas(size_other):
-                        for formula2 in generate_all_COR_formulas(size-1 - size_other):
+                    for formula in generate_all_COR_formulas(size_other, general):
+                        for formula2 in generate_all_COR_formulas(size-1 - size_other, general):
                             yield Dagger(formula, formula2)
             case 7:
                 for size_other in range(1, size-1): # endpoint is excluded
-                    for formula in generate_all_COR_formulas(size_other):
-                        for formula2 in generate_all_COR_formulas(size-1 - size_other):
+                    for formula in generate_all_COR_formulas(size_other, general):
+                        for formula2 in generate_all_COR_formulas(size-1 - size_other, general):
                             yield Composition(formula, formula2)
             case 8:
                 for size_other in range(1, size-1): # endpoint is excluded
-                    for formula in generate_all_COR_formulas(size_other):
-                        for formula2 in generate_all_COR_formulas(size-1 - size_other):
+                    for formula in generate_all_COR_formulas(size_other, general):
+                        for formula2 in generate_all_COR_formulas(size-1 - size_other, general):
                             yield Union(formula, formula2)
             case 9:
                 for size_other in range(1, size-1): # endpoint is excluded
-                    for formula in generate_all_COR_formulas(size_other):
-                        for formula2 in generate_all_COR_formulas(size-1 - size_other):
+                    for formula in generate_all_COR_formulas(size_other, general):
+                        for formula2 in generate_all_COR_formulas(size-1 - size_other, general):
                             yield Intersection(formula, formula2)
 
 
@@ -234,7 +236,7 @@ def test_with_z3(fo3_expression) -> int:
     final = final_translation(nice, 'x', 'y')
     print("Final Translation:   ", final)
     simplified = Search_For_Simplification_Rules.fully_simplify(final)
-    print("Simplified:", simplified)
+    print("Simplified:          ", simplified)
     back = T_Nice(ForAll('a', ForAll('b', simplified.translate('a', 'b'))))
     print("Something that should be equivalent to the original:", back)
     s = z3.Solver()
