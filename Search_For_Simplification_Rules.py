@@ -15,7 +15,7 @@ import COR_Expressions
 
 import Simplify
 
-def look_for_simplification_rules(size, cpu_cores, general, timeout=3600):
+def look_for_simplification_rules(size, cpu_cores, timeout=3600):
     """ This method searches for simplification rules of a given size by utilizing the specified number of cpu cores """
     
     print(f"A search for simplification rules of size {size} has started (using {cpu_cores} logical processors)")
@@ -26,7 +26,7 @@ def look_for_simplification_rules(size, cpu_cores, general, timeout=3600):
         cor_dict = pickle.load(file)
         
     # Generate ALL formulas of the specified size and split this list into equally-sized chunks
-    formulas = [formula for formula in list(Testing.generate_all_COR_formulas(size, general)) if not is_already_simplifiable(formula)]
+    formulas = [formula for formula in list(Testing.generate_all_COR_formulas(size)) if not is_already_simplifiable(formula)]
     print(f"Searching {len(formulas)} formulas of this size.")
     equal_chunks = numpy.array_split(numpy.array(formulas), cpu_cores)  # equal_chunks will be a list of numpy arrays
 
@@ -34,7 +34,7 @@ def look_for_simplification_rules(size, cpu_cores, general, timeout=3600):
     with multiprocessing.Pool(cpu_cores) as pool:
         results = []
         for array in equal_chunks:
-            results.append(pool.apply_async(compute_chunk, args=(list(array), size, general, timeout)))  # convert the numpy arrays to lists
+            results.append(pool.apply_async(compute_chunk, args=(list(array), size, timeout)))  # convert the numpy arrays to lists
         pool.close()
         pool.join()
 
@@ -95,15 +95,15 @@ def fully_simplify(expression):
 
 
 # Processes one chunk of a list of formulas and returns a set of the COR simplification rules found
-def compute_chunk(formulas, size, general, timeout=3600):
+def compute_chunk(formulas, size, timeout=3600):
     """ This is simply a helper function for enabling multiprocessing. """
     cor_result = set()
     
     start = default_timer()
 
     for first in formulas:
-        for second_size in range(1, size):
-            for second in [formula for formula in Testing.generate_all_COR_formulas(second_size, general) if not is_already_simplifiable(formula)]:
+        for second_size in range(0, size):
+            for second in [formula for formula in Testing.generate_all_COR_formulas(second_size) if not is_already_simplifiable(formula)]:
                 
                 # Return what we've found if we've been searching for longer than the timeout
                 if default_timer() - start >= timeout:
@@ -142,7 +142,14 @@ def print_rule_dictionary(write_to_txt_file=False):
 def add_tabs_to_string(string, tab_level):
     """ This is a helper function for adding a newline and the specified number of tabs to a string. """
     return ("\n" + ("\t" * tab_level) + string)
-            
+           
+def recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, arg2=[]):
+            if len(arg2) == 0:
+                return accumulator + add_tabs_to_string("return " + second.object_representation(), tab_level+1) 
+            else:
+                (arg2Name,arg) = arg2.pop()
+                return accumulator + generate_helper(arg, second, arg2Name, boundVars, "", tab_level+1, arg2)
+
             
 def generate_helper(first, second, me, boundVars, accumulator, tab_level, arg2=[]) -> str:
     """ Generates Python code for a simplification rule and returns it as a string """
@@ -151,38 +158,26 @@ def generate_helper(first, second, me, boundVars, accumulator, tab_level, arg2=[
             if l in boundVars:
                 accumulator += add_tabs_to_string(f"if str({l})==str({me}):", tab_level)
                 if len(arg2) == 0:
-                    return accumulator  + add_tabs_to_string("return " + second.object_representation(), tab_level+1)
+                    return accumulator + add_tabs_to_string("return " + second.object_representation(), tab_level+1)
                 else:
-                    arg = arg2.pop()
-                    return accumulator + generate_helper(arg, second, f'arg{len(arg2)+2}', boundVars + [l], "", tab_level+1, arg2)
+                    (arg2Name,arg) = arg2.pop()
+                    return accumulator +  generate_helper(arg, second, arg2Name, boundVars + [l], "", tab_level+1, arg2)
             else:
                 accumulator += add_tabs_to_string(f"{l} = {me}", tab_level)
                 if len(arg2) == 0:
                     return accumulator + add_tabs_to_string("return " + second.object_representation(), tab_level)
                 else:
-                    arg = arg2.pop()
-                    return accumulator + generate_helper(arg, second, f'arg{len(arg2)+2}', boundVars + [l], "", tab_level, arg2)
+                    (arg2Name,arg) = arg2.pop()
+                    return accumulator +  generate_helper(arg, second, arg2Name, boundVars + [l], "", tab_level, arg2)
         case COR_Expressions.UniversalRelation():
             accumulator += add_tabs_to_string(f"if isinstance({me}, COR_Expressions.UniversalRelation):", tab_level)
-            if len(arg2) == 0:
-                return accumulator + add_tabs_to_string("return " + second.object_representation(), tab_level+1) 
-            else:
-                arg = arg2.pop()
-                return accumulator + generate_helper(arg, second, f'arg{len(arg2)+2}', boundVars, "", tab_level+1, arg2)
+            return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, arg2)
         case COR_Expressions.EmptyRelation():
             accumulator += add_tabs_to_string(f"if isinstance({me}, COR_Expressions.EmptyRelation):", tab_level)
-            if len(arg2) == 0:
-                return accumulator + add_tabs_to_string("return " + second.object_representation(), tab_level+1) 
-            else:
-                arg = arg2.pop()
-                return accumulator + generate_helper(arg, second, f'arg{len(arg2)+2}', boundVars, "", tab_level+1, arg2)
+            return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, arg2)
         case COR_Expressions.IdentityRelation():
             accumulator += add_tabs_to_string(f"if isinstance({me}, COR_Expressions.IdentityRelation):", tab_level)
-            if len(arg2) == 0:
-                return accumulator + add_tabs_to_string("return " + second.object_representation(), tab_level+1) 
-            else:
-                arg = arg2.pop()
-                return accumulator + generate_helper(arg, second, f'arg{len(arg2)+2}', boundVars, "", tab_level+1, arg2)
+            return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, arg2)
         case COR_Expressions.Complement(argument=arg):
             accumulator += add_tabs_to_string(f"if isinstance({me}, COR_Expressions.Complement):", tab_level) + add_tabs_to_string(f"arg = {me}.argument", tab_level+1)
             return generate_helper(arg,second,'arg', boundVars, accumulator, tab_level+1, arg2)
@@ -190,17 +185,17 @@ def generate_helper(first, second, me, boundVars, accumulator, tab_level, arg2=[
             accumulator += add_tabs_to_string(f"if isinstance({me}, COR_Expressions.Converse):", tab_level) + add_tabs_to_string(f"arg = {me}.argument", tab_level+1)
             return generate_helper(arg,second,'arg', boundVars, accumulator, tab_level+1, arg2)
         case COR_Expressions.Union(argument1=arg1, argument2=argLater):
-            accumulator += add_tabs_to_string(f"if isinstance({me}, COR_Expressions.Union):", tab_level) + add_tabs_to_string(f"arg1, arg{len(arg2)+2} = {me}.argument1, {me}.argument2", tab_level+1)
-            return generate_helper(arg1,second, 'arg1', boundVars, accumulator, tab_level+1, arg2+[argLater])
+            accumulator += add_tabs_to_string(f"if isinstance({me}, COR_Expressions.Union):", tab_level) + add_tabs_to_string(f'lhs{tab_level}, rhs{tab_level} = {me}.argument1, {me}.argument2', tab_level+1)
+            return generate_helper(arg1,second, f'lhs{tab_level}', boundVars, accumulator, tab_level+1, arg2+[(f'rhs{tab_level}',argLater)])
         case COR_Expressions.Intersection(argument1=arg1, argument2=argLater):
-            accumulator += add_tabs_to_string(f"if isinstance({me}, COR_Expressions.Intersection):", tab_level) + add_tabs_to_string(f"arg1, arg{len(arg2)+2} = {me}.argument1, {me}.argument2", tab_level+1)
-            return generate_helper(arg1, second, 'arg1', boundVars, accumulator, tab_level+1, arg2+[argLater])
+            accumulator += add_tabs_to_string(f"if isinstance({me}, COR_Expressions.Intersection):", tab_level) + add_tabs_to_string(f'lhs{tab_level}, rhs{tab_level} = {me}.argument1, {me}.argument2', tab_level+1)
+            return generate_helper(arg1, second, f'lhs{tab_level}', boundVars, accumulator, tab_level+1, arg2+[(f'rhs{tab_level}',argLater)])
         case COR_Expressions.Dagger(argument1=arg1, argument2=argLater):
-            accumulator += add_tabs_to_string(f"if isinstance({me}, COR_Expressions.Dagger):", tab_level) + add_tabs_to_string(f"arg1, arg{len(arg2)+2} = {me}.argument1, {me}.argument2", tab_level+1)
-            return generate_helper(arg1, second, 'arg1', boundVars, accumulator, tab_level+1, arg2+[argLater])
+            accumulator += add_tabs_to_string(f"if isinstance({me}, COR_Expressions.Dagger):", tab_level) + add_tabs_to_string(f'lhs{tab_level}, rhs{tab_level} = {me}.argument1, {me}.argument2', tab_level+1)
+            return generate_helper(arg1, second, f'lhs{tab_level}', boundVars, accumulator, tab_level+1, arg2+[(f'rhs{tab_level}',argLater)])
         case COR_Expressions.Composition(argument1=arg1, argument2=argLater):
-            accumulator += add_tabs_to_string(f"if isinstance({me}, COR_Expressions.Composition):", tab_level) + add_tabs_to_string(f"arg1, arg{len(arg2)+2} = {me}.argument1, {me}.argument2", tab_level+1)
-            return generate_helper(arg1, second, 'arg1', boundVars, accumulator, tab_level+1, arg2+[argLater])
+            accumulator += add_tabs_to_string(f"if isinstance({me}, COR_Expressions.Composition):", tab_level) + add_tabs_to_string(f'lhs{tab_level}, rhs{tab_level} = {me}.argument1, {me}.argument2', tab_level+1)
+            return generate_helper(arg1, second, f'lhs{tab_level}', boundVars, accumulator, tab_level+1, arg2+[(f'rhs{tab_level}',argLater)])
     
     
 def group_by_prefix(lst):
@@ -220,22 +215,18 @@ def group_by_prefix(lst):
 
 def write_grouped_code(python_code, groups):
     """ This method helps us generate prettier code by grouping rules with similar prefixes. """
+    #min_tab_level=0
     for group in groups:
-        if group[-2:] == '_:': continue
+        #tab_level = len(group.split('\t'))
+        #if tab_level > min_tab_level:
         python_code.write(group+'\n')
         if isinstance(groups[group], dict):
             write_grouped_code(python_code, groups[group])
         else:
             for line in groups[group]:
                 python_code.write(line+'\n')
-    for group in groups:
-        if group[-2:] != '_:': continue
-        python_code.write(group+'\n')
-        if isinstance(groups[group], dict):
-            write_grouped_code(python_code, groups[group])
-        else:
-            for line in groups[group]:
-                python_code.write(line+'\n')
+                #if len(line.split('return')) > 1:
+                    #min_tab_level = tab_level
                 
                 
 def generate_code_from_cor_rules(cor_dict):
@@ -256,13 +247,12 @@ def generate_code_from_cor_rules(cor_dict):
     
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
-if __name__ == "__main__":
-    #look_for_simplification_rules(2, 6, True)
-    #look_for_simplification_rules(2, 6, False)
-    #look_for_simplification_rules(3, 6, True)
-    #look_for_simplification_rules(3, 6, False)
-    #look_for_simplification_rules(4, 6, True)
-    #look_for_simplification_rules(4, 6, False)
+if __name__ == "__main__": 
+    look_for_simplification_rules(1, 6)
+    look_for_simplification_rules(2, 6)
+    
+    #look_for_simplification_rules(3, 6)
+    #look_for_simplification_rules(4, 6)
     
     print_rule_dictionary(True)
     

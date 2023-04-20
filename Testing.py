@@ -141,17 +141,14 @@ def generate_all_FO3_formulas(size):
                             yield AND(formula, formula2)
 
 
-# size parameter must be >= 1
-def generate_all_COR_formulas(size, general):
+# size parameter must be >= 0
+def generate_all_COR_formulas(size):
     """ This method generates ALL COR expressions with the specified size (depth of expression tree) """
-    if size == 1:
-        if general:
-            choices = [0]
-        else:
-            choices = range(0, 3+1)  # endpoint is excluded
-    elif size == 2:
-        choices = range(4, 5+1)  # endpoint is excluded
-    else:
+    if size == 0:
+        choices = [0]
+    elif size == 1:
+        choices = range(1, 9+1)  # endpoint is excluded
+    elif size >= 2:
         choices = range(4, 9+1)  # endpoint is excluded
     for choice in choices:
         match choice:
@@ -165,30 +162,30 @@ def generate_all_COR_formulas(size, general):
             case 3:
                 yield UniversalRelation()
             case 4:
-                for formula in generate_all_COR_formulas(size - 1, general):
+                for formula in generate_all_COR_formulas(size - 1):
                     yield Complement(formula)
             case 5:
-                for formula in generate_all_COR_formulas(size - 1, general):
+                for formula in generate_all_COR_formulas(size - 1):
                     yield Converse(formula)
             case 6:
-                for size_other in range(1, size-1): # endpoint is excluded
-                    for formula in generate_all_COR_formulas(size_other, general):
-                        for formula2 in generate_all_COR_formulas(size-1 - size_other, general):
+                for size_other in range(0, size): # endpoint is excluded
+                    for formula in generate_all_COR_formulas(size_other):
+                        for formula2 in generate_all_COR_formulas(size-1 - size_other):
                             yield Dagger(formula, formula2)
             case 7:
-                for size_other in range(1, size-1): # endpoint is excluded
-                    for formula in generate_all_COR_formulas(size_other, general):
-                        for formula2 in generate_all_COR_formulas(size-1 - size_other, general):
+                for size_other in range(0, size): # endpoint is excluded
+                    for formula in generate_all_COR_formulas(size_other):
+                        for formula2 in generate_all_COR_formulas(size-1 - size_other):
                             yield Composition(formula, formula2)
             case 8:
-                for size_other in range(1, size-1): # endpoint is excluded
-                    for formula in generate_all_COR_formulas(size_other, general):
-                        for formula2 in generate_all_COR_formulas(size-1 - size_other, general):
+                for size_other in range(0, size): # endpoint is excluded
+                    for formula in generate_all_COR_formulas(size_other):
+                        for formula2 in generate_all_COR_formulas(size-1 - size_other):
                             yield Union(formula, formula2)
             case 9:
-                for size_other in range(1, size-1): # endpoint is excluded
-                    for formula in generate_all_COR_formulas(size_other, general):
-                        for formula2 in generate_all_COR_formulas(size-1 - size_other, general):
+                for size_other in range(0, size): # endpoint is excluded
+                    for formula in generate_all_COR_formulas(size_other):
+                        for formula2 in generate_all_COR_formulas(size-1 - size_other):
                             yield Intersection(formula, formula2)
 
 
@@ -241,7 +238,7 @@ def test_with_z3(fo3_expression) -> int:
     print("Something that should be equivalent to the original:", back)
     s = z3.Solver()
     s.add(z3.Not(asZ3(fo3_expression) == asZ3(back)))
-    s.set("timeout", 1000)  # If this returns an error, update the z3 module
+    s.set("timeout", 3000)  # If this returns an error, update the z3 module
     z3result = s.check()
     if z3result == z3.sat:
         print("\nZ3 found a bug! (this is bad!)")
