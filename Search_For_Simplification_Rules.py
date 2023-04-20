@@ -215,18 +215,22 @@ def group_by_prefix(lst):
 
 def write_grouped_code(python_code, groups):
     """ This method helps us generate prettier code by grouping rules with similar prefixes. """
-    #min_tab_level=0
+    return_level = 999 # Arbitrarily Large Number
     for group in groups:
-        #tab_level = len(group.split('\t'))
-        #if tab_level > min_tab_level:
-        python_code.write(group+'\n')
+        tab_level = len(group.split('\t'))
+        if tab_level < return_level:
+            return_level = 999 # Arbitrarily Large Number
+            python_code.write(group+'\n')
         if isinstance(groups[group], dict):
             write_grouped_code(python_code, groups[group])
         else:
             for line in groups[group]:
-                python_code.write(line+'\n')
-                #if len(line.split('return')) > 1:
-                    #min_tab_level = tab_level
+                tab_level = len(line.split('\t'))
+                if tab_level < return_level:
+                    return_level = 999 # Arbitrarily Large Number
+                    python_code.write(line+'\n')
+                    if "return" in line:
+                        return_level = len(line.split('\t'))
                 
                 
 def generate_code_from_cor_rules(cor_dict):
@@ -248,8 +252,8 @@ def generate_code_from_cor_rules(cor_dict):
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__": 
-    look_for_simplification_rules(1, 6)
-    look_for_simplification_rules(2, 6)
+    #look_for_simplification_rules(1, 6)
+    #look_for_simplification_rules(2, 6)
     
     #look_for_simplification_rules(3, 6)
     #look_for_simplification_rules(4, 6)

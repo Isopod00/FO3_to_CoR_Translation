@@ -14,8 +14,6 @@ def simplify(expression):
 			if str(B)==str(lhs2):
 				A = rhs2
 				return COR_Expressions.Intersection(A, B)
-				C = rhs2
-				return COR_Expressions.Intersection(C, B)
 			A = lhs2
 			if str(B)==str(rhs2):
 				return COR_Expressions.Intersection(B, A)
@@ -33,8 +31,6 @@ def simplify(expression):
 			if str(B)==str(lhs2):
 				C = rhs2
 				return B
-				A = rhs2
-				return B
 			C = lhs2
 			if str(B)==str(rhs2):
 				return B
@@ -48,8 +44,6 @@ def simplify(expression):
 			if str(A)==str(lhs2):
 				B = rhs2
 				return COR_Expressions.Intersection(B, A)
-				C = rhs2
-				return COR_Expressions.Intersection(A, C)
 			B = lhs2
 			if str(A)==str(rhs2):
 				return COR_Expressions.Intersection(B, A)
@@ -60,8 +54,6 @@ def simplify(expression):
 			lhs2, rhs2 = rhs1.argument1, rhs1.argument2
 			if str(A)==str(lhs2):
 				B = rhs2
-				return A
-				C = rhs2
 				return A
 			C = lhs2
 			if str(A)==str(rhs2):
@@ -88,8 +80,6 @@ def simplify(expression):
 			if str(C)==str(lhs2):
 				A = rhs2
 				return C
-				B = rhs2
-				return C
 			A = lhs2
 			if str(C)==str(rhs2):
 				return C
@@ -98,8 +88,6 @@ def simplify(expression):
 			if str(C)==str(lhs2):
 				B = rhs2
 				return COR_Expressions.Intersection(B, C)
-				A = rhs2
-				return COR_Expressions.Intersection(C, A)
 			A = lhs2
 			if str(C)==str(rhs2):
 				return COR_Expressions.Intersection(C, A)
@@ -187,10 +175,6 @@ def simplify(expression):
 		if isinstance(lhs1, COR_Expressions.UniversalRelation):
 			C = rhs1
 			return C
-			B = rhs1
-			return B
-			A = rhs1
-			return A
 		if isinstance(lhs1, COR_Expressions.Complement):
 			arg = lhs1.argument
 			B = arg
@@ -204,10 +188,6 @@ def simplify(expression):
 				return COR_Expressions.EmptyRelation()
 		if isinstance(lhs1, COR_Expressions.EmptyRelation):
 			B = rhs1
-			return COR_Expressions.EmptyRelation()
-			C = rhs1
-			return COR_Expressions.EmptyRelation()
-			A = rhs1
 			return COR_Expressions.EmptyRelation()
 	if isinstance(expression, COR_Expressions.Union):
 		lhs1, rhs1 = expression.argument1, expression.argument2
@@ -228,8 +208,6 @@ def simplify(expression):
 			if str(B)==str(lhs2):
 				A = rhs2
 				return COR_Expressions.Union(A, B)
-				C = rhs2
-				return COR_Expressions.Union(B, C)
 			C = lhs2
 			if str(B)==str(rhs2):
 				return COR_Expressions.Union(C, B)
@@ -240,8 +218,6 @@ def simplify(expression):
 				return B
 			if str(B)==str(lhs2):
 				A = rhs2
-				return B
-				C = rhs2
 				return B
 			C = lhs2
 			if str(B)==str(rhs2):
@@ -256,8 +232,6 @@ def simplify(expression):
 			if str(A)==str(lhs2):
 				C = rhs2
 				return COR_Expressions.Union(A, C)
-				B = rhs2
-				return COR_Expressions.Union(B, A)
 			B = lhs2
 			if str(A)==str(rhs2):
 				return COR_Expressions.Union(A, B)
@@ -271,8 +245,6 @@ def simplify(expression):
 				return A
 			if str(A)==str(lhs2):
 				B = rhs2
-				return A
-				C = rhs2
 				return A
 			B = lhs2
 			if str(A)==str(rhs2):
@@ -293,8 +265,6 @@ def simplify(expression):
 			if str(C)==str(lhs2):
 				A = rhs2
 				return COR_Expressions.Union(C, A)
-				B = rhs2
-				return COR_Expressions.Union(B, C)
 			A = lhs2
 			if str(C)==str(rhs2):
 				return COR_Expressions.Union(C, A)
@@ -307,8 +277,6 @@ def simplify(expression):
 			lhs2, rhs2 = rhs1.argument1, rhs1.argument2
 			if str(C)==str(lhs2):
 				A = rhs2
-				return C
-				B = rhs2
 				return C
 			A = lhs2
 			if str(C)==str(rhs2):
@@ -406,33 +374,17 @@ def simplify(expression):
 		if isinstance(lhs1, COR_Expressions.EmptyRelation):
 			C = rhs1
 			return C
-			A = rhs1
-			return A
-			B = rhs1
-			return B
 		if isinstance(lhs1, COR_Expressions.UniversalRelation):
 			C = rhs1
-			return COR_Expressions.UniversalRelation()
-			B = rhs1
-			return COR_Expressions.UniversalRelation()
-			A = rhs1
 			return COR_Expressions.UniversalRelation()
 	if isinstance(expression, COR_Expressions.Composition):
 		lhs1, rhs1 = expression.argument1, expression.argument2
 		if isinstance(lhs1, COR_Expressions.EmptyRelation):
 			C = rhs1
 			return COR_Expressions.EmptyRelation()
-			B = rhs1
-			return COR_Expressions.EmptyRelation()
-			A = rhs1
-			return COR_Expressions.EmptyRelation()
 		if isinstance(lhs1, COR_Expressions.IdentityRelation):
 			C = rhs1
 			return C
-			B = rhs1
-			return B
-			A = rhs1
-			return A
 		C = lhs1
 		if isinstance(rhs1, COR_Expressions.EmptyRelation):
 			return COR_Expressions.EmptyRelation()
@@ -456,10 +408,6 @@ def simplify(expression):
 			arg = arg.argument
 			A = arg
 			return A
-			B = arg
-			return B
-			C = arg
-			return C
 		if isinstance(arg, COR_Expressions.EmptyRelation):
 			return COR_Expressions.EmptyRelation()
 		if isinstance(arg, COR_Expressions.IdentityRelation):
@@ -472,10 +420,6 @@ def simplify(expression):
 			arg = arg.argument
 			B = arg
 			return B
-			A = arg
-			return A
-			C = arg
-			return C
 		if isinstance(arg, COR_Expressions.EmptyRelation):
 			return COR_Expressions.UniversalRelation()
 	if isinstance(expression, COR_Expressions.Dagger):
@@ -491,10 +435,6 @@ def simplify(expression):
 			return COR_Expressions.UniversalRelation()
 		if isinstance(lhs1, COR_Expressions.UniversalRelation):
 			B = rhs1
-			return COR_Expressions.UniversalRelation()
-			C = rhs1
-			return COR_Expressions.UniversalRelation()
-			A = rhs1
 			return COR_Expressions.UniversalRelation()
 
 	return expression # The given expression was unable to be simplified
