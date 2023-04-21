@@ -45,13 +45,27 @@ def look_for_simplification_rules(size, cpu_cores, timeout=3600):
 
     # Add the final answers to the rule dictionary
     for rule in final_cor_result:
-        cor_dict[rule[0]] = rule[1]
+        first = rule[0]
+        second = rule[1]
+        if alphabetical_order_check(str(first)):
+            cor_dict[first] = second
         
     # Save the rule dictionary to file
     with open('cor_dict.pickle', 'wb') as file:
         pickle.dump(cor_dict, file, protocol=pickle.HIGHEST_PROTOCOL)
 
     print(f"The search for simplification rules of size {size} finished in {default_timer() - start} seconds!")
+
+
+def alphabetical_order_check(string):
+    """ Prevent generating duplicate rules by only allowing rules with relations in alphabetical order """
+    next_letter = ord('A')
+    for char in string:
+        if ord(char) == next_letter:
+            next_letter += 1
+        elif (ord(char) in [ord('A'), ord('B'), ord('C')]) and (ord(char) > next_letter):
+            return False
+    return True # This rule passed the test!
 
 
 def is_already_simplifiable(formula) -> bool:
