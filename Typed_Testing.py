@@ -35,12 +35,12 @@ def generate_random_typed_FO3(size, allowed_variables):
             var1, var2 = allowed_variables[random.randint(0, 2)], allowed_variables[random.randint(0, 2)]
             return Predicate(letter_choice, var1, var2)
         case 4:  # ForAll
-            var = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], ['Q', 'R', 'S', 'T'][random.randint(0, 3)])
+            var = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], ['P', 'Q', 'R', 'S'][random.randint(0, 3)])
             new_allowed_variables = allowed_variables.copy()
             new_allowed_variables[random.randint(0, 2)] = var
             return ForAll(var, generate_random_typed_FO3(size - 1, new_allowed_variables))
         case 5:  # ThereExists
-            var = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], ['Q', 'R', 'S', 'T'][random.randint(0, 3)])
+            var = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], ['P', 'Q', 'R', 'S'][random.randint(0, 3)])
             new_allowed_variables = allowed_variables.copy()
             new_allowed_variables[random.randint(0, 2)] = var
             return ThereExists(var, generate_random_typed_FO3(size - 1, new_allowed_variables))
@@ -64,9 +64,9 @@ def random_typed_FO3_tester(attempts, size):
     successes = 0
     for attempt in range(attempts):
         # Generate 3 random variables
-        x = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], ['Q', 'R', 'S', 'T'][random.randint(0, 3)])
-        y = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], ['Q', 'R', 'S', 'T'][random.randint(0, 3)])
-        z = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], ['Q', 'R', 'S', 'T'][random.randint(0, 3)])
+        x = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], ['P', 'Q', 'R', 'S'][random.randint(0, 3)])
+        y = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], ['P', 'Q', 'R', 'S'][random.randint(0, 3)])
+        z = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], ['P', 'Q', 'R', 'S'][random.randint(0, 3)])
 
         test = make_typed_FO3_expression_closed(generate_random_typed_FO3(size, [x, y, z]))
         return_value = test_typed_with_z3(test)
