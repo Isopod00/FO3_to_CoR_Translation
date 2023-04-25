@@ -23,21 +23,43 @@ def make_homogeneous_formula_typed(formula):
         case Relation(letter=l):
             for set1 in ['P', 'Q', 'R', 'S']:
                 for set2 in ['P', 'Q', 'R', 'S']:
-                    yield Typed_Relation(set1, set2)
+                    yield Typed_Relation(l, set1, set2)
         case Complement(argument=arg):
-            yield Typed_Complement(make_homogeneous_formula_typed(arg))
+            for subformula in make_homogeneous_formula_typed(arg):
+                yield Typed_Complement(subformula)
         case Converse(argument=arg):
-            yield Typed_Converse(make_homogeneous_formula_typed(arg))
+            for subformula in make_homogeneous_formula_typed(arg):
+                yield Typed_Converse(subformula)
         case Union(argument1=arg1, argument2=arg2):
-            yield Typed_Union(make_homogeneous_formula_typed(arg1), make_homogeneous_formula_typed(arg2))
+            for subformula1 in make_homogeneous_formula_typed(arg1):
+                for subformula2 in make_homogeneous_formula_typed(arg2):
+                    try:
+                        yield Typed_Union(subformula1, subformula2)
+                    except:
+                        pass
         case Intersection(argument1=arg1, argument2=arg2):
-            yield Typed_Intersection(make_homogeneous_formula_typed(arg1), make_homogeneous_formula_typed(arg2))
+            for subformula1 in make_homogeneous_formula_typed(arg1):
+                for subformula2 in make_homogeneous_formula_typed(arg2):
+                    try:
+                        yield Typed_Intersection(subformula1, subformula2)
+                    except:
+                        pass
         case Dagger(argument1=arg1, argument2=arg2):
-            yield Typed_Dagger(make_homogeneous_formula_typed(arg1), make_homogeneous_formula_typed(arg2))
+            for subformula1 in make_homogeneous_formula_typed(arg1):
+                for subformula2 in make_homogeneous_formula_typed(arg2):
+                    try:
+                        yield Typed_Dagger(subformula1, subformula2)
+                    except:
+                        pass
         case Composition(argument1=arg1, argument2=arg2):
-            yield Typed_Composition(make_homogeneous_formula_typed(arg1), make_homogeneous_formula_typed(arg2))
+            for subformula1 in make_homogeneous_formula_typed(arg1):
+                for subformula2 in make_homogeneous_formula_typed(arg2):
+                    try:
+                        yield Typed_Composition(subformula1, subformula2)
+                    except:
+                        pass
         
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__": 
-    print([str(formula) for formula in make_homogeneous_formula_typed(UniversalRelation())])
+    print([str(formula) for formula in make_homogeneous_formula_typed(Union(Relation('A'), Relation('B')))])
