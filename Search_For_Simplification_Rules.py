@@ -136,12 +136,8 @@ def compute_chunk(formulas, size, timeout=3600):
     return cor_result
 
 
-def print_rule_dictionary(write_to_txt_file=False):
+def print_rule_dictionary(cor_dict, write_to_txt_file=False):
     """ This will print out the dictionary of stored rules. Set the parameter to True for printing to a .txt or False for printing to the terminal. """
-    
-    # Load the rule dictionary from file
-    with open('cor_dict.pickle', 'rb') as file:
-        cor_dict = pickle.load(file)
         
     if not write_to_txt_file:
         print("COR Rules: ")
@@ -272,8 +268,7 @@ if __name__ == "__main__":
     #look_for_simplification_rules(3, 6)
     #look_for_simplification_rules(4, 6)
     
-    print_rule_dictionary(True)
-    
     with open('cor_dict.pickle', 'rb') as file:
         cor_dict = pickle.load(file)
+    print_rule_dictionary(cor_dict, True)
     generate_code_from_cor_rules(cor_dict)
