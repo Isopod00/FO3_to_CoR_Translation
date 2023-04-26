@@ -2,6 +2,11 @@
 # Last Changed: May 2023
 """ This file is for creating typed simplification rules from the untyped rules we have found with Search_For_Simplification_Rules.py. """
 
+import pickle
+import z3  # pip install z3-solver
+
+import Typed_Testing
+import Search_For_Simplification_Rules
 from COR_Expressions import *
 from Typed_COR_Expressions import *
 
@@ -59,7 +64,43 @@ def make_homogeneous_formula_typed(formula):
                     except:
                         pass
         
+        
+def make_rules_typed():
+    # Load the rule dictionary from file
+    with open('cor_dict.pickle', 'rb') as file:
+        cor_dict = pickle.load(file)
+        
+    typed_rules_dict = dict()
+        
+    for lhs in cor_dict:
+        rhs = cor_dict[lhs]
+        typed_lhs = list(make_homogeneous_formula_typed(lhs))
+        typed_rhs = list(make_homogeneous_formula_typed(rhs))
+        for formula in typed_lhs:
+            for formula2 in typed_rhs:
+                first_translated = formula.translate('x', 'y')
+                second_translated = formula2.translate('x', 'y')
+                s = z3.Solver()
+                try:
+                    s.add(z3.Not(Typed_Testing.typed_asZ3(first_translated) == Typed_Testing.typed_asZ3(second_translated)))
+                    s.set("timeout", 500)
+                    z3result = s.check()
+                    if z3result == z3.unsat:
+                        typed_rules_dict[formula] = formula2
+                        print(formula, " -> ", formula2)
+                except:
+                    pass
+                    
+    # Save the new typed rule dictionary to file
+    with open('typed_cor_dict.pickle', 'wb') as file:
+        pickle.dump(typed_rules_dict, file, protocol=pickle.HIGHEST_PROTOCOL)
+
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__": 
-    print([str(formula) for formula in make_homogeneous_formula_typed(Union(Relation('A'), Relation('B')))])
+    #make_rules_typed()
+    
+    with open('typed_cor_dict.pickle', 'rb') as file:
+        typed_cor_dict = pickle.load(file)
+    #Search_For_Simplification_Rules.print_rule_dictionary(typed_cor_dict, True)
+    Search_For_Simplification_Rules.generate_code_from_cor_rules(typed_cor_dict, "Typed_Simplify.py", True)

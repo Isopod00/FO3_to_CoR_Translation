@@ -12,6 +12,7 @@ import pickle # save/load python objects from a file
 import Testing
 from FO3_Expressions import *
 import COR_Expressions
+import Typed_COR_Expressions
 
 import Simplify
 
@@ -153,13 +154,63 @@ def add_tabs_to_string(string, tab_level):
     """ This is a helper function for adding a newline and the specified number of tabs to a string. """
     return ("\n" + ("\t" * tab_level) + string)
            
-def recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, arg2=[]):
+def recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, typed, arg2=[]):
             if len(arg2) == 0:
                 return accumulator + add_tabs_to_string("return " + second.object_representation(), tab_level+1) 
             else:
                 (arg2Name,arg) = arg2.pop()
-                return accumulator + generate_helper(arg, second, arg2Name, boundVars, "", tab_level+1, arg2)
+                if not typed:
+                    return accumulator + generate_helper(arg, second, arg2Name, boundVars, "", tab_level+1, arg2)
+                else:
+                    return accumulator + generate_helper_typed(arg, second, arg2Name, boundVars, "", tab_level+1, arg2)
 
+            
+def generate_helper_typed(first, second, me, boundVars, accumulator, tab_level, arg2=[]) -> str:
+    """ Generates Python code for a typed simplification rule and returns it as a string """
+    match first:
+        case Typed_COR_Expressions.Typed_Relation(letter=l, set1=s1, set2=s2):
+            if l in boundVars:
+                accumulator += add_tabs_to_string(f"if str({l})==str({me}) and {l}.type() == {me}.type():", tab_level)
+                if len(arg2) == 0:
+                    return accumulator + add_tabs_to_string("return " + second.object_representation(), tab_level+1)
+                else:
+                    (arg2Name,arg) = arg2.pop()
+                    return accumulator +  generate_helper_typed(arg, second, arg2Name, boundVars + [l], "", tab_level+1, arg2)
+            else:
+                accumulator += add_tabs_to_string(f"{l} = {me}", tab_level)
+                if len(arg2) == 0:
+                    return accumulator + add_tabs_to_string("return " + second.object_representation(), tab_level)
+                else:
+                    (arg2Name,arg) = arg2.pop()
+                    return accumulator +  generate_helper_typed(arg, second, arg2Name, boundVars + [l], "", tab_level, arg2)
+        case Typed_COR_Expressions.Typed_UniversalRelation(set1=s1, set2=s2):
+            accumulator += add_tabs_to_string(f"if isinstance({me}, Typed_COR_Expressions.Typed_UniversalRelation) and {me}.set1=='{s1}' and {me}.set2=='{s2}':", tab_level)
+            return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, True, arg2)
+        case Typed_COR_Expressions.Typed_EmptyRelation(set1=s1, set2=s2):
+            accumulator += add_tabs_to_string(f"if isinstance({me}, Typed_COR_Expressions.Typed_EmptyRelation) and {me}.set1=='{s1}' and {me}.set2=='{s2}':", tab_level)
+            return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, True, arg2)
+        case Typed_COR_Expressions.Typed_IdentityRelation(set1=s1, set2=s2):
+            accumulator += add_tabs_to_string(f"if isinstance({me}, Typed_COR_Expressions.Typed_IdentityRelation) and {me}.set1=='{s1}' and {me}.set2=='{s2}':", tab_level)
+            return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, True, arg2)
+        case Typed_COR_Expressions.Typed_Complement(argument=arg):
+            accumulator += add_tabs_to_string(f"if isinstance({me}, Typed_COR_Expressions.Typed_Complement):", tab_level) + add_tabs_to_string(f"arg = {me}.argument", tab_level+1)
+            return generate_helper_typed(arg,second,'arg', boundVars, accumulator, tab_level+1, arg2)
+        case Typed_COR_Expressions.Typed_Converse(argument=arg):
+            accumulator += add_tabs_to_string(f"if isinstance({me}, Typed_COR_Expressions.Typed_Converse):", tab_level) + add_tabs_to_string(f"arg = {me}.argument", tab_level+1)
+            return generate_helper_typed(arg,second,'arg', boundVars, accumulator, tab_level+1, arg2)
+        case Typed_COR_Expressions.Typed_Union(argument1=arg1, argument2=argLater):
+            accumulator += add_tabs_to_string(f"if isinstance({me}, Typed_COR_Expressions.Typed_Union):", tab_level) + add_tabs_to_string(f'lhs{tab_level}, rhs{tab_level} = {me}.argument1, {me}.argument2', tab_level+1)
+            return generate_helper_typed(arg1,second, f'lhs{tab_level}', boundVars, accumulator, tab_level+1, arg2+[(f'rhs{tab_level}',argLater)])
+        case Typed_COR_Expressions.Typed_Intersection(argument1=arg1, argument2=argLater):
+            accumulator += add_tabs_to_string(f"if isinstance({me}, Typed_COR_Expressions.Typed_Intersection):", tab_level) + add_tabs_to_string(f'lhs{tab_level}, rhs{tab_level} = {me}.argument1, {me}.argument2', tab_level+1)
+            return generate_helper_typed(arg1, second, f'lhs{tab_level}', boundVars, accumulator, tab_level+1, arg2+[(f'rhs{tab_level}',argLater)])
+        case Typed_COR_Expressions.Typed_Dagger(argument1=arg1, argument2=argLater):
+            accumulator += add_tabs_to_string(f"if isinstance({me}, Typed_COR_Expressions.Typed_Dagger):", tab_level) + add_tabs_to_string(f'lhs{tab_level}, rhs{tab_level} = {me}.argument1, {me}.argument2', tab_level+1)
+            return generate_helper_typed(arg1, second, f'lhs{tab_level}', boundVars, accumulator, tab_level+1, arg2+[(f'rhs{tab_level}',argLater)])
+        case Typed_COR_Expressions.Typed_Composition(argument1=arg1, argument2=argLater):
+            accumulator += add_tabs_to_string(f"if isinstance({me}, Typed_COR_Expressions.Typed_Composition):", tab_level) + add_tabs_to_string(f'lhs{tab_level}, rhs{tab_level} = {me}.argument1, {me}.argument2', tab_level+1)
+            return generate_helper_typed(arg1, second, f'lhs{tab_level}', boundVars, accumulator, tab_level+1, arg2+[(f'rhs{tab_level}',argLater)])
+            
             
 def generate_helper(first, second, me, boundVars, accumulator, tab_level, arg2=[]) -> str:
     """ Generates Python code for a simplification rule and returns it as a string """
@@ -181,13 +232,13 @@ def generate_helper(first, second, me, boundVars, accumulator, tab_level, arg2=[
                     return accumulator +  generate_helper(arg, second, arg2Name, boundVars + [l], "", tab_level, arg2)
         case COR_Expressions.UniversalRelation():
             accumulator += add_tabs_to_string(f"if isinstance({me}, COR_Expressions.UniversalRelation):", tab_level)
-            return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, arg2)
+            return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, False, arg2)
         case COR_Expressions.EmptyRelation():
             accumulator += add_tabs_to_string(f"if isinstance({me}, COR_Expressions.EmptyRelation):", tab_level)
-            return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, arg2)
+            return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, False, arg2)
         case COR_Expressions.IdentityRelation():
             accumulator += add_tabs_to_string(f"if isinstance({me}, COR_Expressions.IdentityRelation):", tab_level)
-            return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, arg2)
+            return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, False, arg2)
         case COR_Expressions.Complement(argument=arg):
             accumulator += add_tabs_to_string(f"if isinstance({me}, COR_Expressions.Complement):", tab_level) + add_tabs_to_string(f"arg = {me}.argument", tab_level+1)
             return generate_helper(arg,second,'arg', boundVars, accumulator, tab_level+1, arg2)
@@ -212,7 +263,10 @@ def group_by_prefix(lst):
     """ This method helps us generate prettier code by grouping rules with similar prefixes. """
     groups = {}
     for item in lst:
-        prefix, remainder = (item[0],item[1:])
+        try:
+            prefix, remainder = (item[0],item[1:])
+        except:
+            continue
         if prefix in groups:
             groups[prefix].append(remainder)
         else:
@@ -243,16 +297,24 @@ def write_grouped_code(python_code, groups):
                         return_level = len(line.split('\t'))
                 
                 
-def generate_code_from_cor_rules(cor_dict, filename):
+def generate_code_from_cor_rules(cor_dict, filename, typed):
     """ Generates Python code in the file Simplify.py from a dictionary of simplification rules """
     # Create a new .py file to write to
     python_code = open(filename, "w+", encoding="utf_8")
     code = []
-    for first in cor_dict:
-        second = cor_dict[first]
-        code.append(generate_helper(first, second, "expression", [], "", 1).split('\n'))
+    if not typed:
+        for first in cor_dict:
+            second = cor_dict[first]
+            code.append(generate_helper(first, second, "expression", [], "", 1).split('\n'))
+    else:
+        for first in cor_dict:
+            second = cor_dict[first]
+            code.append(generate_helper_typed(first, second, "expression", [], "", 1).split('\n'))
     code = group_by_prefix(code)
-    python_code.write("import COR_Expressions" + "\n")
+    if not typed:
+        python_code.write("import COR_Expressions" + "\n")
+    else:
+        python_code.write("import Typed_COR_Expressions" + "\n")
     python_code.write("\ndef simplify(expression):")
     write_grouped_code(python_code, code)
     python_code.write("\n\treturn expression # The given expression was unable to be simplified")
@@ -271,4 +333,4 @@ if __name__ == "__main__":
     with open('cor_dict.pickle', 'rb') as file:
         cor_dict = pickle.load(file)
     print_rule_dictionary(cor_dict, True)
-    generate_code_from_cor_rules(cor_dict, "Simplify.py")
+    generate_code_from_cor_rules(cor_dict, "Simplify.py", False)
