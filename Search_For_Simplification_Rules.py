@@ -243,10 +243,10 @@ def write_grouped_code(python_code, groups):
                         return_level = len(line.split('\t'))
                 
                 
-def generate_code_from_cor_rules(cor_dict):
+def generate_code_from_cor_rules(cor_dict, filename):
     """ Generates Python code in the file Simplify.py from a dictionary of simplification rules """
     # Create a new .py file to write to
-    python_code = open("Simplify.py", "w+", encoding="utf_8")
+    python_code = open(filename, "w+", encoding="utf_8")
     code = []
     for first in cor_dict:
         second = cor_dict[first]
@@ -271,4 +271,4 @@ if __name__ == "__main__":
     with open('cor_dict.pickle', 'rb') as file:
         cor_dict = pickle.load(file)
     print_rule_dictionary(cor_dict, True)
-    generate_code_from_cor_rules(cor_dict)
+    generate_code_from_cor_rules(cor_dict, "Simplify.py")
