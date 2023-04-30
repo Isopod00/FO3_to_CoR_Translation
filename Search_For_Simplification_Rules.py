@@ -192,7 +192,7 @@ def generate_helper_typed(first, second, me, boundVars, accumulator, tab_level, 
     match first:
         case Typed_COR_Expressions.Typed_Relation(letter=l, set1=s1, set2=s2):
             if l in boundVars:
-                accumulator += add_tabs_to_string(f"if str({l})==str({me}) and {l}.type() == {me}.type():", tab_level)
+                accumulator += add_tabs_to_string(f"if str({l})==str({me}):", tab_level)
                 if len(arg2) == 0:
                     return accumulator + add_tabs_to_string("return " + second.object_representation(), tab_level+1)
                 else:

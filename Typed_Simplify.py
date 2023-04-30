@@ -4,7 +4,7 @@ def simplify(expression):
 	if isinstance(expression, Typed_COR_Expressions.Typed_Intersection):
 		lhs1, rhs1 = expression.argument1, expression.argument2
 		A = lhs1
-		if str(A)==str(rhs1) and A.type() == rhs1.type():
+		if str(A)==str(rhs1):
 			return A
 		if isinstance(rhs1, Typed_COR_Expressions.Typed_UniversalRelation) and rhs1.set1=='P' and rhs1.set2=='P':
 			return A
@@ -40,19 +40,19 @@ def simplify(expression):
 			return A
 		if isinstance(rhs1, Typed_COR_Expressions.Typed_Intersection):
 			lhs2, rhs2 = rhs1.argument1, rhs1.argument2
-			if str(A)==str(lhs2) and A.type() == lhs2.type():
+			if str(A)==str(lhs2):
 				B = rhs2
 				return Typed_COR_Expressions.Typed_Intersection(B, A)
 			B = lhs2
-			if str(A)==str(rhs2) and A.type() == rhs2.type():
+			if str(A)==str(rhs2):
 				return Typed_COR_Expressions.Typed_Intersection(A, B)
 		if isinstance(rhs1, Typed_COR_Expressions.Typed_Union):
 			lhs2, rhs2 = rhs1.argument1, rhs1.argument2
-			if str(A)==str(lhs2) and A.type() == lhs2.type():
+			if str(A)==str(lhs2):
 				B = rhs2
 				return A
 			B = lhs2
-			if str(A)==str(rhs2) and A.type() == rhs2.type():
+			if str(A)==str(rhs2):
 				return A
 		if isinstance(rhs1, Typed_COR_Expressions.Typed_EmptyRelation) and rhs1.set1=='P' and rhs1.set2=='P':
 			return Typed_COR_Expressions.Typed_EmptyRelation('P', 'P')
@@ -88,7 +88,7 @@ def simplify(expression):
 			return Typed_COR_Expressions.Typed_EmptyRelation('S', 'S')
 		if isinstance(rhs1, Typed_COR_Expressions.Typed_Complement):
 			arg = rhs1.argument
-			if str(A)==str(arg) and A.type() == arg.type():
+			if str(A)==str(arg):
 				return Typed_COR_Expressions.Typed_EmptyRelation('P', 'P')
 				return Typed_COR_Expressions.Typed_EmptyRelation('P', 'Q')
 				return Typed_COR_Expressions.Typed_EmptyRelation('P', 'R')
@@ -109,9 +109,9 @@ def simplify(expression):
 			lhs2, rhs2 = lhs1.argument1, lhs1.argument2
 			A = lhs2
 			B = rhs2
-			if str(B)==str(rhs1) and B.type() == rhs1.type():
+			if str(B)==str(rhs1):
 				return B
-			if str(A)==str(rhs1) and A.type() == rhs1.type():
+			if str(A)==str(rhs1):
 				return A
 		if isinstance(lhs1, Typed_COR_Expressions.Typed_UniversalRelation) and lhs1.set1=='P' and lhs1.set2=='P':
 			A = rhs1
@@ -165,9 +165,9 @@ def simplify(expression):
 			lhs2, rhs2 = lhs1.argument1, lhs1.argument2
 			A = lhs2
 			B = rhs2
-			if str(A)==str(rhs1) and A.type() == rhs1.type():
+			if str(A)==str(rhs1):
 				return Typed_COR_Expressions.Typed_Intersection(B, A)
-			if str(B)==str(rhs1) and B.type() == rhs1.type():
+			if str(B)==str(rhs1):
 				return Typed_COR_Expressions.Typed_Intersection(B, A)
 		if isinstance(lhs1, Typed_COR_Expressions.Typed_EmptyRelation) and lhs1.set1=='P' and lhs1.set2=='P':
 			A = rhs1
@@ -220,7 +220,7 @@ def simplify(expression):
 		if isinstance(lhs1, Typed_COR_Expressions.Typed_Complement):
 			arg = lhs1.argument
 			A = arg
-			if str(A)==str(rhs1) and A.type() == rhs1.type():
+			if str(A)==str(rhs1):
 				return Typed_COR_Expressions.Typed_EmptyRelation('P', 'P')
 				return Typed_COR_Expressions.Typed_EmptyRelation('P', 'Q')
 				return Typed_COR_Expressions.Typed_EmptyRelation('P', 'R')
@@ -240,7 +240,7 @@ def simplify(expression):
 	if isinstance(expression, Typed_COR_Expressions.Typed_Union):
 		lhs1, rhs1 = expression.argument1, expression.argument2
 		A = lhs1
-		if str(A)==str(rhs1) and A.type() == rhs1.type():
+		if str(A)==str(rhs1):
 			return A
 		if isinstance(rhs1, Typed_COR_Expressions.Typed_UniversalRelation) and rhs1.set1=='P' and rhs1.set2=='P':
 			return Typed_COR_Expressions.Typed_UniversalRelation('P', 'P')
@@ -277,18 +277,18 @@ def simplify(expression):
 		if isinstance(rhs1, Typed_COR_Expressions.Typed_Intersection):
 			lhs2, rhs2 = rhs1.argument1, rhs1.argument2
 			B = lhs2
-			if str(A)==str(rhs2) and A.type() == rhs2.type():
+			if str(A)==str(rhs2):
 				return A
-			if str(A)==str(lhs2) and A.type() == lhs2.type():
+			if str(A)==str(lhs2):
 				B = rhs2
 				return A
 		if isinstance(rhs1, Typed_COR_Expressions.Typed_Union):
 			lhs2, rhs2 = rhs1.argument1, rhs1.argument2
-			if str(A)==str(lhs2) and A.type() == lhs2.type():
+			if str(A)==str(lhs2):
 				B = rhs2
 				return Typed_COR_Expressions.Typed_Union(B, A)
 			B = lhs2
-			if str(A)==str(rhs2) and A.type() == rhs2.type():
+			if str(A)==str(rhs2):
 				return Typed_COR_Expressions.Typed_Union(B, A)
 		if isinstance(rhs1, Typed_COR_Expressions.Typed_EmptyRelation) and rhs1.set1=='P' and rhs1.set2=='P':
 			return A
@@ -324,7 +324,7 @@ def simplify(expression):
 			return A
 		if isinstance(rhs1, Typed_COR_Expressions.Typed_Complement):
 			arg = rhs1.argument
-			if str(A)==str(arg) and A.type() == arg.type():
+			if str(A)==str(arg):
 				return Typed_COR_Expressions.Typed_UniversalRelation('P', 'P')
 				return Typed_COR_Expressions.Typed_UniversalRelation('P', 'Q')
 				return Typed_COR_Expressions.Typed_UniversalRelation('P', 'R')
@@ -393,22 +393,22 @@ def simplify(expression):
 			lhs2, rhs2 = lhs1.argument1, lhs1.argument2
 			A = lhs2
 			B = rhs2
-			if str(B)==str(rhs1) and B.type() == rhs1.type():
+			if str(B)==str(rhs1):
 				return B
-			if str(A)==str(rhs1) and A.type() == rhs1.type():
+			if str(A)==str(rhs1):
 				return A
 		if isinstance(lhs1, Typed_COR_Expressions.Typed_Union):
 			lhs2, rhs2 = lhs1.argument1, lhs1.argument2
 			A = lhs2
 			B = rhs2
-			if str(B)==str(rhs1) and B.type() == rhs1.type():
+			if str(B)==str(rhs1):
 				return Typed_COR_Expressions.Typed_Union(A, B)
-			if str(A)==str(rhs1) and A.type() == rhs1.type():
+			if str(A)==str(rhs1):
 				return Typed_COR_Expressions.Typed_Union(B, A)
 		if isinstance(lhs1, Typed_COR_Expressions.Typed_Complement):
 			arg = lhs1.argument
 			A = arg
-			if str(A)==str(rhs1) and A.type() == rhs1.type():
+			if str(A)==str(rhs1):
 				return Typed_COR_Expressions.Typed_UniversalRelation('P', 'P')
 				return Typed_COR_Expressions.Typed_UniversalRelation('P', 'Q')
 				return Typed_COR_Expressions.Typed_UniversalRelation('P', 'R')
