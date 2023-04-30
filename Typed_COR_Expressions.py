@@ -25,7 +25,7 @@ class Typed_UniversalRelation:
         return 1
     
     def object_representation(self) -> str:
-        return f"Typed_COR_Expressions.Typed_UniversalRelation('{self.set1}', '{self.set2}')"
+        return f"Typed_COR_Expressions.Typed_UniversalRelation(expression.type()[0], expression.type()[1])"
 
 
 class Typed_EmptyRelation:
@@ -48,7 +48,7 @@ class Typed_EmptyRelation:
         return 1
     
     def object_representation(self) -> str:
-        return f"Typed_COR_Expressions.Typed_EmptyRelation('{self.set1}', '{self.set2}')"
+        return f"Typed_COR_Expressions.Typed_EmptyRelation(expression.type()[0], expression.type()[1])"
 
 
 class Typed_IdentityRelation:
@@ -71,7 +71,7 @@ class Typed_IdentityRelation:
         return 1
     
     def object_representation(self) -> str:
-        return f"Typed_COR_Expressions.Typed_IdentityRelation('{self.set1}', '{self.set2}')"
+        return f"Typed_COR_Expressions.Typed_IdentityRelation(expression.type()[0], expression.type()[1])"
 
 
 class Typed_Converse:

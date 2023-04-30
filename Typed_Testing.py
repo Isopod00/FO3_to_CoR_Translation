@@ -7,6 +7,7 @@ import random
 import z3  # pip install z3-solver
 
 from Typed_FO3_Translation import *
+import Search_For_Simplification_Rules
 
 
 # size parameter must be >= 1
@@ -119,7 +120,9 @@ def test_typed_with_z3(fo3_expression) -> int:
     print("Nice FO3 Translation:  ", nice)  # Nice FO3 Term
     final = typed_final_translation(nice, Typed_Variable('x', "Left"), Typed_Variable('y', "Right"))
     print("\nFinal Translation:   ", final)
-    back = FO3_Translation_Methods.T_Nice(ForAll(Typed_Variable('a', 'A'), ForAll(Typed_Variable('b', 'B'), final.translate('a', 'b'))))
+    simplified = Search_For_Simplification_Rules.fully_simplify(final, True)
+    print("Simplified:          ", simplified)
+    back = FO3_Translation_Methods.T_Nice(ForAll(Typed_Variable('a', 'A'), ForAll(Typed_Variable('b', 'B'), simplified.translate('a', 'b'))))
     print("Something that should be equivalent to the original:", back)
     s = z3.Solver()
     s.add(z3.Not(typed_asZ3(fo3_expression) == typed_asZ3(back)))

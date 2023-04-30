@@ -206,13 +206,13 @@ def generate_helper_typed(first, second, me, boundVars, accumulator, tab_level, 
                     (arg2Name,arg) = arg2.pop()
                     return accumulator +  generate_helper_typed(arg, second, arg2Name, boundVars + [l], "", tab_level, arg2)
         case Typed_COR_Expressions.Typed_UniversalRelation(set1=s1, set2=s2):
-            accumulator += add_tabs_to_string(f"if isinstance({me}, Typed_COR_Expressions.Typed_UniversalRelation) and {me}.set1=='{s1}' and {me}.set2=='{s2}':", tab_level)
+            accumulator += add_tabs_to_string(f"if isinstance({me}, Typed_COR_Expressions.Typed_UniversalRelation):", tab_level)
             return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, True, arg2)
         case Typed_COR_Expressions.Typed_EmptyRelation(set1=s1, set2=s2):
-            accumulator += add_tabs_to_string(f"if isinstance({me}, Typed_COR_Expressions.Typed_EmptyRelation) and {me}.set1=='{s1}' and {me}.set2=='{s2}':", tab_level)
+            accumulator += add_tabs_to_string(f"if isinstance({me}, Typed_COR_Expressions.Typed_EmptyRelation):", tab_level)
             return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, True, arg2)
         case Typed_COR_Expressions.Typed_IdentityRelation(set1=s1, set2=s2):
-            accumulator += add_tabs_to_string(f"if isinstance({me}, Typed_COR_Expressions.Typed_IdentityRelation) and {me}.set1=='{s1}' and {me}.set2=='{s2}':", tab_level)
+            accumulator += add_tabs_to_string(f"if isinstance({me}, Typed_COR_Expressions.Typed_IdentityRelation):", tab_level)
             return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, True, arg2)
         case Typed_COR_Expressions.Typed_Complement(argument=arg):
             accumulator += add_tabs_to_string(f"if isinstance({me}, Typed_COR_Expressions.Typed_Complement):", tab_level) + add_tabs_to_string(f"arg = {me}.argument", tab_level+1)
