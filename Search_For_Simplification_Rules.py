@@ -15,6 +15,7 @@ import COR_Expressions
 import Typed_COR_Expressions
 
 import Simplify
+import Typed_Simplify
 
 def look_for_simplification_rules(size, cpu_cores, timeout=3600):
     """ This method searches for simplification rules of a given size by utilizing the specified number of cpu cores """
@@ -74,13 +75,16 @@ def is_already_simplifiable(formula) -> bool:
     return not (str(fully_simplify(formula)) == str(formula))
         
         
-def simplify_subformula(subformula):
+def simplify_subformula(subformula, typed=False):
     """ This is just a helper function for the next method. """
-    return Simplify.simplify(simplify(subformula))
+    if not typed:
+        return Simplify.simplify(simplify(subformula))
+    else:
+        return Typed_Simplify.simplify(simplify_typed(subformula))
         
         
 def simplify(expression):
-    """ Simplify a COR expression using the code we have geenrated in Simplify.py """
+    """ Simplify a COR expression using the code we have generated in Simplify.py """
     match expression:
         case COR_Expressions.Complement(argument=arg):
             return Simplify.simplify(COR_Expressions.Complement(simplify_subformula(arg)))
@@ -98,10 +102,29 @@ def simplify(expression):
             return expression
         
 
-def fully_simplify(expression):
+def simplify_typed(expression):
+    """ Simplify a typed COR expression using the code we have generated in Typed_Simplify.py """
+    match expression:
+        case Typed_COR_Expressions.Typed_Complement(argument=arg):
+            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Complement(simplify_subformula(arg, True)))
+        case Typed_COR_Expressions.Typed_Converse(argument=arg):
+            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Converse(simplify_subformula(arg, True)))
+        case Typed_COR_Expressions.Typed_Union(argument1=arg1, argument2=arg2):
+            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Union(simplify_subformula(arg1, True), simplify_subformula(arg2, True)))
+        case Typed_COR_Expressions.Typed_Intersection(argument1=arg1, argument2=arg2):
+            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Intersection(simplify_subformula(arg1, True), simplify_subformula(arg2, True)))
+        case Typed_COR_Expressions.Typed_Dagger(argument1=arg1, argument2=arg2):
+            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Dagger(simplify_subformula(arg1, True), simplify_subformula(arg2, True)))
+        case Typed_COR_Expressions.Typed_Composition(argument1=arg1, argument2=arg2):
+            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Composition(simplify_subformula(arg1, True), simplify_subformula(arg2, True)))
+        case _:
+            return expression
+        
+
+def fully_simplify(expression, typed=False):
     """ This FULLY simplifies a COR expression by continuing to call simplify() until it cannot be simplified any further. """
     while True:
-        possibly_simplified = simplify(expression)
+        possibly_simplified = simplify(expression) if not typed else simplify_typed(expression)
         if str(possibly_simplified) == str(expression):
             break # Fully simplified!
         else:
@@ -331,5 +354,5 @@ if __name__ == "__main__":
     
     with open('cor_dict.pickle', 'rb') as file:
         cor_dict = pickle.load(file)
-    print_rule_dictionary(cor_dict, True)
+    print_rule_dictionary(cor_dict, True, "COR_Rules.txt")
     generate_code_from_cor_rules(cor_dict, "Simplify.py", False)
