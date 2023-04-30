@@ -10,7 +10,7 @@ import Search_For_Simplification_Rules
 from COR_Expressions import *
 from Typed_COR_Expressions import *
 
-# Takes an untyped COR expression and applies types to it
+# Takes an untyped COR expression and applies all valid types to it
 def make_homogeneous_formula_typed(formula):
     match formula:
         case UniversalRelation():
@@ -63,6 +63,45 @@ def make_homogeneous_formula_typed(formula):
                         yield Typed_Composition(subformula1, subformula2)
                     except:
                         pass
+ 
+ 
+# Takes an untyped COR expression and applies the specified type to it (type is an ordered pair)
+def give_type(formula, type):
+    set1 = type[0]
+    set2 = type[1]
+    match formula:
+        case UniversalRelation():
+            yield Typed_UniversalRelation(set1, set2)
+        case EmptyRelation():
+            yield Typed_EmptyRelation(set1, set2)
+        case IdentityRelation():
+            yield Typed_IdentityRelation(set1, set2)
+        case Relation(letter=l):
+            yield Typed_Relation(l, set1, set2)
+        case Complement(argument=arg):
+            for subformula in give_type(arg, type):
+                yield Typed_Complement(subformula)
+        case Converse(argument=arg):
+            for subformula in give_type(arg, type):
+                yield Typed_Converse(subformula)
+        case Union(argument1=arg1, argument2=arg2):
+            for subformula1 in give_type(arg1, type):
+                for subformula2 in give_type(arg2, type):
+                    yield Typed_Union(subformula1, subformula2)
+        case Intersection(argument1=arg1, argument2=arg2):
+            for subformula1 in give_type(arg1, type):
+                for subformula2 in give_type(arg2, type):
+                    yield Typed_Intersection(subformula1, subformula2)
+        case Dagger(argument1=arg1, argument2=arg2):
+            for set in ['P', 'Q', 'R', 'S']:
+                for subformula1 in give_type(arg1, (set1, set)):
+                    for subformula2 in give_type(arg2, (set, set2)):
+                        yield Typed_Dagger(subformula1, subformula2)
+        case Composition(argument1=arg1, argument2=arg2):
+            for set in ['P', 'Q', 'R', 'S']:
+                for subformula1 in give_type(arg1, (set1, set)):
+                    for subformula2 in give_type(arg2, (set, set2)):
+                        yield Typed_Composition(subformula1, subformula2)
         
         
 def make_rules_typed():
@@ -75,8 +114,8 @@ def make_rules_typed():
     for lhs in cor_dict:
         rhs = cor_dict[lhs]
         typed_lhs = list(make_homogeneous_formula_typed(lhs))
-        typed_rhs = list(make_homogeneous_formula_typed(rhs))
         for formula in typed_lhs:
+            typed_rhs = list(give_type(rhs, formula.type()))
             for formula2 in typed_rhs:
                 first_translated = formula.translate('x', 'y')
                 second_translated = formula2.translate('x', 'y')
