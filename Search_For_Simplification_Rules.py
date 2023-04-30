@@ -137,15 +137,14 @@ def compute_chunk(formulas, size, timeout=3600):
     return cor_result
 
 
-def print_rule_dictionary(cor_dict, write_to_txt_file=False):
+def print_rule_dictionary(cor_dict, write_to_txt_file=False, filename=""):
     """ This will print out the dictionary of stored rules. Set the parameter to True for printing to a .txt or False for printing to the terminal. """
         
     if not write_to_txt_file:
-        print("COR Rules: ")
         for key in cor_dict:
             print(str(key) + " -> " + str(cor_dict[key]))
     else:
-        cor_rules = open("COR_Rules.txt", "w+", encoding="utf_8")
+        cor_rules = open(filename, "w+", encoding="utf_8")
         for key in cor_dict:
             cor_rules.write(str(key) + " -> " + str(cor_dict[key]) + "\n")
             

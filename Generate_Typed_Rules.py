@@ -102,5 +102,5 @@ if __name__ == "__main__":
     
     with open('typed_cor_dict.pickle', 'rb') as file:
         typed_cor_dict = pickle.load(file)
-    #Search_For_Simplification_Rules.print_rule_dictionary(typed_cor_dict, True)
+    Search_For_Simplification_Rules.print_rule_dictionary(typed_cor_dict, True, "Typed_COR_Rules.txt")
     Search_For_Simplification_Rules.generate_code_from_cor_rules(typed_cor_dict, "Typed_Simplify.py", True)
