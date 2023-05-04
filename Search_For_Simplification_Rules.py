@@ -1,9 +1,10 @@
 # Author: Anthony Brogni
 # Last Changed: May 2023
 """ The code in this file is for finding all possible COR simplification rules up to a specified size. We utilize multiprocessing across multiple cores to make the search faster. """
-
+from tqdm import tqdm
 import multiprocessing
 from timeit import default_timer
+import random
 
 import numpy  # pip install numpy
 import z3  # pip install z3-solver
@@ -17,11 +18,11 @@ import Typed_COR_Expressions
 import Simplify
 import Typed_Simplify
 
-def look_for_simplification_rules(size, cpu_cores, timeout=3600):
+def look_for_simplification_rules(size, cpu_cores1, timeout=3600):
     """ This method searches for simplification rules of a given size by utilizing the specified number of cpu cores """
     global cor_dict
 
-    print(f"A search for simplification rules of size {size} has started (using {cpu_cores} logical processors)")
+    print(f"A search for simplification rules of size {size} has started (using {cpu_cores1} logical processors)")
     start = default_timer()  # Time how long this takes
         
     # Generate ALL formulas of the specified size and split this list into equally-sized chunks
@@ -29,20 +30,29 @@ def look_for_simplification_rules(size, cpu_cores, timeout=3600):
                  if (not is_already_simplifiable(formula))
                  and alphabetical_order_check(str(formula))]
     print(f"Searching {len(formulas)} formulas of this size.")
-    equal_chunks = numpy.array_split(numpy.array(formulas), cpu_cores)  # equal_chunks will be a list of numpy arrays
+    equal_chunks = numpy.array_split(numpy.array(formulas), len(formulas))  # equal_chunks will be a list of numpy arrays
+    random.shuffle(equal_chunks)  # for more accurate time measurement
 
-    # Create our pool of tasks
-    with multiprocessing.Pool(cpu_cores) as pool:
-        results = []
-        for array in equal_chunks:
-            results.append(pool.apply_async(compute_chunk, args=(list(array), size, timeout)))  # convert the numpy arrays to lists
-        pool.close()
-        pool.join()
+    results = []
+
+    if cpu_cores1 == 1:
+        # Using single-core for the progress bar:
+        for array in tqdm(equal_chunks):
+            results.append(compute_chunk(list(array), size, timeout))
+    else:
+        # Create our pool of tasks
+        with multiprocessing.Pool(cpu_cores1) as pool:
+            for array in equal_chunks:
+                results.append(pool.apply_async(compute_chunk, args=(list(array), size, timeout)))  # convert the numpy arrays to lists
+            pool.close()
+            pool.join()
+            for i in range(len(results)):
+                results[i] = results[i].get()
 
     # Construct the sets which will contain the final answers
     final_cor_result = set()
     for result in results:
-        final_cor_result = final_cor_result.union(result.get())
+        final_cor_result = final_cor_result.union(result)
     for (l,r) in final_cor_result:
         cor_dict[l]=r
 
@@ -126,37 +136,56 @@ def fully_simplify(expression, typed=False):
     return expression
 
 
+def compute_single(pair):
+    first,second=pair
+    first_translated = first.translate('x', 'y')
+    second_translated = second.translate('x', 'y')
+
+    s = z3.Solver()
+    s.set("timeout", 100)
+    z3result = s.check(z3.Not(Testing.asZ3(first_translated) == Testing.asZ3(second_translated)))
+    if z3result == z3.unsat:
+        return [(first, second)]
+    elif z3result == z3.sat:
+        return []
+    else:
+        q=('Stuck at: ' + str(first) + ' -> ' + str(second))
+        enum,(_,_,_,_) = z3.EnumSort('univ',['SA','SB','SC','SD'])
+        s.set("timeout", 6000)
+        z3result = s.check(z3.Not(Testing.asZ3(first_translated,enum) == Testing.asZ3(second_translated,enum)))
+        if z3result == z3.unsat:
+            print(q+'\nGoing into slow mode...')
+            s = z3.Solver()
+            s.set("timeout", 60000)
+            z3result = s.check(z3.Not(Testing.asZ3(first_translated) == Testing.asZ3(second_translated)))
+            if z3result == z3.unsat:
+                print('successful rule found by using more time!')
+                return [(first, second)]
+            elif z3result == z3.sat:
+                print('successful refutation found by using more time!')
+                return []
+            else:
+                raise Exception("Z3 does not know the answer!\n"+q)
+        elif z3result == z3.sat:
+            return [] # counter example found for a small universe, this happens quite a lot
+        else:
+            q=('Stuck at: ' + str(first) + ' -> ' + str(second))
+            raise Exception("Z3 times out even in the finite case!\n"+q)
+
 # Processes one chunk of a list of formulas and returns a set of the COR simplification rules found
-def compute_chunk(formulas, size, timeout=3600):
+def compute_chunk(formulas, size, cpu_cores, timeout=3600):
     """ This is simply a helper function for enabling multiprocessing. """
-    cor_result = set()
     
-    start = default_timer()
+    pairs = ((first,second)
+              for first in formulas
+              for vars_used in [set(char for char in str(first) if ord(char) in [ord('A'), ord('B'), ord('C')])]
+              for second_size in range(size)
+              for second in Testing.generate_all_COR_formulas(second_size)
+              if not is_already_simplifiable(second)
+                 and set(char for char in str(second) if ord(char) in [ord('A'), ord('B'), ord('C')]).issubset(vars_used)
+            )
+    return set(result for pair in pairs for result in compute_single(pair))
 
-    for first in formulas:
-        vars_used = set(char for char in str(first) if ord(char) in [ord('A'), ord('B'), ord('C')])
-        for second_size in range(0, size):
-            for second in [formula for formula in Testing.generate_all_COR_formulas(second_size) if not is_already_simplifiable(formula)]:
-                vars_second = set(char for char in str(second) if ord(char) in [ord('A'), ord('B'), ord('C')])
-                if not vars_second.issubset(vars_second):
-                    continue
-
-                first_translated = first.translate('x', 'y')
-                second_translated = second.translate('x', 'y')
-
-                s = z3.Solver()
-                s.add(z3.Not(Testing.asZ3(first_translated) == Testing.asZ3(second_translated)))
-                # s.set("timeout", 500)
-                z3result = s.check()
-                if z3result == z3.unsat:
-                    cor_result.add((first, second))
-                    # print('found rule: ' + str(first) + ' -> ' + str(second))
-                elif z3result == z3.sat:
-                    pass
-                else:
-                    raise Exception("Z3 timed out, aborted, or does not know the answer!")
-
-    return cor_result
 
 
 def print_rule_dictionary(cor_dict, write_to_txt_file=False, filename=""):
@@ -354,10 +383,12 @@ if __name__ == "__main__":
     
     #look_for_simplification_rules(0, 6)
     #look_for_simplification_rules(1, 6)
+    #look_for_simplification_rules(2, 1)
     #look_for_simplification_rules(2, 6)
-    
     look_for_simplification_rules(3, 6)
+    
+    #look_for_simplification_rules(3, 6)
     #look_for_simplification_rules(4, 6)
     
-    print_rule_dictionary(cor_dict, True, "COR_Rules.txt")
-    generate_code_from_cor_rules(cor_dict, "Simplify.py", False)
+    #print_rule_dictionary(cor_dict, True, "COR_Rules.txt")
+    #generate_code_from_cor_rules(cor_dict, "Simplify.py", False)

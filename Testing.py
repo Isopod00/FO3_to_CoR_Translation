@@ -14,7 +14,7 @@ import Search_For_Simplification_Rules
 SortForEverything = z3.DeclareSort('SomeSort')
 
 
-def asZ3(expression):
+def asZ3(expression, sort=SortForEverything):
     """ This method computes the z3 representation of an FO3 formula """
     match expression:
         case tt():
@@ -22,20 +22,20 @@ def asZ3(expression):
         case ff():
             return False
         case ForAll(argument=arg, variable=var):
-            return z3.ForAll([z3.Const(var, SortForEverything)], asZ3(arg))
+            return z3.ForAll([z3.Const(var, sort)], asZ3(arg,sort))
         case ThereExists(argument=arg, variable=var):
-            return z3.Exists([z3.Const(var, SortForEverything)], asZ3(arg))
+            return z3.Exists([z3.Const(var, sort)], asZ3(arg,sort))
         case AND(argument1=arg1, argument2=arg2):
-            return z3.And(asZ3(arg1), asZ3(arg2))
+            return z3.And(asZ3(arg1,sort), asZ3(arg2,sort))
         case OR(argument1=arg1, argument2=arg2):
-            return z3.Or(asZ3(arg1), asZ3(arg2))
+            return z3.Or(asZ3(arg1,sort), asZ3(arg2,sort))
         case Predicate(letter=a, argument1=arg1, argument2=arg2):
-            return z3.Function(a, SortForEverything, SortForEverything, z3.BoolSort())(
-                z3.Const(arg1, SortForEverything), z3.Const(arg2, SortForEverything))
+            return z3.Function(a, sort, sort, z3.BoolSort())(
+                z3.Const(arg1, sort), z3.Const(arg2, sort))
         case Negation(argument=arg):
-            return z3.Not(asZ3(arg))
+            return z3.Not(asZ3(arg,sort))
         case Equals(argument1=arg1, argument2=arg2):
-            return z3.Const(arg1, SortForEverything) == z3.Const(arg2, SortForEverything)
+            return z3.Const(arg1, sort) == z3.Const(arg2, sort)
 
 
 # size parameter must be >= 1
