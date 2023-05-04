@@ -19,16 +19,15 @@ import Typed_Simplify
 
 def look_for_simplification_rules(size, cpu_cores, timeout=3600):
     """ This method searches for simplification rules of a given size by utilizing the specified number of cpu cores """
-    
+    global cor_dict
+
     print(f"A search for simplification rules of size {size} has started (using {cpu_cores} logical processors)")
     start = default_timer()  # Time how long this takes
-
-    # Load the rule dictionary from file
-    with open('cor_dict.pickle', 'rb') as file:
-        cor_dict = pickle.load(file)
         
     # Generate ALL formulas of the specified size and split this list into equally-sized chunks
-    formulas = [formula for formula in list(Testing.generate_all_COR_formulas(size)) if not is_already_simplifiable(formula)]
+    formulas = [formula for formula in list(Testing.generate_all_COR_formulas(size))
+                 if (not is_already_simplifiable(formula))
+                 and alphabetical_order_check(str(formula))]
     print(f"Searching {len(formulas)} formulas of this size.")
     equal_chunks = numpy.array_split(numpy.array(formulas), cpu_cores)  # equal_chunks will be a list of numpy arrays
 
@@ -44,14 +43,9 @@ def look_for_simplification_rules(size, cpu_cores, timeout=3600):
     final_cor_result = set()
     for result in results:
         final_cor_result = final_cor_result.union(result.get())
+    for (l,r) in final_cor_result:
+        cor_dict[l]=r
 
-    # Add the final answers to the rule dictionary
-    for rule in final_cor_result:
-        first = rule[0]
-        second = rule[1]
-        if alphabetical_order_check(str(first)):
-            cor_dict[first] = second
-        
     # Save the rule dictionary to file
     with open('cor_dict.pickle', 'wb') as file:
         pickle.dump(cor_dict, file, protocol=pickle.HIGHEST_PROTOCOL)
@@ -72,7 +66,7 @@ def alphabetical_order_check(string):
 
 def is_already_simplifiable(formula) -> bool:
     """ If a formula is already simplifiable, then we don't need to consider it again. """
-    return not (str(fully_simplify(formula)) == str(formula))
+    return not (str(simplify(formula)) == str(formula))
         
         
 def simplify_subformula(subformula, typed=False):
@@ -81,23 +75,23 @@ def simplify_subformula(subformula, typed=False):
         return Simplify.simplify(simplify(subformula))
     else:
         return Typed_Simplify.simplify(simplify_typed(subformula))
-        
-        
+
+
 def simplify(expression):
     """ Simplify a COR expression using the code we have generated in Simplify.py """
     match expression:
         case COR_Expressions.Complement(argument=arg):
-            return Simplify.simplify(COR_Expressions.Complement(simplify_subformula(arg)))
+            return Simplify.simplify(COR_Expressions.Complement(simplify(arg)))
         case COR_Expressions.Converse(argument=arg):
-            return Simplify.simplify(COR_Expressions.Converse(simplify_subformula(arg)))
+            return Simplify.simplify(COR_Expressions.Converse(simplify(arg)))
         case COR_Expressions.Union(argument1=arg1, argument2=arg2):
-            return Simplify.simplify(COR_Expressions.Union(simplify_subformula(arg1), simplify_subformula(arg2)))
+            return Simplify.simplify(COR_Expressions.Union(simplify(arg1), simplify(arg2)))
         case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
-            return Simplify.simplify(COR_Expressions.Intersection(simplify_subformula(arg1), simplify_subformula(arg2)))
+            return Simplify.simplify(COR_Expressions.Intersection(simplify(arg1), simplify(arg2)))
         case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
-            return Simplify.simplify(COR_Expressions.Dagger(simplify_subformula(arg1), simplify_subformula(arg2)))
+            return Simplify.simplify(COR_Expressions.Dagger(simplify(arg1), simplify(arg2)))
         case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
-            return Simplify.simplify(COR_Expressions.Composition(simplify_subformula(arg1), simplify_subformula(arg2)))
+            return Simplify.simplify(COR_Expressions.Composition(simplify(arg1), simplify(arg2)))
         case _:
             return expression
         
@@ -106,17 +100,17 @@ def simplify_typed(expression):
     """ Simplify a typed COR expression using the code we have generated in Typed_Simplify.py """
     match expression:
         case Typed_COR_Expressions.Typed_Complement(argument=arg):
-            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Complement(simplify_subformula(arg, True)))
+            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Complement(simplify_typed(arg, True)))
         case Typed_COR_Expressions.Typed_Converse(argument=arg):
-            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Converse(simplify_subformula(arg, True)))
+            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Converse(simplify_typed(arg, True)))
         case Typed_COR_Expressions.Typed_Union(argument1=arg1, argument2=arg2):
-            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Union(simplify_subformula(arg1, True), simplify_subformula(arg2, True)))
+            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Union(simplify_typed(arg1, True), simplify_typed(arg2, True)))
         case Typed_COR_Expressions.Typed_Intersection(argument1=arg1, argument2=arg2):
-            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Intersection(simplify_subformula(arg1, True), simplify_subformula(arg2, True)))
+            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Intersection(simplify_typed(arg1, True), simplify_typed(arg2, True)))
         case Typed_COR_Expressions.Typed_Dagger(argument1=arg1, argument2=arg2):
-            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Dagger(simplify_subformula(arg1, True), simplify_subformula(arg2, True)))
+            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Dagger(simplify_typed(arg1, True), simplify_typed(arg2, True)))
         case Typed_COR_Expressions.Typed_Composition(argument1=arg1, argument2=arg2):
-            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Composition(simplify_subformula(arg1, True), simplify_subformula(arg2, True)))
+            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Composition(simplify_typed(arg1, True), simplify_typed(arg2, True)))
         case _:
             return expression
         
@@ -140,22 +134,27 @@ def compute_chunk(formulas, size, timeout=3600):
     start = default_timer()
 
     for first in formulas:
+        vars_used = set(char for char in str(first) if ord(char) in [ord('A'), ord('B'), ord('C')])
         for second_size in range(0, size):
             for second in [formula for formula in Testing.generate_all_COR_formulas(second_size) if not is_already_simplifiable(formula)]:
-                
-                # Return what we've found if we've been searching for longer than the timeout
-                if default_timer() - start >= timeout:
-                    return cor_result
+                vars_second = set(char for char in str(second) if ord(char) in [ord('A'), ord('B'), ord('C')])
+                if not vars_second.issubset(vars_second):
+                    continue
 
                 first_translated = first.translate('x', 'y')
                 second_translated = second.translate('x', 'y')
 
                 s = z3.Solver()
                 s.add(z3.Not(Testing.asZ3(first_translated) == Testing.asZ3(second_translated)))
-                s.set("timeout", 500)
+                # s.set("timeout", 500)
                 z3result = s.check()
                 if z3result == z3.unsat:
                     cor_result.add((first, second))
+                    # print('found rule: ' + str(first) + ' -> ' + str(second))
+                elif z3result == z3.sat:
+                    pass
+                else:
+                    raise Exception("Z3 timed out, aborted, or does not know the answer!")
 
     return cor_result
 
@@ -346,13 +345,19 @@ def generate_code_from_cor_rules(cor_dict, filename, typed):
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__": 
+    try:
+        with open('cor_dict.pickle', 'rb') as file:
+            cor_dict = pickle.load(file)
+    except FileNotFoundError:
+        cor_dict = {}
+        print("No cor_dict.pickle file found. Using an empty dictionary (and probably creating one later)...")
+    
+    #look_for_simplification_rules(0, 6)
     #look_for_simplification_rules(1, 6)
     #look_for_simplification_rules(2, 6)
     
-    #look_for_simplification_rules(3, 6)
+    look_for_simplification_rules(3, 6)
     #look_for_simplification_rules(4, 6)
     
-    with open('cor_dict.pickle', 'rb') as file:
-        cor_dict = pickle.load(file)
     print_rule_dictionary(cor_dict, True, "COR_Rules.txt")
     generate_code_from_cor_rules(cor_dict, "Simplify.py", False)
