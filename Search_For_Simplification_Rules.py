@@ -390,5 +390,5 @@ if __name__ == "__main__":
     #look_for_simplification_rules(3, 6)
     #look_for_simplification_rules(4, 6)
     
-    #print_rule_dictionary(cor_dict, True, "COR_Rules.txt")
-    #generate_code_from_cor_rules(cor_dict, "Simplify.py", False)
+    print_rule_dictionary(cor_dict, True, "COR_Rules.txt")
+    generate_code_from_cor_rules(cor_dict, "Simplify.py", False)
