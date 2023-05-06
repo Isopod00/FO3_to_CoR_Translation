@@ -110,17 +110,17 @@ def simplify_typed(expression):
     """ Simplify a typed COR expression using the code we have generated in Typed_Simplify.py """
     match expression:
         case Typed_COR_Expressions.Typed_Complement(argument=arg):
-            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Complement(simplify_typed(arg, True)))
+            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Complement(simplify_typed(arg)))
         case Typed_COR_Expressions.Typed_Converse(argument=arg):
-            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Converse(simplify_typed(arg, True)))
+            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Converse(simplify_typed(arg)))
         case Typed_COR_Expressions.Typed_Union(argument1=arg1, argument2=arg2):
-            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Union(simplify_typed(arg1, True), simplify_typed(arg2, True)))
+            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Union(simplify_typed(arg1), simplify_typed(arg2)))
         case Typed_COR_Expressions.Typed_Intersection(argument1=arg1, argument2=arg2):
-            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Intersection(simplify_typed(arg1, True), simplify_typed(arg2, True)))
+            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Intersection(simplify_typed(arg1), simplify_typed(arg2)))
         case Typed_COR_Expressions.Typed_Dagger(argument1=arg1, argument2=arg2):
-            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Dagger(simplify_typed(arg1, True), simplify_typed(arg2, True)))
+            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Dagger(simplify_typed(arg1), simplify_typed(arg2)))
         case Typed_COR_Expressions.Typed_Composition(argument1=arg1, argument2=arg2):
-            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Composition(simplify_typed(arg1, True), simplify_typed(arg2, True)))
+            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Composition(simplify_typed(arg1), simplify_typed(arg2)))
         case _:
             return expression
         
@@ -206,7 +206,10 @@ def add_tabs_to_string(string, tab_level):
            
 def recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, typed, arg2=[]):
             if len(arg2) == 0:
-                return accumulator + add_tabs_to_string("return " + second.object_representation(), tab_level+1) 
+                if not typed:
+                    return accumulator + add_tabs_to_string("return " + second.object_representation(), tab_level+1)
+                else:
+                    return accumulator + add_tabs_to_string("return " + second.object_representation("expression.type()[0]", "expression.type()[1]"), tab_level+1)
             else:
                 (arg2Name,arg) = arg2.pop()
                 if not typed:
@@ -222,14 +225,14 @@ def generate_helper_typed(first, second, me, boundVars, accumulator, tab_level, 
             if l in boundVars:
                 accumulator += add_tabs_to_string(f"if str({l})==str({me}):", tab_level)
                 if len(arg2) == 0:
-                    return accumulator + add_tabs_to_string("return " + second.object_representation(), tab_level+1)
+                    return accumulator + add_tabs_to_string("return " + second.object_representation("expression.type()[0]", "expression.type()[1]"), tab_level+1)
                 else:
                     (arg2Name,arg) = arg2.pop()
                     return accumulator +  generate_helper_typed(arg, second, arg2Name, boundVars + [l], "", tab_level+1, arg2)
             else:
                 accumulator += add_tabs_to_string(f"{l} = {me}", tab_level)
                 if len(arg2) == 0:
-                    return accumulator + add_tabs_to_string("return " + second.object_representation(), tab_level)
+                    return accumulator + add_tabs_to_string("return " + second.object_representation("expression.type()[0]", "expression.type()[1]"), tab_level)
                 else:
                     (arg2Name,arg) = arg2.pop()
                     return accumulator +  generate_helper_typed(arg, second, arg2Name, boundVars + [l], "", tab_level, arg2)
@@ -383,12 +386,8 @@ if __name__ == "__main__":
     
     #look_for_simplification_rules(0, 6)
     #look_for_simplification_rules(1, 6)
-    #look_for_simplification_rules(2, 1)
     #look_for_simplification_rules(2, 6)
-    look_for_simplification_rules(3, 6)
-    
     #look_for_simplification_rules(3, 6)
-    #look_for_simplification_rules(4, 6)
     
     print_rule_dictionary(cor_dict, True, "COR_Rules.txt")
     generate_code_from_cor_rules(cor_dict, "Simplify.py", False)

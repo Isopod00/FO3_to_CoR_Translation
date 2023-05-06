@@ -24,8 +24,8 @@ class Typed_UniversalRelation:
     def size(self) -> int:
         return 1
     
-    def object_representation(self) -> str:
-        return "Typed_COR_Expressions.Typed_UniversalRelation(expression.type()[0], expression.type()[1])"
+    def object_representation(self, type1, type2) -> str:
+        return f"Typed_COR_Expressions.Typed_UniversalRelation({type1}, {type2})"
 
 
 class Typed_EmptyRelation:
@@ -47,8 +47,8 @@ class Typed_EmptyRelation:
     def size(self) -> int:
         return 1
     
-    def object_representation(self) -> str:
-        return "Typed_COR_Expressions.Typed_EmptyRelation(expression.type()[0], expression.type()[1])"
+    def object_representation(self, type1, type2) -> str:
+        return f"Typed_COR_Expressions.Typed_EmptyRelation({type1}, {type2})"
 
 
 class Typed_IdentityRelation:
@@ -70,8 +70,8 @@ class Typed_IdentityRelation:
     def size(self) -> int:
         return 1
     
-    def object_representation(self) -> str:
-        return "Typed_COR_Expressions.Typed_IdentityRelation(expression.type()[0], expression.type()[1])"
+    def object_representation(self, type1, type2) -> str:
+        return f"Typed_COR_Expressions.Typed_IdentityRelation({type1}, {type2})"
 
 
 class Typed_Converse:
@@ -92,8 +92,8 @@ class Typed_Converse:
     def size(self) -> int:
         return 1 + self.argument.size()
     
-    def object_representation(self) -> str:
-        return f"Typed_COR_Expressions.Typed_Converse({self.argument.object_representation()})"
+    def object_representation(self, type1, type2) -> str:
+        return f"Typed_COR_Expressions.Typed_Converse({self.argument.object_representation(type2, type1)})"
 
 
 class Typed_Complement:
@@ -114,8 +114,8 @@ class Typed_Complement:
     def size(self) -> int:
         return 1 + self.argument.size()
     
-    def object_representation(self) -> str:
-        return f"Typed_COR_Expressions.Typed_Complement({self.argument.object_representation()})"
+    def object_representation(self, type1, type2) -> str:
+        return f"Typed_COR_Expressions.Typed_Complement({self.argument.object_representation(type1, type2)})"
 
 
 class Typed_Union:
@@ -140,8 +140,8 @@ class Typed_Union:
     def size(self) -> int:
         return 1 + self.argument1.size() + self.argument2.size()
     
-    def object_representation(self) -> str:
-        return f"Typed_COR_Expressions.Typed_Union({self.argument1.object_representation()}, {self.argument2.object_representation()})"
+    def object_representation(self, type1, type2) -> str:
+        return f"Typed_COR_Expressions.Typed_Union({self.argument1.object_representation(type1, type2)}, {self.argument2.object_representation(type1, type2)})"
 
 
 class Typed_Intersection:
@@ -166,8 +166,8 @@ class Typed_Intersection:
     def size(self) -> int:
         return 1 + self.argument1.size() + self.argument2.size()
     
-    def object_representation(self) -> str:
-        return f"Typed_COR_Expressions.Typed_Intersection({self.argument1.object_representation()}, {self.argument2.object_representation()})"
+    def object_representation(self, type1, type2) -> str:
+        return f"Typed_COR_Expressions.Typed_Intersection({self.argument1.object_representation(type1, type2)}, {self.argument2.object_representation(type1, type2)})"
 
 
 class Typed_Composition:
@@ -196,8 +196,13 @@ class Typed_Composition:
     def size(self) -> int:
         return 1 + self.argument1.size() + self.argument2.size()
     
-    def object_representation(self) -> str:
-        return f"Typed_COR_Expressions.Typed_Composition({self.argument1.object_representation()}, {self.argument2.object_representation()})"
+    def object_representation(self, type1, type2) -> str:
+        middle_type = self.argument1.type()[1]
+        if isinstance(self.argument1, Typed_Relation):
+            middle_type = f"{self.argument1.object_representation('left', 'right')}.type()[1]"
+        elif isinstance(self.argument2, Typed_Relation):
+            middle_type = middle_type = f"{self.argument2.object_representation('left', 'right')}.type()[0]"
+        return f"Typed_COR_Expressions.Typed_Composition({self.argument1.object_representation(type1, middle_type)}, {self.argument2.object_representation(middle_type, type2)})"
 
 
 class Typed_Dagger:
@@ -226,8 +231,13 @@ class Typed_Dagger:
     def size(self) -> int:
         return 1 + self.argument1.size() + self.argument2.size()
     
-    def object_representation(self) -> str:
-        return f"Typed_COR_Expressions.Typed_Dagger({self.argument1.object_representation()}, {self.argument2.object_representation()})"
+    def object_representation(self, type1, type2) -> str:
+        middle_type = self.argument1.type()[1]
+        if isinstance(self.argument1, Typed_Relation):
+            middle_type = f"{self.argument1.object_representation('left', 'right')}.type()[1]"
+        elif isinstance(self.argument2, Typed_Relation):
+            middle_type = middle_type = f"{self.argument2.object_representation('left', 'right')}.type()[0]"
+        return f"Typed_COR_Expressions.Typed_Dagger({self.argument1.object_representation(type1, middle_type)}, {self.argument2.object_representation(middle_type, type2)})"
 
 
 class Typed_Relation:
@@ -251,7 +261,7 @@ class Typed_Relation:
     def size(self) -> int:
         return 1
     
-    def object_representation(self) -> str:
+    def object_representation(self, type1, type2) -> str:
         return self.letter
 
 
