@@ -115,20 +115,22 @@ def make_rules_typed():
         rhs = cor_dict[lhs]
         typed_lhs = list(make_homogeneous_formula_typed(lhs))
         for formula in typed_lhs:
-            typed_rhs = list(give_type(rhs, formula.type()))
-            for formula2 in typed_rhs:
-                first_translated = formula.translate('x', 'y')
-                second_translated = formula2.translate('x', 'y')
-                s = z3.Solver()
-                try:
+            try:
+                typed_rhs = list(give_type(rhs, formula.type()))
+                for formula2 in typed_rhs:
+                    first_translated = formula.translate('x', 'y')
+                    second_translated = formula2.translate('x', 'y')
+                    
+                    s = z3.Solver()
                     s.add(z3.Not(Typed_Testing.typed_asZ3(first_translated) == Typed_Testing.typed_asZ3(second_translated)))
                     s.set("timeout", 500)
                     z3result = s.check()
+                    
                     if z3result == z3.unsat:
                         typed_rules_dict[formula] = formula2
                         print(formula, " -> ", formula2)
-                except:
-                    pass
+            except:
+                pass # Not a well-typed rule, so skip over it and carry on
                     
     # Save the new typed rule dictionary to file
     with open('typed_cor_dict.pickle', 'wb') as file:
@@ -137,9 +139,9 @@ def make_rules_typed():
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__": 
-    #make_rules_typed()
+    # make_rules_typed()
     
     with open('typed_cor_dict.pickle', 'rb') as file:
         typed_cor_dict = pickle.load(file)
-    Search_For_Simplification_Rules.print_rule_dictionary(typed_cor_dict, True, "Typed_COR_Rules.txt")
+    # Search_For_Simplification_Rules.print_rule_dictionary(typed_cor_dict, True, "Typed_COR_Rules.txt")
     Search_For_Simplification_Rules.generate_code_from_cor_rules(typed_cor_dict, "Typed_Simplify.py", True)
