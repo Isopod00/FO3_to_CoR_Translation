@@ -6,6 +6,7 @@ import multiprocessing
 from timeit import default_timer
 import random
 
+import multiset  # pip install multiset
 import numpy  # pip install numpy
 import z3  # pip install z3-solver
 import pickle # save/load python objects from a file
@@ -355,14 +356,15 @@ def generate_code_from_cor_rules(cor_dict, filename, typed):
     # Create a new .py file to write to
     python_code = open(filename, "w+", encoding="utf_8")
     code = []
-    if not typed:
-        for first in cor_dict:
-            second = cor_dict[first]
-            code.append(generate_helper(first, second, "expression", [], "", 1).split('\n'))
-    else:
-        for first in cor_dict:
-            second = cor_dict[first]
-            code.append(generate_helper_typed(first, second, "expression", [], "", 1).split('\n'))
+    for first in cor_dict:
+        vars_first = multiset.Multiset(char for char in str(first) if ord(char) in [ord('A'), ord('B'), ord('C')])
+        second = cor_dict[first]
+        vars_second = multiset.Multiset(char for char in str(second) if ord(char) in [ord('A'), ord('B'), ord('C')])
+        if vars_second.issubset(vars_first):
+            code.append(generate_helper_typed(first, second, "expression", [], "", 1).split('\n')
+                        if typed
+                         else generate_helper(first, second, "expression", [], "", 1).split('\n')
+            )
     code = group_by_prefix(code)
     if not typed:
         python_code.write("import COR_Expressions" + "\n")
