@@ -956,17 +956,6 @@ def simplify(expression):
 			return COR_Expressions.EmptyRelation()
 		if isinstance(rhs1, COR_Expressions.IdentityRelation):
 			return A
-		if isinstance(rhs1, COR_Expressions.Union):
-			lhs2, rhs2 = rhs1.argument1, rhs1.argument2
-			if isinstance(lhs2, COR_Expressions.IdentityRelation):
-				B = rhs2
-				return COR_Expressions.Union(A, COR_Expressions.Composition(A, B))
-			B = lhs2
-			if isinstance(rhs2, COR_Expressions.IdentityRelation):
-				return COR_Expressions.Union(COR_Expressions.Composition(A, B), A)
-			if str(A)==str(lhs2):
-				if isinstance(rhs2, COR_Expressions.IdentityRelation):
-					return COR_Expressions.Union(COR_Expressions.Composition(A, A), A)
 		if isinstance(rhs1, COR_Expressions.Dagger):
 			lhs2, rhs2 = rhs1.argument1, rhs1.argument2
 			if isinstance(lhs2, COR_Expressions.EmptyRelation):
@@ -991,16 +980,6 @@ def simplify(expression):
 				arg = rhs1.argument
 				B = arg
 				return COR_Expressions.Converse(COR_Expressions.Composition(B, A))
-		if isinstance(lhs1, COR_Expressions.Union):
-			lhs2, rhs2 = lhs1.argument1, lhs1.argument2
-			A = lhs2
-			if isinstance(rhs2, COR_Expressions.IdentityRelation):
-				B = rhs1
-				return COR_Expressions.Union(COR_Expressions.Composition(A, B), B)
-			if isinstance(lhs2, COR_Expressions.IdentityRelation):
-				A = rhs2
-				B = rhs1
-				return COR_Expressions.Union(B, COR_Expressions.Composition(A, B))
 		if isinstance(lhs1, COR_Expressions.Complement):
 			arg = lhs1.argument
 			A = arg

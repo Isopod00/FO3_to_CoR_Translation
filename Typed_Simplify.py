@@ -944,19 +944,6 @@ def simplify(expression):
 			return Typed_COR_Expressions.Typed_EmptyRelation(expression.type()[0], expression.type()[1])
 		if isinstance(rhs1, Typed_COR_Expressions.Typed_IdentityRelation):
 			return A
-		if isinstance(rhs1, Typed_COR_Expressions.Typed_Union):
-			lhs2, rhs2 = rhs1.argument1, rhs1.argument2
-			if isinstance(lhs2, Typed_COR_Expressions.Typed_IdentityRelation):
-				B = rhs2
-				return Typed_COR_Expressions.Typed_Union(A, Typed_COR_Expressions.Typed_Composition(A, B))
-				if str(A)==str(rhs2):
-					return Typed_COR_Expressions.Typed_Union(Typed_COR_Expressions.Typed_Composition(A, A), A)
-			B = lhs2
-			if isinstance(rhs2, Typed_COR_Expressions.Typed_IdentityRelation):
-				return Typed_COR_Expressions.Typed_Union(Typed_COR_Expressions.Typed_Composition(A, B), A)
-			if str(A)==str(lhs2):
-				if isinstance(rhs2, Typed_COR_Expressions.Typed_IdentityRelation):
-					return Typed_COR_Expressions.Typed_Union(Typed_COR_Expressions.Typed_Composition(A, A), A)
 		if isinstance(rhs1, Typed_COR_Expressions.Typed_Dagger):
 			lhs2, rhs2 = rhs1.argument1, rhs1.argument2
 			if isinstance(lhs2, Typed_COR_Expressions.Typed_EmptyRelation):
@@ -983,20 +970,6 @@ def simplify(expression):
 				return Typed_COR_Expressions.Typed_Converse(Typed_COR_Expressions.Typed_Composition(B, A))
 				if str(A)==str(arg):
 					return Typed_COR_Expressions.Typed_Converse(Typed_COR_Expressions.Typed_Composition(A, A))
-		if isinstance(lhs1, Typed_COR_Expressions.Typed_Union):
-			lhs2, rhs2 = lhs1.argument1, lhs1.argument2
-			A = lhs2
-			if isinstance(rhs2, Typed_COR_Expressions.Typed_IdentityRelation):
-				B = rhs1
-				return Typed_COR_Expressions.Typed_Union(Typed_COR_Expressions.Typed_Composition(A, B), B)
-				if str(A)==str(rhs1):
-					return Typed_COR_Expressions.Typed_Union(Typed_COR_Expressions.Typed_Composition(A, A), A)
-			if isinstance(lhs2, Typed_COR_Expressions.Typed_IdentityRelation):
-				A = rhs2
-				B = rhs1
-				return Typed_COR_Expressions.Typed_Union(B, Typed_COR_Expressions.Typed_Composition(A, B))
-				if str(A)==str(rhs1):
-					return Typed_COR_Expressions.Typed_Union(Typed_COR_Expressions.Typed_Composition(A, A), A)
 		if isinstance(lhs1, Typed_COR_Expressions.Typed_Complement):
 			arg = lhs1.argument
 			A = arg
