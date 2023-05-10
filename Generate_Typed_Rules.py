@@ -149,6 +149,9 @@ def delete_generalizable_rules():
         rule_applied = Typed_Simplify.simplify(lhs)[0]
         if rule_applied is not None and rule_applied.split(" =")[0] == str(lhs): # Only keep it if the rule applied matches lhs
             new_dict[lhs] = typed_cor_dict[lhs]
+        else:
+            print("Deleted Rule:", str(lhs) + " = " + str(typed_cor_dict[lhs]))
+            print("Rule Used Instead Was:", rule_applied)
         
     # Save the new typed rule dictionary to file
     with open('typed_cor_dict.pickle', 'wb') as file:

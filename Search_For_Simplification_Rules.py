@@ -368,9 +368,31 @@ def generate_code_from_cor_rules(cor_dict, filename, typed):
     # Close the file when done
     python_code.close()
     
+    
+def delete_generalizable_rules():
+    new_dict = dict()
+    
+    # Load the rule dictionary from file
+    with open('cor_dict.pickle', 'rb') as file:
+        cor_dict = pickle.load(file)
+        
+    for lhs in cor_dict:
+        rule_applied = Simplify.simplify(lhs)[0]
+        if rule_applied is not None and rule_applied.split(" =")[0] == str(lhs): # Only keep it if the rule applied matches lhs
+            new_dict[lhs] = cor_dict[lhs]
+        else:
+            print("Deleted Rule:", str(lhs) + " = " + str(cor_dict[lhs]))
+            print("Rule Used Instead Was:", rule_applied)
+        
+    # Save the new typed rule dictionary to file
+    with open('cor_dict.pickle', 'wb') as file:
+        pickle.dump(new_dict, file, protocol=pickle.HIGHEST_PROTOCOL)
+    
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__": 
+    delete_generalizable_rules()
+    
     try:
         with open('cor_dict.pickle', 'rb') as file:
             cor_dict = pickle.load(file)

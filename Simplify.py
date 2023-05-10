@@ -387,18 +387,6 @@ def simplify(expression):
 				C = lhs3
 				if str(B)==str(rhs3):
 					return ("((A) ∘ (B)) ∪ ((C) ∘ (B)) = ((C) ∪ (A)) ∘ (B)", COR_Expressions.Composition(COR_Expressions.Union(C, A), B))
-				if str(B)==str(lhs3):
-					if str(B)==str(rhs3):
-						return ("((A) ∘ (B)) ∪ ((B) ∘ (B)) = ((A) ∪ (B)) ∘ (B)", COR_Expressions.Composition(COR_Expressions.Union(A, B), B))
-			if str(A)==str(rhs2):
-				if isinstance(rhs1, COR_Expressions.Composition):
-					lhs4, rhs4 = rhs1.argument1, rhs1.argument2
-					if str(A)==str(lhs4):
-						B = rhs4
-						return ("((A) ∘ (A)) ∪ ((A) ∘ (B)) = (A) ∘ ((A) ∪ (B))", COR_Expressions.Composition(A, COR_Expressions.Union(A, B)))
-					B = lhs4
-					if str(A)==str(rhs4):
-						return ("((A) ∘ (A)) ∪ ((B) ∘ (A)) = ((B) ∪ (A)) ∘ (A)", COR_Expressions.Composition(COR_Expressions.Union(B, A), A))
 			if isinstance(rhs2, COR_Expressions.UniversalRelation):
 				if str(A)==str(rhs1):
 					return ("((A) ∘ (T)) ∪ (A) = (A) ∘ (T)", COR_Expressions.Composition(A, COR_Expressions.UniversalRelation()))
@@ -613,8 +601,6 @@ def simplify(expression):
 				if str(B)==str(rhs3):
 					return ("((A) ∩ (B)) ∩ ((C) ∪ (B)) = (B) ∩ (A)", COR_Expressions.Intersection(B, A))
 				if str(A)==str(lhs3):
-					if str(B)==str(rhs3):
-						return ("((A) ∩ (B)) ∩ ((A) ∪ (B)) = (A) ∩ (B)", COR_Expressions.Intersection(A, B))
 					C = rhs3
 					return ("((A) ∩ (B)) ∩ ((A) ∪ (C)) = (B) ∩ (A)", COR_Expressions.Intersection(B, A))
 			if isinstance(rhs1, COR_Expressions.Complement):
@@ -684,8 +670,6 @@ def simplify(expression):
 				if str(B)==str(rhs3):
 					return ("((A) ∪ (B)) ∩ ((C) ∪ (B)) = (B) ∪ ((A) ∩ (C))", COR_Expressions.Union(B, COR_Expressions.Intersection(A, C)))
 				if str(B)==str(lhs3):
-					if str(A)==str(rhs3):
-						return ("((A) ∪ (B)) ∩ ((B) ∪ (A)) = (B) ∪ (A)", COR_Expressions.Union(B, A))
 					C = rhs3
 					return ("((A) ∪ (B)) ∩ ((B) ∪ (C)) = ((C) ∩ (A)) ∪ (B)", COR_Expressions.Union(COR_Expressions.Intersection(C, A), B))
 				if str(A)==str(lhs3):
@@ -704,8 +688,6 @@ def simplify(expression):
 				if str(B)==str(rhs3):
 					return ("((A) ∪ (B)) ∩ ((C) ∩ (B)) = (C) ∩ (B)", COR_Expressions.Intersection(C, B))
 				if str(A)==str(lhs3):
-					if str(B)==str(rhs3):
-						return ("((A) ∪ (B)) ∩ ((A) ∩ (B)) = (B) ∩ (A)", COR_Expressions.Intersection(B, A))
 					C = rhs3
 					return ("((A) ∪ (B)) ∩ ((A) ∩ (C)) = (C) ∩ (A)", COR_Expressions.Intersection(C, A))
 			if isinstance(rhs1, COR_Expressions.Complement):
@@ -820,18 +802,6 @@ def simplify(expression):
 						return ("((A) † (B)) ∩ ((A) † (A)) = (A) † ((B) ∩ (A))", COR_Expressions.Dagger(A, COR_Expressions.Intersection(B, A)))
 					C = rhs3
 					return ("((A) † (B)) ∩ ((A) † (C)) = (A) † ((B) ∩ (C))", COR_Expressions.Dagger(A, COR_Expressions.Intersection(B, C)))
-				if str(B)==str(lhs3):
-					if str(B)==str(rhs3):
-						return ("((A) † (B)) ∩ ((B) † (B)) = ((A) ∩ (B)) † (B)", COR_Expressions.Dagger(COR_Expressions.Intersection(A, B), B))
-			if str(A)==str(rhs2):
-				if isinstance(rhs1, COR_Expressions.Dagger):
-					lhs4, rhs4 = rhs1.argument1, rhs1.argument2
-					B = lhs4
-					if str(A)==str(rhs4):
-						return ("((A) † (A)) ∩ ((B) † (A)) = ((B) ∩ (A)) † (A)", COR_Expressions.Dagger(COR_Expressions.Intersection(B, A), A))
-					if str(A)==str(lhs4):
-						B = rhs4
-						return ("((A) † (A)) ∩ ((A) † (B)) = (A) † ((B) ∩ (A))", COR_Expressions.Dagger(A, COR_Expressions.Intersection(B, A)))
 			if isinstance(rhs2, COR_Expressions.IdentityRelation):
 				if str(A)==str(rhs1):
 					return ("((A) † (𝟏)) ∩ (A) = (A) † (𝟎)", COR_Expressions.Dagger(A, COR_Expressions.EmptyRelation()))
