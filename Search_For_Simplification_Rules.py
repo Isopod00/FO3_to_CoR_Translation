@@ -79,14 +79,6 @@ def is_already_simplifiable(formula, typed=False) -> bool:
     """ If a formula is already simplifiable, then we don't need to consider it again. """
     return (not (str(simplify(formula)) == str(formula))) if not typed else (not (str(simplify_typed(formula)) == str(formula)))
         
-        
-def simplify_subformula(subformula, typed=False):
-    """ This is just a helper function for the next method. """
-    if not typed:
-        return Simplify.simplify(simplify(subformula))
-    else:
-        return Typed_Simplify.simplify(simplify_typed(subformula))
-
 
 def simplify(expression):
     """ Simplify a COR expression using the code we have generated in Simplify.py """
