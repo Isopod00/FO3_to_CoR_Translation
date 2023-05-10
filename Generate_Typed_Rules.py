@@ -6,6 +6,7 @@ import pickle
 import z3  # pip install z3-solver
 
 import Typed_Testing
+import Typed_Simplify
 import Search_For_Simplification_Rules
 from COR_Expressions import *
 from Typed_COR_Expressions import *
@@ -137,11 +138,29 @@ def make_rules_typed():
         pickle.dump(typed_rules_dict, file, protocol=pickle.HIGHEST_PROTOCOL)
 
 
+def delete_generalizable_rules():
+    new_dict = dict()
+    
+    # Load the rule dictionary from file
+    with open('typed_cor_dict.pickle', 'rb') as file:
+        typed_cor_dict = pickle.load(file)
+        
+    for lhs in typed_cor_dict:
+        rule_applied = Typed_Simplify.simplify(lhs)[0]
+        if rule_applied is not None and rule_applied.split(" =")[0] == str(lhs): # Only keep it if the rule applied matches lhs
+            new_dict[lhs] = typed_cor_dict[lhs]
+        
+    # Save the new typed rule dictionary to file
+    with open('typed_cor_dict.pickle', 'wb') as file:
+        pickle.dump(new_dict, file, protocol=pickle.HIGHEST_PROTOCOL)
+        
+
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__": 
     # make_rules_typed()
     
+    delete_generalizable_rules()
     with open('typed_cor_dict.pickle', 'rb') as file:
         typed_cor_dict = pickle.load(file)
-    # Search_For_Simplification_Rules.print_rule_dictionary(typed_cor_dict, True, "Typed_COR_Rules.txt")
+    Search_For_Simplification_Rules.print_rule_dictionary(typed_cor_dict, True, "Typed_COR_Rules.txt")
     Search_For_Simplification_Rules.generate_code_from_cor_rules(typed_cor_dict, "Typed_Simplify.py", True)

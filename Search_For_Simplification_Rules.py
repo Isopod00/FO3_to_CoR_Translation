@@ -77,24 +77,24 @@ def alphabetical_order_check(string):
 
 def is_already_simplifiable(formula, typed=False) -> bool:
     """ If a formula is already simplifiable, then we don't need to consider it again. """
-    return (not (str(simplify(formula)) == str(formula))) if not typed else (not (str(simplify_typed(formula)) == str(formula)))
+    return (Simplify.simplify(formula)[0] != None) if not typed else (Typed_Simplify.simplify(formula)[0] != None)
         
 
 def simplify(expression):
     """ Simplify a COR expression using the code we have generated in Simplify.py """
     match expression:
         case COR_Expressions.Complement(argument=arg):
-            return Simplify.simplify(COR_Expressions.Complement(simplify(arg)))
+            return Simplify.simplify(COR_Expressions.Complement(simplify(arg)))[1]
         case COR_Expressions.Converse(argument=arg):
-            return Simplify.simplify(COR_Expressions.Converse(simplify(arg)))
+            return Simplify.simplify(COR_Expressions.Converse(simplify(arg)))[1]
         case COR_Expressions.Union(argument1=arg1, argument2=arg2):
-            return Simplify.simplify(COR_Expressions.Union(simplify(arg1), simplify(arg2)))
+            return Simplify.simplify(COR_Expressions.Union(simplify(arg1), simplify(arg2)))[1]
         case COR_Expressions.Intersection(argument1=arg1, argument2=arg2):
-            return Simplify.simplify(COR_Expressions.Intersection(simplify(arg1), simplify(arg2)))
+            return Simplify.simplify(COR_Expressions.Intersection(simplify(arg1), simplify(arg2)))[1]
         case COR_Expressions.Dagger(argument1=arg1, argument2=arg2):
-            return Simplify.simplify(COR_Expressions.Dagger(simplify(arg1), simplify(arg2)))
+            return Simplify.simplify(COR_Expressions.Dagger(simplify(arg1), simplify(arg2)))[1]
         case COR_Expressions.Composition(argument1=arg1, argument2=arg2):
-            return Simplify.simplify(COR_Expressions.Composition(simplify(arg1), simplify(arg2)))
+            return Simplify.simplify(COR_Expressions.Composition(simplify(arg1), simplify(arg2)))[1]
         case _:
             return expression
         
@@ -103,17 +103,17 @@ def simplify_typed(expression):
     """ Simplify a typed COR expression using the code we have generated in Typed_Simplify.py """
     match expression:
         case Typed_COR_Expressions.Typed_Complement(argument=arg):
-            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Complement(simplify_typed(arg)))
+            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Complement(simplify_typed(arg)))[1]
         case Typed_COR_Expressions.Typed_Converse(argument=arg):
-            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Converse(simplify_typed(arg)))
+            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Converse(simplify_typed(arg)))[1]
         case Typed_COR_Expressions.Typed_Union(argument1=arg1, argument2=arg2):
-            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Union(simplify_typed(arg1), simplify_typed(arg2)))
+            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Union(simplify_typed(arg1), simplify_typed(arg2)))[1]
         case Typed_COR_Expressions.Typed_Intersection(argument1=arg1, argument2=arg2):
-            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Intersection(simplify_typed(arg1), simplify_typed(arg2)))
+            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Intersection(simplify_typed(arg1), simplify_typed(arg2)))[1]
         case Typed_COR_Expressions.Typed_Dagger(argument1=arg1, argument2=arg2):
-            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Dagger(simplify_typed(arg1), simplify_typed(arg2)))
+            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Dagger(simplify_typed(arg1), simplify_typed(arg2)))[1]
         case Typed_COR_Expressions.Typed_Composition(argument1=arg1, argument2=arg2):
-            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Composition(simplify_typed(arg1), simplify_typed(arg2)))
+            return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Composition(simplify_typed(arg1), simplify_typed(arg2)))[1]
         case _:
             return expression
         
@@ -197,112 +197,112 @@ def add_tabs_to_string(string, tab_level):
     """ This is a helper function for adding a newline and the specified number of tabs to a string. """
     return ("\n" + ("\t" * tab_level) + string)
            
-def recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, typed, arg2=[]):
+def recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, typed, arg2, rule):
             if len(arg2) == 0:
                 if not typed:
-                    return accumulator + add_tabs_to_string("return " + second.object_representation(), tab_level+1)
+                    return accumulator + add_tabs_to_string("return (\"" + rule + "\", " + second.object_representation() + ")", tab_level+1)
                 else:
-                    return accumulator + add_tabs_to_string("return " + second.object_representation("expression.type()[0]", "expression.type()[1]"), tab_level+1)
+                    return accumulator + add_tabs_to_string("return (\"" + rule + "\", " + second.object_representation("expression.type()[0]", "expression.type()[1]") + ")", tab_level+1)
             else:
                 (arg2Name,arg) = arg2.pop()
                 if not typed:
-                    return accumulator + generate_helper(arg, second, arg2Name, boundVars, "", tab_level+1, arg2)
+                    return accumulator + generate_helper(arg, second, arg2Name, boundVars, "", tab_level+1, arg2, rule)
                 else:
-                    return accumulator + generate_helper_typed(arg, second, arg2Name, boundVars, "", tab_level+1, arg2)
+                    return accumulator + generate_helper_typed(arg, second, arg2Name, boundVars, "", tab_level+1, arg2, rule)
 
             
-def generate_helper_typed(first, second, me, boundVars, accumulator, tab_level, arg2=[]) -> str:
+def generate_helper_typed(first, second, me, boundVars, accumulator, tab_level, arg2, rule) -> str:
     """ Generates Python code for a typed simplification rule and returns it as a string """
     match first:
         case Typed_COR_Expressions.Typed_Relation(letter=l, set1=s1, set2=s2):
             if l in boundVars:
                 accumulator += add_tabs_to_string(f"if str({l})==str({me}):", tab_level)
                 if len(arg2) == 0:
-                    return accumulator + add_tabs_to_string("return " + second.object_representation("expression.type()[0]", "expression.type()[1]"), tab_level+1)
+                    return accumulator + add_tabs_to_string("return (\"" + rule + "\", " + second.object_representation("expression.type()[0]", "expression.type()[1]") + ")", tab_level+1)
                 else:
                     (arg2Name,arg) = arg2.pop()
-                    return accumulator +  generate_helper_typed(arg, second, arg2Name, boundVars + [l], "", tab_level+1, arg2)
+                    return accumulator +  generate_helper_typed(arg, second, arg2Name, boundVars + [l], "", tab_level+1, arg2, rule)
             else:
                 accumulator += add_tabs_to_string(f"{l} = {me}", tab_level)
                 if len(arg2) == 0:
-                    return accumulator + add_tabs_to_string("return " + second.object_representation("expression.type()[0]", "expression.type()[1]"), tab_level)
+                    return accumulator + add_tabs_to_string("return (\"" + rule + "\", " + second.object_representation("expression.type()[0]", "expression.type()[1]") + ")", tab_level)
                 else:
                     (arg2Name,arg) = arg2.pop()
-                    return accumulator +  generate_helper_typed(arg, second, arg2Name, boundVars + [l], "", tab_level, arg2)
+                    return accumulator +  generate_helper_typed(arg, second, arg2Name, boundVars + [l], "", tab_level, arg2, rule)
         case Typed_COR_Expressions.Typed_UniversalRelation(set1=s1, set2=s2):
             accumulator += add_tabs_to_string(f"if isinstance({me}, Typed_COR_Expressions.Typed_UniversalRelation):", tab_level)
-            return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, True, arg2)
+            return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, True, arg2, rule)
         case Typed_COR_Expressions.Typed_EmptyRelation(set1=s1, set2=s2):
             accumulator += add_tabs_to_string(f"if isinstance({me}, Typed_COR_Expressions.Typed_EmptyRelation):", tab_level)
-            return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, True, arg2)
+            return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, True, arg2, rule)
         case Typed_COR_Expressions.Typed_IdentityRelation(set1=s1, set2=s2):
             accumulator += add_tabs_to_string(f"if isinstance({me}, Typed_COR_Expressions.Typed_IdentityRelation):", tab_level)
-            return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, True, arg2)
+            return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, True, arg2, rule)
         case Typed_COR_Expressions.Typed_Complement(argument=arg):
             accumulator += add_tabs_to_string(f"if isinstance({me}, Typed_COR_Expressions.Typed_Complement):", tab_level) + add_tabs_to_string(f"arg = {me}.argument", tab_level+1)
-            return generate_helper_typed(arg,second,'arg', boundVars, accumulator, tab_level+1, arg2)
+            return generate_helper_typed(arg,second,'arg', boundVars, accumulator, tab_level+1, arg2, rule)
         case Typed_COR_Expressions.Typed_Converse(argument=arg):
             accumulator += add_tabs_to_string(f"if isinstance({me}, Typed_COR_Expressions.Typed_Converse):", tab_level) + add_tabs_to_string(f"arg = {me}.argument", tab_level+1)
-            return generate_helper_typed(arg,second,'arg', boundVars, accumulator, tab_level+1, arg2)
+            return generate_helper_typed(arg,second,'arg', boundVars, accumulator, tab_level+1, arg2, rule)
         case Typed_COR_Expressions.Typed_Union(argument1=arg1, argument2=argLater):
             accumulator += add_tabs_to_string(f"if isinstance({me}, Typed_COR_Expressions.Typed_Union):", tab_level) + add_tabs_to_string(f'lhs{tab_level}, rhs{tab_level} = {me}.argument1, {me}.argument2', tab_level+1)
-            return generate_helper_typed(arg1,second, f'lhs{tab_level}', boundVars, accumulator, tab_level+1, arg2+[(f'rhs{tab_level}',argLater)])
+            return generate_helper_typed(arg1,second, f'lhs{tab_level}', boundVars, accumulator, tab_level+1, arg2+[(f'rhs{tab_level}',argLater)], rule)
         case Typed_COR_Expressions.Typed_Intersection(argument1=arg1, argument2=argLater):
             accumulator += add_tabs_to_string(f"if isinstance({me}, Typed_COR_Expressions.Typed_Intersection):", tab_level) + add_tabs_to_string(f'lhs{tab_level}, rhs{tab_level} = {me}.argument1, {me}.argument2', tab_level+1)
-            return generate_helper_typed(arg1, second, f'lhs{tab_level}', boundVars, accumulator, tab_level+1, arg2+[(f'rhs{tab_level}',argLater)])
+            return generate_helper_typed(arg1, second, f'lhs{tab_level}', boundVars, accumulator, tab_level+1, arg2+[(f'rhs{tab_level}',argLater)], rule)
         case Typed_COR_Expressions.Typed_Dagger(argument1=arg1, argument2=argLater):
             accumulator += add_tabs_to_string(f"if isinstance({me}, Typed_COR_Expressions.Typed_Dagger):", tab_level) + add_tabs_to_string(f'lhs{tab_level}, rhs{tab_level} = {me}.argument1, {me}.argument2', tab_level+1)
-            return generate_helper_typed(arg1, second, f'lhs{tab_level}', boundVars, accumulator, tab_level+1, arg2+[(f'rhs{tab_level}',argLater)])
+            return generate_helper_typed(arg1, second, f'lhs{tab_level}', boundVars, accumulator, tab_level+1, arg2+[(f'rhs{tab_level}',argLater)], rule)
         case Typed_COR_Expressions.Typed_Composition(argument1=arg1, argument2=argLater):
             accumulator += add_tabs_to_string(f"if isinstance({me}, Typed_COR_Expressions.Typed_Composition):", tab_level) + add_tabs_to_string(f'lhs{tab_level}, rhs{tab_level} = {me}.argument1, {me}.argument2', tab_level+1)
-            return generate_helper_typed(arg1, second, f'lhs{tab_level}', boundVars, accumulator, tab_level+1, arg2+[(f'rhs{tab_level}',argLater)])
+            return generate_helper_typed(arg1, second, f'lhs{tab_level}', boundVars, accumulator, tab_level+1, arg2+[(f'rhs{tab_level}',argLater)], rule)
             
             
-def generate_helper(first, second, me, boundVars, accumulator, tab_level, arg2=[]) -> str:
+def generate_helper(first, second, me, boundVars, accumulator, tab_level, arg2, rule) -> str:
     """ Generates Python code for a simplification rule and returns it as a string """
     match first:
         case COR_Expressions.Relation(letter=l):
             if l in boundVars:
                 accumulator += add_tabs_to_string(f"if str({l})==str({me}):", tab_level)
                 if len(arg2) == 0:
-                    return accumulator + add_tabs_to_string("return " + second.object_representation(), tab_level+1)
+                    return accumulator + add_tabs_to_string("return (\"" + rule + "\", " + second.object_representation() + ")", tab_level+1)
                 else:
                     (arg2Name,arg) = arg2.pop()
-                    return accumulator +  generate_helper(arg, second, arg2Name, boundVars + [l], "", tab_level+1, arg2)
+                    return accumulator +  generate_helper(arg, second, arg2Name, boundVars + [l], "", tab_level+1, arg2, rule)
             else:
                 accumulator += add_tabs_to_string(f"{l} = {me}", tab_level)
                 if len(arg2) == 0:
-                    return accumulator + add_tabs_to_string("return " + second.object_representation(), tab_level)
+                    return accumulator + add_tabs_to_string("return (\"" + rule + "\", " + second.object_representation() + ")", tab_level)
                 else:
                     (arg2Name,arg) = arg2.pop()
-                    return accumulator +  generate_helper(arg, second, arg2Name, boundVars + [l], "", tab_level, arg2)
+                    return accumulator +  generate_helper(arg, second, arg2Name, boundVars + [l], "", tab_level, arg2, rule)
         case COR_Expressions.UniversalRelation():
             accumulator += add_tabs_to_string(f"if isinstance({me}, COR_Expressions.UniversalRelation):", tab_level)
-            return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, False, arg2)
+            return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, False, arg2, rule)
         case COR_Expressions.EmptyRelation():
             accumulator += add_tabs_to_string(f"if isinstance({me}, COR_Expressions.EmptyRelation):", tab_level)
-            return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, False, arg2)
+            return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, False, arg2, rule)
         case COR_Expressions.IdentityRelation():
             accumulator += add_tabs_to_string(f"if isinstance({me}, COR_Expressions.IdentityRelation):", tab_level)
-            return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, False, arg2)
+            return recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, tab_level, False, arg2, rule)
         case COR_Expressions.Complement(argument=arg):
             accumulator += add_tabs_to_string(f"if isinstance({me}, COR_Expressions.Complement):", tab_level) + add_tabs_to_string(f"arg = {me}.argument", tab_level+1)
-            return generate_helper(arg,second,'arg', boundVars, accumulator, tab_level+1, arg2)
+            return generate_helper(arg,second,'arg', boundVars, accumulator, tab_level+1, arg2, rule)
         case COR_Expressions.Converse(argument=arg):
             accumulator += add_tabs_to_string(f"if isinstance({me}, COR_Expressions.Converse):", tab_level) + add_tabs_to_string(f"arg = {me}.argument", tab_level+1)
-            return generate_helper(arg,second,'arg', boundVars, accumulator, tab_level+1, arg2)
+            return generate_helper(arg,second,'arg', boundVars, accumulator, tab_level+1, arg2, rule)
         case COR_Expressions.Union(argument1=arg1, argument2=argLater):
             accumulator += add_tabs_to_string(f"if isinstance({me}, COR_Expressions.Union):", tab_level) + add_tabs_to_string(f'lhs{tab_level}, rhs{tab_level} = {me}.argument1, {me}.argument2', tab_level+1)
-            return generate_helper(arg1,second, f'lhs{tab_level}', boundVars, accumulator, tab_level+1, arg2+[(f'rhs{tab_level}',argLater)])
+            return generate_helper(arg1,second, f'lhs{tab_level}', boundVars, accumulator, tab_level+1, arg2+[(f'rhs{tab_level}',argLater)], rule)
         case COR_Expressions.Intersection(argument1=arg1, argument2=argLater):
             accumulator += add_tabs_to_string(f"if isinstance({me}, COR_Expressions.Intersection):", tab_level) + add_tabs_to_string(f'lhs{tab_level}, rhs{tab_level} = {me}.argument1, {me}.argument2', tab_level+1)
-            return generate_helper(arg1, second, f'lhs{tab_level}', boundVars, accumulator, tab_level+1, arg2+[(f'rhs{tab_level}',argLater)])
+            return generate_helper(arg1, second, f'lhs{tab_level}', boundVars, accumulator, tab_level+1, arg2+[(f'rhs{tab_level}',argLater)], rule)
         case COR_Expressions.Dagger(argument1=arg1, argument2=argLater):
             accumulator += add_tabs_to_string(f"if isinstance({me}, COR_Expressions.Dagger):", tab_level) + add_tabs_to_string(f'lhs{tab_level}, rhs{tab_level} = {me}.argument1, {me}.argument2', tab_level+1)
-            return generate_helper(arg1, second, f'lhs{tab_level}', boundVars, accumulator, tab_level+1, arg2+[(f'rhs{tab_level}',argLater)])
+            return generate_helper(arg1, second, f'lhs{tab_level}', boundVars, accumulator, tab_level+1, arg2+[(f'rhs{tab_level}',argLater)], rule)
         case COR_Expressions.Composition(argument1=arg1, argument2=argLater):
             accumulator += add_tabs_to_string(f"if isinstance({me}, COR_Expressions.Composition):", tab_level) + add_tabs_to_string(f'lhs{tab_level}, rhs{tab_level} = {me}.argument1, {me}.argument2', tab_level+1)
-            return generate_helper(arg1, second, f'lhs{tab_level}', boundVars, accumulator, tab_level+1, arg2+[(f'rhs{tab_level}',argLater)])
+            return generate_helper(arg1, second, f'lhs{tab_level}', boundVars, accumulator, tab_level+1, arg2+[(f'rhs{tab_level}',argLater)], rule)
     
     
 def group_by_prefix(lst):
@@ -353,9 +353,9 @@ def generate_code_from_cor_rules(cor_dict, filename, typed):
         second = cor_dict[first]
         vars_second = multiset.Multiset(char for char in str(second) if ord(char) in [ord('A'), ord('B'), ord('C')])
         if vars_second.issubset(vars_first):
-            code.append(generate_helper_typed(first, second, "expression", [], "", 1).split('\n')
+            code.append(generate_helper_typed(first, second, "expression", [], "", 1, [], str(first) + " = " + str(second)).split('\n')
                         if typed
-                         else generate_helper(first, second, "expression", [], "", 1).split('\n')
+                         else generate_helper(first, second, "expression", [], "", 1, [], str(first) + " = " + str(second)).split('\n')
             )
     code = group_by_prefix(code)
     if not typed:
@@ -364,7 +364,7 @@ def generate_code_from_cor_rules(cor_dict, filename, typed):
         python_code.write("import Typed_COR_Expressions" + "\n")
     python_code.write("\ndef simplify(expression):")
     write_grouped_code(python_code, code)
-    python_code.write("\n\treturn expression # The given expression was unable to be simplified")
+    python_code.write("\n\treturn (None, expression) # The given expression was unable to be simplified")
     # Close the file when done
     python_code.close()
     
