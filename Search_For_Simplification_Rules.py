@@ -185,10 +185,10 @@ def compute_chunk(workpacket, size, timeout=3600):
 
 
 
-def print_rule_dictionary(cor_dict, write_to_txt_file=False, filename=""):
+def print_rule_dictionary(cor_dict, filename=None):
     """ This will print out the dictionary of stored rules. Set the parameter to True for printing to a .txt or False for printing to the terminal. """
         
-    if not write_to_txt_file:
+    if filename == None:
         for key in cor_dict:
             print(str(key) + " -> " + str(cor_dict[key]))
     else:
@@ -347,7 +347,7 @@ def write_grouped_code(python_code, groups):
                         return_level = len(line.split('\t'))
                 
                 
-def generate_code_from_cor_rules(cor_dict, filename, typed):
+def generate_code_from_cor_rules(cor_dict, filename, typed, reverse=False):
     """ Generates Python code in the file Simplify.py from a dictionary of simplification rules """
     # Create a new .py file to write to
     python_code = open(filename, "w+", encoding="utf_8")
@@ -361,7 +361,7 @@ def generate_code_from_cor_rules(cor_dict, filename, typed):
                         if typed
                          else generate_helper(first, second, "expression", [], "", 1, [], str(first) + " = " + str(second)).split('\n')
             )
-    code = group_by_prefix(code)
+    code = group_by_prefix(reversed(code) if reverse else code)
     if not typed:
         python_code.write("import COR_Expressions" + "\n")
     else:
@@ -409,5 +409,5 @@ if __name__ == "__main__":
     #look_for_simplification_rules(2, 6)
     #look_for_simplification_rules(3, 6)
     
-    print_rule_dictionary(cor_dict, True, "COR_Rules.txt")
+    print_rule_dictionary(cor_dict, "COR_Rules.txt")
     generate_code_from_cor_rules(cor_dict, "Simplify.py", False)
