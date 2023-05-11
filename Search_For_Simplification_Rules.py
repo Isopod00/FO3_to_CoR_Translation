@@ -31,8 +31,8 @@ def look_for_simplification_rules(size, cpu_cores1, timeout=3600):
                  if (not is_already_simplifiable(formula))
                  and alphabetical_order_check(str(formula))]
     print(f"Searching {len(formulas)} formulas of this size.")
-    equal_chunks = numpy.array_split(numpy.array(formulas), len(formulas))  # equal_chunks will be a list of numpy arrays
-    random.shuffle(equal_chunks)  # for more accurate time measurement
+    random.shuffle(formulas)  # for more accurate time measurement
+    equal_chunks = enumerate(map(list,numpy.array_split(numpy.array(formulas), len(formulas))))  # equal_chunks will be a list of numpy arrays
 
     results = []
 
@@ -44,7 +44,7 @@ def look_for_simplification_rules(size, cpu_cores1, timeout=3600):
         # Create our pool of tasks
         with multiprocessing.Pool(cpu_cores1) as pool:
             for array in equal_chunks:
-                results.append(pool.apply_async(compute_chunk, args=(list(array), size, timeout)))  # convert the numpy arrays to lists
+                results.append(pool.apply_async(compute_chunk, args=(array, size, timeout)))  # convert the numpy arrays to lists
             pool.close()
             pool.join()
             for i in range(len(results)):
@@ -129,7 +129,7 @@ def fully_simplify(expression, typed=False):
     return expression
 
 
-def compute_single(pair):
+def compute_single(pair,fallback_enum):
     first,second=pair
     first_translated = first.translate('x', 'y')
     second_translated = second.translate('x', 'y')
@@ -143,9 +143,10 @@ def compute_single(pair):
         return []
     else:
         q=('Stuck at: ' + str(first) + ' -> ' + str(second))
-        enum,(_,_,_,_) = z3.EnumSort('univ',['SA','SB','SC','SD'])
+        print('reverting to enum univ')
         s.set("timeout", 6000)
-        z3result = s.check(z3.Not(Testing.asZ3(first_translated,enum) == Testing.asZ3(second_translated,enum)))
+
+        z3result = s.check(z3.Not(Testing.asZ3(first_translated,fallback_enum) == Testing.asZ3(second_translated,fallback_enum)))
         if z3result == z3.unsat:
             print(q+'\nGoing into slow mode...')
             s = z3.Solver()
@@ -166,9 +167,12 @@ def compute_single(pair):
             raise Exception("Z3 times out even in the finite case!\n"+q)
 
 # Processes one chunk of a list of formulas and returns a set of the COR simplification rules found
-def compute_chunk(formulas, size, cpu_cores, timeout=3600):
+def compute_chunk(workpacket, size, timeout=3600):
     """ This is simply a helper function for enabling multiprocessing. """
     
+    (jobid, formulas) = workpacket
+    fallback_enum,(_,_,_,_) = z3.EnumSort(f'univ{jobid}',['SA','SB','SC','SD'])
+    assert isinstance(fallback_enum, z3.SortRef)
     pairs = ((first,second)
               for first in formulas
               for vars_used in [set(char for char in str(first) if ord(char) in [ord('A'), ord('B'), ord('C')])]
@@ -177,7 +181,7 @@ def compute_chunk(formulas, size, cpu_cores, timeout=3600):
               if not is_already_simplifiable(second)
                  and set(char for char in str(second) if ord(char) in [ord('A'), ord('B'), ord('C')]).issubset(vars_used)
             )
-    return set(result for pair in pairs for result in compute_single(pair))
+    return set(result for pair in pairs for result in compute_single(pair, fallback_enum))
 
 
 
@@ -370,11 +374,8 @@ def generate_code_from_cor_rules(cor_dict, filename, typed):
     
     
 def delete_generalizable_rules():
+    global cor_dict
     new_dict = dict()
-    
-    # Load the rule dictionary from file
-    with open('cor_dict.pickle', 'rb') as file:
-        cor_dict = pickle.load(file)
         
     for lhs in cor_dict:
         rule_applied = Simplify.simplify(lhs)[0]
@@ -390,11 +391,11 @@ def delete_generalizable_rules():
     # Save the new typed rule dictionary to file
     with open('cor_dict.pickle', 'wb') as file:
         pickle.dump(new_dict, file, protocol=pickle.HIGHEST_PROTOCOL)
+    cor_dict = new_dict
     
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__": 
-    delete_generalizable_rules()
     
     try:
         with open('cor_dict.pickle', 'rb') as file:
@@ -402,8 +403,8 @@ if __name__ == "__main__":
     except FileNotFoundError:
         cor_dict = {}
         print("No cor_dict.pickle file found. Using an empty dictionary (and probably creating one later)...")
+    delete_generalizable_rules()
     
-    #look_for_simplification_rules(0, 6)
     #look_for_simplification_rules(1, 6)
     #look_for_simplification_rules(2, 6)
     #look_for_simplification_rules(3, 6)
