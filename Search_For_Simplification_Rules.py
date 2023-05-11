@@ -25,7 +25,7 @@ def look_for_simplification_rules(size, cpu_cores1, timeout=3600):
 
     print(f"A search for simplification rules of size {size} has started (using {cpu_cores1} logical processors)")
     start = default_timer()  # Time how long this takes
-        
+
     # Generate ALL formulas of the specified size and split this list into equally-sized chunks
     formulas = [formula for formula in list(Testing.generate_all_COR_formulas(size))
                  if (not is_already_simplifiable(formula))
@@ -396,13 +396,13 @@ def delete_generalizable_rules():
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__": 
-    
     try:
         with open('cor_dict.pickle', 'rb') as file:
             cor_dict = pickle.load(file)
     except FileNotFoundError:
         cor_dict = {}
         print("No cor_dict.pickle file found. Using an empty dictionary (and probably creating one later)...")
+        
     delete_generalizable_rules()
     
     #look_for_simplification_rules(1, 6)
