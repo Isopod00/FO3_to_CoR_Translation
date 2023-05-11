@@ -179,7 +179,7 @@ def compute_chunk(workpacket, size, timeout=3600):
         for second_size in range(size):
             for second in Testing.generate_all_COR_formulas(second_size):
                 vars_second = multiset.Multiset(char for char in str(second) if ord(char) in [ord('A'), ord('B'), ord('C')])
-                if not is_already_simplifiable and vars_second.issubset(vars_first):
+                if not is_already_simplifiable(second) and vars_second.issubset(vars_first):
                     pairs.append((first, second))
     return set(result for pair in pairs for result in compute_single(pair, fallback_enum))
 
