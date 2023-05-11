@@ -173,14 +173,14 @@ def compute_chunk(workpacket, size, timeout=3600):
     (jobid, formulas) = workpacket
     fallback_enum,(_,_,_,_) = z3.EnumSort(f'univ{jobid}',['SA','SB','SC','SD'])
     assert isinstance(fallback_enum, z3.SortRef)
-    pairs = ((first,second)
-              for first in formulas
-              for vars_used in [set(char for char in str(first) if ord(char) in [ord('A'), ord('B'), ord('C')])]
-              for second_size in range(size)
-              for second in Testing.generate_all_COR_formulas(second_size)
-              if not is_already_simplifiable(second)
-                 and set(char for char in str(second) if ord(char) in [ord('A'), ord('B'), ord('C')]).issubset(vars_used)
-            )
+    pairs = []
+    for first in formulas:
+        vars_first = multiset.Multiset(char for char in str(first) if ord(char) in [ord('A'), ord('B'), ord('C')])
+        for second_size in range(size):
+            for second in Testing.generate_all_COR_formulas(second_size):
+                vars_second = multiset.Multiset(char for char in str(second) if ord(char) in [ord('A'), ord('B'), ord('C')])
+                if not is_already_simplifiable and vars_second.issubset(vars_first):
+                    pairs.append((first, second))
     return set(result for pair in pairs for result in compute_single(pair, fallback_enum))
 
 
