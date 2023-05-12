@@ -31,7 +31,11 @@ Contributors: Anthony Brogni (brogn002@umn.edu) and Sebastiaan J. C. Joosten (sj
  
  -Search_For_Simplification_Rules.py : Code for finding all possible simplfication rules of a given size
  
- -Simplify.py : Python code generated from our simplification rules for simplifying CoR expressions
+ -Generate_Typed_Rules.py : Code for taking our dictionary of homogeneous rules and producing a dictionary of heterogeneous rules from them
+ 
+ -Simplify.py : Python code generated from our homogeneous simplification rules (COR_Rules.txt) for simplifying homogeneous CoR expressions
+ 
+ -Typed_Simplify.py : Python code generated from our heterogeneous simplification rules (Typed_COR_Rules.txt) for simplifying heterogeneous CoR expressions
  
  -List_Methods.py : Helper methods for treating lists as if they were sets
  
