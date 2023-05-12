@@ -11,7 +11,9 @@ Contributors: Anthony Brogni (brogn002@umn.edu) and Sebastiaan J. C. Joosten (sj
 
 -Generation of random formulas and automated testing with the z3-solver Python library
 
--Simplification of CoR formulas
+-Discovery of simplification rules with the help of Z3
+
+-Simplification of CoR formulas (both homogeneous/untyped and heterogeneous/typed)
 
  ## Summary of each File
  
