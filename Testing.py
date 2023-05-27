@@ -251,11 +251,31 @@ def test_with_z3(fo3_expression) -> int:
         print("\nZ3 proved that the round-trip returned something equivalent (this is good!)")
         return 1
     else:
-        print("\nZ3 timed out and returned ", z3result)
-        return 0
-        # TODO: if Z3 times out, we should try with a finite sort instead,
-        # Here's how to get a finite sort of three elements:
-        # S, (a, b, c) = z3.EnumSort('round', ['a','b','c'])
+        q=('Stuck at: ' + str(fo3_expression) + ' = ' + str(back))
+        print('reverting to enum univ')
+        s.set("timeout", 6000)
+
+        fallback_enum,(_,_,_,_) = z3.EnumSort('univ',['SA','SB','SC','SD'])
+        assert isinstance(fallback_enum, z3.SortRef)
+        z3result = s.check(z3.Not(asZ3(fo3_expression,fallback_enum) == asZ3(back,fallback_enum)))
+        if z3result == z3.unsat:
+            print(q+'\nGoing into slow mode...')
+            s = z3.Solver()
+            s.set("timeout", 60000)
+            z3result = s.check(z3.Not(asZ3(fo3_expression) == asZ3(back)))
+            if z3result == z3.unsat:
+                print('successful rule found by using more time!')
+                return 1
+            elif z3result == z3.sat:
+                print('successful refutation found by using more time!')
+                return -1
+            else:
+                raise Exception("Z3 does not know the answer!\n"+q)
+        elif z3result == z3.sat:
+            return -1 # counter example found for a small universe, this happens quite a lot
+        else:
+            q=('Stuck at: ' + str(fo3_expression) + ' = ' + str(back))
+            raise Exception("Z3 times out even in the finite case!\n"+q)
 
 
 def translation_speed_test(number, size, generate_new_terms=False):
