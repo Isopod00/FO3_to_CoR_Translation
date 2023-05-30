@@ -65,10 +65,6 @@ def make_rules_typed():
     with open('cor_dict.pickle', 'rb') as file:
         cor_dict = pickle.load(file)
 
-    fallback_enum, (_, _, _, _) = z3.EnumSort(
-        f'univ', ['SA', 'SB', 'SC', 'SD'])
-    assert isinstance(fallback_enum, z3.SortRef)
-
     typed_rules_dict = dict()
     for lhs in cor_dict:
         rhs = cor_dict[lhs]
@@ -92,6 +88,9 @@ def make_rules_typed():
                     print('reverting to enum univ')
                     s.set("timeout", 6000)
 
+                    fallback_enum, (_, _, _, _) = z3.EnumSort(
+                        f'univ', ['SA', 'SB', 'SC', 'SD'])
+                    assert isinstance(fallback_enum, z3.SortRef)
                     z3result = s.check(z3.Not(Typed_Testing.typed_asZ3(
                         first_translated, fallback_enum) == Typed_Testing.typed_asZ3(second_translated, fallback_enum)))
                     if z3result == z3.unsat:
