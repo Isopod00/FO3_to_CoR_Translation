@@ -217,6 +217,20 @@ def recurse_generate_helper_Symbol(first, second, me, boundVars, accumulator, ta
             
 def generate_helper_typed(first, second, me, boundVars, accumulator, tab_level, arg2, rule) -> str:
     """ Generates Python code for a typed simplification rule and returns it as a string """
+    t1 = first.type()[0]
+    t2 = first.type()[1]
+    if t1 in boundVars:
+        accumulator += add_tabs_to_string(f"if {t1}=={me}.type()[0]:", tab_level)
+        tab_level += 1
+    else:
+        accumulator += add_tabs_to_string(f"{t1} = {me}.type()[0]", tab_level)
+        boundVars.append(t1)
+    if t2 in boundVars:
+        accumulator += add_tabs_to_string(f"if {t2}=={me}.type()[1]:", tab_level)
+        tab_level += 1
+    else:
+        accumulator += add_tabs_to_string(f"{t2} = {me}.type()[1]", tab_level)
+        boundVars.append(t2)
     match first:
         case Typed_COR_Expressions.Typed_Relation(letter=l, set1=s1, set2=s2):
             if l in boundVars:
