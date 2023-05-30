@@ -65,6 +65,10 @@ def make_rules_typed():
     with open('cor_dict.pickle', 'rb') as file:
         cor_dict = pickle.load(file)
 
+    fallback_enum, (_, _, _, _) = z3.EnumSort(
+        f'univ', ['SA', 'SB', 'SC', 'SD'])
+    assert isinstance(fallback_enum, z3.SortRef)
+
     typed_rules_dict = dict()
     for lhs in cor_dict:
         rhs = cor_dict[lhs]
@@ -80,11 +84,9 @@ def make_rules_typed():
                     first_translated) == Typed_Testing.typed_asZ3(second_translated)))
                 if z3result == z3.unsat:
                     typed_rules_dict[first] = second
-                    # print (f'quickly found: {first} = {second}')
-                    pass
+                    print(f'quickly found: {first} = {second}')
                 elif z3result == z3.sat:
-                    # print (f'refuted: {first} = {second}')
-                    pass
+                    print(f'refuted: {first} = {second}')
                 else:
                     q = ('Stuck at: ' + str(first) + ' -> ' + str(second))
                     print('reverting to enum univ')
@@ -101,14 +103,13 @@ def make_rules_typed():
                         if z3result == z3.unsat:
                             print('successful rule found by using more time!')
                             typed_rules_dict[first] = second
-                            pass  # return [(first, second)]
                         elif z3result == z3.sat:
                             print('successful refutation found by using more time!')
-                            pass  # return []
                         else:
                             raise Exception("Z3 does not know the answer!\n"+q)
                     elif z3result == z3.sat:
-                        pass  # return [] # counter example found for a small universe, this happens quite a lot
+                        # this happens quite a lot
+                        print('counter example found for a small universe')
                     else:
                         q = ('Stuck at: ' + str(first) + ' -> ' + str(second))
                         raise Exception(
@@ -146,8 +147,24 @@ def delete_generalizable_rules():
 
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
-    # make_rules_typed()
+    # Make typed versions of our homogeneous rules
+    make_rules_typed()
 
+    # Delete all generalizable rules
+    delete_generalizable_rules()
+    with open('typed_cor_dict.pickle', 'rb') as file:
+        typed_cor_dict = pickle.load(file)
+    Search_For_Simplification_Rules.print_rule_dictionary(
+        typed_cor_dict, "Typed_COR_Rules.txt")
+    Search_For_Simplification_Rules.generate_code_from_cor_rules(
+        typed_cor_dict, "Typed_Simplify.py", True)
+    delete_generalizable_rules()
+    with open('typed_cor_dict.pickle', 'rb') as file:
+        typed_cor_dict = pickle.load(file)
+    Search_For_Simplification_Rules.print_rule_dictionary(
+        typed_cor_dict, "Typed_COR_Rules.txt")
+    Search_For_Simplification_Rules.generate_code_from_cor_rules(
+        typed_cor_dict, "Typed_Simplify.py", True, True)
     delete_generalizable_rules()
     with open('typed_cor_dict.pickle', 'rb') as file:
         typed_cor_dict = pickle.load(file)
