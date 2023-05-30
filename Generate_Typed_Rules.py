@@ -13,57 +13,10 @@ from Typed_COR_Expressions import *
 
 # Takes an untyped COR expression and applies all valid types to it
 def make_homogeneous_formula_typed(formula):
-    match formula:
-        case UniversalRelation():
-            for set1 in ['P', 'Q', 'R', 'S']:
-                for set2 in ['P', 'Q', 'R', 'S']:
-                    yield Typed_UniversalRelation(set1, set2)
-        case EmptyRelation():
-            for set1 in ['P', 'Q', 'R', 'S']:
-                for set2 in ['P', 'Q', 'R', 'S']:
-                    yield Typed_EmptyRelation(set1, set2)
-        case IdentityRelation():
-            for set1 in ['P', 'Q', 'R', 'S']:
-                for set2 in ['P', 'Q', 'R', 'S']:
-                    yield Typed_IdentityRelation(set1, set2)
-        case Relation(letter=l):
-            for set1 in ['P', 'Q', 'R', 'S']:
-                for set2 in ['P', 'Q', 'R', 'S']:
-                    yield Typed_Relation(l, set1, set2)
-        case Complement(argument=arg):
-            for subformula in make_homogeneous_formula_typed(arg):
-                yield Typed_Complement(subformula)
-        case Converse(argument=arg):
-            for subformula in make_homogeneous_formula_typed(arg):
-                yield Typed_Converse(subformula)
-        case Union(argument1=arg1, argument2=arg2):
-            for subformula1 in make_homogeneous_formula_typed(arg1):
-                for subformula2 in make_homogeneous_formula_typed(arg2):
-                    try:
-                        yield Typed_Union(subformula1, subformula2)
-                    except:
-                        pass
-        case Intersection(argument1=arg1, argument2=arg2):
-            for subformula1 in make_homogeneous_formula_typed(arg1):
-                for subformula2 in make_homogeneous_formula_typed(arg2):
-                    try:
-                        yield Typed_Intersection(subformula1, subformula2)
-                    except:
-                        pass
-        case Dagger(argument1=arg1, argument2=arg2):
-            for subformula1 in make_homogeneous_formula_typed(arg1):
-                for subformula2 in make_homogeneous_formula_typed(arg2):
-                    try:
-                        yield Typed_Dagger(subformula1, subformula2)
-                    except:
-                        pass
-        case Composition(argument1=arg1, argument2=arg2):
-            for subformula1 in make_homogeneous_formula_typed(arg1):
-                for subformula2 in make_homogeneous_formula_typed(arg2):
-                    try:
-                        yield Typed_Composition(subformula1, subformula2)
-                    except:
-                        pass
+    for i in give_type(formula, ('P','P')):
+        yield i
+    for i in give_type(formula, ('P','Q')):
+        yield i
  
  
 # Takes an untyped COR expression and applies the specified type to it (type is an ordered pair)
@@ -76,14 +29,14 @@ def give_type(formula, type):
         case EmptyRelation():
             yield Typed_EmptyRelation(set1, set2)
         case IdentityRelation():
-            yield Typed_IdentityRelation(set1, set2)
+            if set1 == set2 : yield Typed_IdentityRelation(set1, set2)
         case Relation(letter=l):
             yield Typed_Relation(l, set1, set2)
         case Complement(argument=arg):
             for subformula in give_type(arg, type):
                 yield Typed_Complement(subformula)
         case Converse(argument=arg):
-            for subformula in give_type(arg, type):
+            for subformula in give_type(arg, (type[1],type[0])):
                 yield Typed_Converse(subformula)
         case Union(argument1=arg1, argument2=arg2):
             for subformula1 in give_type(arg1, type):
@@ -111,27 +64,49 @@ def make_rules_typed():
         cor_dict = pickle.load(file)
         
     typed_rules_dict = dict()
-        
     for lhs in cor_dict:
         rhs = cor_dict[lhs]
         typed_lhs = list(make_homogeneous_formula_typed(lhs))
-        for formula in typed_lhs:
-            try:
-                typed_rhs = list(give_type(rhs, formula.type()))
-                for formula2 in typed_rhs:
-                    first_translated = formula.translate('x', 'y')
-                    second_translated = formula2.translate('x', 'y')
-                    
-                    s = z3.Solver()
-                    s.add(z3.Not(Typed_Testing.typed_asZ3(first_translated) == Typed_Testing.typed_asZ3(second_translated)))
-                    s.set("timeout", 500)
-                    z3result = s.check()
-                    
+        for first in typed_lhs:
+            typed_rhs = list(give_type(rhs, first.type()))
+            for second in typed_rhs:
+                first_translated = first.translate('x', 'y')
+                second_translated = second.translate('x', 'y')
+                s = z3.Solver()
+                s.set("timeout", 100)
+                z3result = s.check(z3.Not(Typed_Testing.typed_asZ3(first_translated) == Typed_Testing.typed_asZ3(second_translated)))
+                if z3result == z3.unsat:
+                    typed_rules_dict[first] = second
+                    #print (f'quickly found: {first} = {second}')
+                    pass
+                elif z3result == z3.sat:
+                    #print (f'refuted: {first} = {second}')
+                    pass
+                else:
+                    q=('Stuck at: ' + str(first) + ' -> ' + str(second))
+                    print('reverting to enum univ')
+                    s.set("timeout", 6000)
+
+                    z3result = s.check(z3.Not(Typed_Testing.typed_asZ3(first_translated,fallback_enum) == Typed_Testing.typed_asZ3(second_translated,fallback_enum)))
                     if z3result == z3.unsat:
-                        typed_rules_dict[formula] = formula2
-                        print(formula, " -> ", formula2)
-            except:
-                pass # Not a well-typed rule, so skip over it and carry on
+                        print(q+'\nGoing into slow mode...')
+                        s = z3.Solver()
+                        s.set("timeout", 60000)
+                        z3result = s.check(z3.Not(Typed_Testing.typed_asZ3(first_translated) == Typed_Testing.typed_asZ3(second_translated)))
+                        if z3result == z3.unsat:
+                            print('successful rule found by using more time!')
+                            typed_rules_dict[first] = second
+                            pass # return [(first, second)]
+                        elif z3result == z3.sat:
+                            print('successful refutation found by using more time!')
+                            pass # return []
+                        else:
+                            raise Exception("Z3 does not know the answer!\n"+q)
+                    elif z3result == z3.sat:
+                        pass # return [] # counter example found for a small universe, this happens quite a lot
+                    else:
+                        q=('Stuck at: ' + str(first) + ' -> ' + str(second))
+                        raise Exception("Z3 times out even in the finite case!\n"+q)
                     
     # Save the new typed rule dictionary to file
     with open('typed_cor_dict.pickle', 'wb') as file:

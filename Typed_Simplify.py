@@ -749,6 +749,19 @@ def simplify(expression):
 											if Q==rhs1.type()[1]:
 												if str(A)==str(rhs1):
 													return ("((𝟎[P*P]) † (A[P*Q])) ∪ (A[P*Q]) = A[P*Q]", A)
+				if isinstance(lhs1, Typed_COR_Expressions.Typed_Converse):
+					arg = lhs1.argument
+					if Q==arg.type()[0]:
+						if P==arg.type()[1]:
+							A = arg
+							if P==rhs1.type()[0]:
+								if Q==rhs1.type()[1]:
+									if isinstance(rhs1, Typed_COR_Expressions.Typed_Converse):
+										arg = rhs1.argument
+										if Q==arg.type()[0]:
+											if P==arg.type()[1]:
+												B = arg
+												return ("((A[Q*P])⁻¹) ∪ ((B[Q*P])⁻¹) = ((A[Q*P]) ∪ (B[Q*P]))⁻¹", Typed_COR_Expressions.Typed_Converse(Typed_COR_Expressions.Typed_Union(A, B)))
 	if isinstance(expression, Typed_COR_Expressions.Typed_Intersection):
 		lhs1, rhs1 = expression.argument1, expression.argument2
 		if P==lhs1.type()[0]:
@@ -1494,6 +1507,19 @@ def simplify(expression):
 															if Q==rhs10.type()[1]:
 																C = rhs10
 																return ("((A[P*R]) † (B[R*Q])) ∩ ((A[P*R]) † (C[R*Q])) = (A[P*R]) † ((B[R*Q]) ∩ (C[R*Q]))", Typed_COR_Expressions.Typed_Dagger(A, Typed_COR_Expressions.Typed_Intersection(B, C)))
+				if isinstance(lhs1, Typed_COR_Expressions.Typed_Converse):
+					arg = lhs1.argument
+					if Q==arg.type()[0]:
+						if P==arg.type()[1]:
+							A = arg
+							if P==rhs1.type()[0]:
+								if Q==rhs1.type()[1]:
+									if isinstance(rhs1, Typed_COR_Expressions.Typed_Converse):
+										arg = rhs1.argument
+										if Q==arg.type()[0]:
+											if P==arg.type()[1]:
+												B = arg
+												return ("((A[Q*P])⁻¹) ∩ ((B[Q*P])⁻¹) = ((A[Q*P]) ∩ (B[Q*P]))⁻¹", Typed_COR_Expressions.Typed_Converse(Typed_COR_Expressions.Typed_Intersection(A, B)))
 				if isinstance(lhs1, Typed_COR_Expressions.Typed_Composition):
 					lhs4, rhs4 = lhs1.argument1, lhs1.argument2
 					if P==lhs4.type()[0]:
@@ -1529,6 +1555,94 @@ def simplify(expression):
 					return ("(𝟎[Q*P])⁻¹ = 𝟎[P*Q]", Typed_COR_Expressions.Typed_EmptyRelation(expression.type()[0], expression.type()[1]))
 				if isinstance(arg, Typed_COR_Expressions.Typed_UniversalRelation):
 					return ("(T[Q*P])⁻¹ = T[P*Q]", Typed_COR_Expressions.Typed_UniversalRelation(expression.type()[0], expression.type()[1]))
+				if isinstance(arg, Typed_COR_Expressions.Typed_Union):
+					lhs4, rhs4 = arg.argument1, arg.argument2
+					if Q==lhs4.type()[0]:
+						if P==lhs4.type()[1]:
+							A = lhs4
+							if Q==rhs4.type()[0]:
+								if P==rhs4.type()[1]:
+									if isinstance(rhs4, Typed_COR_Expressions.Typed_Converse):
+										arg = rhs4.argument
+										if P==arg.type()[0]:
+											if Q==arg.type()[1]:
+												B = arg
+												return ("((A[Q*P]) ∪ ((B[P*Q])⁻¹))⁻¹ = ((A[Q*P])⁻¹) ∪ (B[P*Q])", Typed_COR_Expressions.Typed_Union(Typed_COR_Expressions.Typed_Converse(A), B))
+							if isinstance(lhs4, Typed_COR_Expressions.Typed_Converse):
+								arg = lhs4.argument
+								if P==arg.type()[0]:
+									if Q==arg.type()[1]:
+										A = arg
+										if Q==rhs4.type()[0]:
+											if P==rhs4.type()[1]:
+												B = rhs4
+												return ("(((A[P*Q])⁻¹) ∪ (B[Q*P]))⁻¹ = ((B[Q*P])⁻¹) ∪ (A[P*Q])", Typed_COR_Expressions.Typed_Union(Typed_COR_Expressions.Typed_Converse(B), A))
+				if isinstance(arg, Typed_COR_Expressions.Typed_Intersection):
+					lhs4, rhs4 = arg.argument1, arg.argument2
+					if Q==lhs4.type()[0]:
+						if P==lhs4.type()[1]:
+							A = lhs4
+							if Q==rhs4.type()[0]:
+								if P==rhs4.type()[1]:
+									if isinstance(rhs4, Typed_COR_Expressions.Typed_Converse):
+										arg = rhs4.argument
+										if P==arg.type()[0]:
+											if Q==arg.type()[1]:
+												B = arg
+												return ("((A[Q*P]) ∩ ((B[P*Q])⁻¹))⁻¹ = ((A[Q*P])⁻¹) ∩ (B[P*Q])", Typed_COR_Expressions.Typed_Intersection(Typed_COR_Expressions.Typed_Converse(A), B))
+							if isinstance(lhs4, Typed_COR_Expressions.Typed_Converse):
+								arg = lhs4.argument
+								if P==arg.type()[0]:
+									if Q==arg.type()[1]:
+										A = arg
+										if Q==rhs4.type()[0]:
+											if P==rhs4.type()[1]:
+												B = rhs4
+												return ("(((A[P*Q])⁻¹) ∩ (B[Q*P]))⁻¹ = ((B[Q*P])⁻¹) ∩ (A[P*Q])", Typed_COR_Expressions.Typed_Intersection(Typed_COR_Expressions.Typed_Converse(B), A))
+				if isinstance(arg, Typed_COR_Expressions.Typed_Dagger):
+					lhs4, rhs4 = arg.argument1, arg.argument2
+					if Q==lhs4.type()[0]:
+						R = lhs4.type()[1]
+						A = lhs4
+						if R==rhs4.type()[0]:
+							if P==rhs4.type()[1]:
+								if isinstance(rhs4, Typed_COR_Expressions.Typed_Converse):
+									arg = rhs4.argument
+									if P==arg.type()[0]:
+										if R==arg.type()[1]:
+											B = arg
+											return ("((A[Q*R]) † ((B[P*R])⁻¹))⁻¹ = (B[P*R]) † ((A[Q*R])⁻¹)", Typed_COR_Expressions.Typed_Dagger(B, Typed_COR_Expressions.Typed_Converse(A)))
+						if isinstance(lhs4, Typed_COR_Expressions.Typed_Converse):
+							arg = lhs4.argument
+							if R==arg.type()[0]:
+								if Q==arg.type()[1]:
+									A = arg
+									if R==rhs4.type()[0]:
+										if P==rhs4.type()[1]:
+											B = rhs4
+											return ("(((A[R*Q])⁻¹) † (B[R*P]))⁻¹ = ((B[R*P])⁻¹) † (A[R*Q])", Typed_COR_Expressions.Typed_Dagger(Typed_COR_Expressions.Typed_Converse(B), A))
+				if isinstance(arg, Typed_COR_Expressions.Typed_Composition):
+					lhs4, rhs4 = arg.argument1, arg.argument2
+					if Q==lhs4.type()[0]:
+						R = lhs4.type()[1]
+						A = lhs4
+						if R==rhs4.type()[0]:
+							if P==rhs4.type()[1]:
+								if isinstance(rhs4, Typed_COR_Expressions.Typed_Converse):
+									arg = rhs4.argument
+									if P==arg.type()[0]:
+										if R==arg.type()[1]:
+											B = arg
+											return ("((A[Q*R]) ∘ ((B[P*R])⁻¹))⁻¹ = (B[P*R]) ∘ ((A[Q*R])⁻¹)", Typed_COR_Expressions.Typed_Composition(B, Typed_COR_Expressions.Typed_Converse(A)))
+						if isinstance(lhs4, Typed_COR_Expressions.Typed_Converse):
+							arg = lhs4.argument
+							if R==arg.type()[0]:
+								if Q==arg.type()[1]:
+									A = arg
+									if R==rhs4.type()[0]:
+										if P==rhs4.type()[1]:
+											B = rhs4
+											return ("(((A[R*Q])⁻¹) ∘ (B[R*P]))⁻¹ = ((B[R*P])⁻¹) ∘ (A[R*Q])", Typed_COR_Expressions.Typed_Composition(Typed_COR_Expressions.Typed_Converse(B), A))
 				if isinstance(arg, Typed_COR_Expressions.Typed_Complement):
 					arg = arg.argument
 					if Q==arg.type()[0]:
@@ -1553,6 +1667,19 @@ def simplify(expression):
 					if Q==rhs1.type()[1]:
 						A = rhs1
 						return ("(𝟎[P*R]) ∘ (A[R*Q]) = 𝟎[P*Q]", Typed_COR_Expressions.Typed_EmptyRelation(expression.type()[0], expression.type()[1]))
+			if isinstance(lhs1, Typed_COR_Expressions.Typed_Converse):
+				arg = lhs1.argument
+				if R==arg.type()[0]:
+					if P==arg.type()[1]:
+						A = arg
+						if R==rhs1.type()[0]:
+							if Q==rhs1.type()[1]:
+								if isinstance(rhs1, Typed_COR_Expressions.Typed_Converse):
+									arg = rhs1.argument
+									if Q==arg.type()[0]:
+										if R==arg.type()[1]:
+											B = arg
+											return ("((A[R*P])⁻¹) ∘ ((B[Q*R])⁻¹) = ((B[Q*R]) ∘ (A[R*P]))⁻¹", Typed_COR_Expressions.Typed_Converse(Typed_COR_Expressions.Typed_Composition(B, A)))
 			if isinstance(lhs1, Typed_COR_Expressions.Typed_Complement):
 				arg = lhs1.argument
 				if P==arg.type()[0]:
@@ -1636,6 +1763,19 @@ def simplify(expression):
 											if Q==arg.type()[1]:
 												B = arg
 												return ("((A[P*P])⁻) † ((B[P*Q])⁻) = ((A[P*P]) ∘ (B[P*Q]))⁻", Typed_COR_Expressions.Typed_Complement(Typed_COR_Expressions.Typed_Composition(A, B)))
+				if isinstance(lhs1, Typed_COR_Expressions.Typed_Converse):
+					arg = lhs1.argument
+					if P==arg.type()[0]:
+						if P==arg.type()[1]:
+							A = arg
+							if P==rhs1.type()[0]:
+								if Q==rhs1.type()[1]:
+									if isinstance(rhs1, Typed_COR_Expressions.Typed_Converse):
+										arg = rhs1.argument
+										if Q==arg.type()[0]:
+											if P==arg.type()[1]:
+												B = arg
+												return ("((A[P*P])⁻¹) † ((B[Q*P])⁻¹) = ((B[Q*P]) † (A[P*P]))⁻¹", Typed_COR_Expressions.Typed_Converse(Typed_COR_Expressions.Typed_Dagger(B, A)))
 				if isinstance(lhs1, Typed_COR_Expressions.Typed_EmptyRelation):
 					if P==rhs1.type()[0]:
 						if Q==rhs1.type()[1]:
@@ -1664,6 +1804,19 @@ def simplify(expression):
 					if Q==rhs1.type()[1]:
 						A = rhs1
 						return ("(T[P*R]) † (A[R*Q]) = T[P*Q]", Typed_COR_Expressions.Typed_UniversalRelation(expression.type()[0], expression.type()[1]))
+			if isinstance(lhs1, Typed_COR_Expressions.Typed_Converse):
+				arg = lhs1.argument
+				if R==arg.type()[0]:
+					if P==arg.type()[1]:
+						A = arg
+						if R==rhs1.type()[0]:
+							if Q==rhs1.type()[1]:
+								if isinstance(rhs1, Typed_COR_Expressions.Typed_Converse):
+									arg = rhs1.argument
+									if Q==arg.type()[0]:
+										if R==arg.type()[1]:
+											B = arg
+											return ("((A[R*P])⁻¹) † ((B[Q*R])⁻¹) = ((B[Q*R]) † (A[R*P]))⁻¹", Typed_COR_Expressions.Typed_Converse(Typed_COR_Expressions.Typed_Dagger(B, A)))
 			if isinstance(lhs1, Typed_COR_Expressions.Typed_Complement):
 				arg = lhs1.argument
 				if P==arg.type()[0]:
@@ -1737,6 +1890,16 @@ def simplify(expression):
 											if Q==rhs4.type()[1]:
 												B = rhs4
 												return ("(((A[P*Q])⁻) ∪ (B[P*Q]))⁻ = (A[P*Q]) ∩ ((B[P*Q])⁻)", Typed_COR_Expressions.Typed_Intersection(A, Typed_COR_Expressions.Typed_Complement(B)))
+				if isinstance(arg, Typed_COR_Expressions.Typed_Converse):
+					arg = arg.argument
+					if Q==arg.type()[0]:
+						if P==arg.type()[1]:
+							if isinstance(arg, Typed_COR_Expressions.Typed_Complement):
+								arg = arg.argument
+								if Q==arg.type()[0]:
+									if P==arg.type()[1]:
+										A = arg
+										return ("(((A[Q*P])⁻)⁻¹)⁻ = (A[Q*P])⁻¹", Typed_COR_Expressions.Typed_Converse(A))
 				if isinstance(arg, Typed_COR_Expressions.Typed_Intersection):
 					lhs4, rhs4 = arg.argument1, arg.argument2
 					if P==lhs4.type()[0]:
@@ -1810,28 +1973,6 @@ def simplify(expression):
 				if P==arg.type()[1]:
 					if isinstance(arg, Typed_COR_Expressions.Typed_IdentityRelation):
 						return ("(𝟏[P*P])⁻¹ = 𝟏[P*P]", Typed_COR_Expressions.Typed_IdentityRelation(expression.type()[0], expression.type()[1]))
-					if isinstance(arg, Typed_COR_Expressions.Typed_Union):
-						lhs5, rhs5 = arg.argument1, arg.argument2
-						if P==lhs5.type()[0]:
-							if P==lhs5.type()[1]:
-								A = lhs5
-								if P==rhs5.type()[0]:
-									if P==rhs5.type()[1]:
-										if isinstance(rhs5, Typed_COR_Expressions.Typed_Converse):
-											arg = rhs5.argument
-											if P==arg.type()[0]:
-												if P==arg.type()[1]:
-													B = arg
-													return ("((A[P*P]) ∪ ((B[P*P])⁻¹))⁻¹ = ((A[P*P])⁻¹) ∪ (B[P*P])", Typed_COR_Expressions.Typed_Union(Typed_COR_Expressions.Typed_Converse(A), B))
-								if isinstance(lhs5, Typed_COR_Expressions.Typed_Converse):
-									arg = lhs5.argument
-									if P==arg.type()[0]:
-										if P==arg.type()[1]:
-											A = arg
-											if P==rhs5.type()[0]:
-												if P==rhs5.type()[1]:
-													B = rhs5
-													return ("(((A[P*P])⁻¹) ∪ (B[P*P]))⁻¹ = ((B[P*P])⁻¹) ∪ (A[P*P])", Typed_COR_Expressions.Typed_Union(Typed_COR_Expressions.Typed_Converse(B), A))
 					if isinstance(arg, Typed_COR_Expressions.Typed_Intersection):
 						lhs5, rhs5 = arg.argument1, arg.argument2
 						if P==lhs5.type()[0]:
@@ -1841,21 +1982,6 @@ def simplify(expression):
 									if P==rhs5.type()[1]:
 										if isinstance(rhs5, Typed_COR_Expressions.Typed_IdentityRelation):
 											return ("((A[P*P]) ∩ (𝟏[P*P]))⁻¹ = (𝟏[P*P]) ∩ (A[P*P])", Typed_COR_Expressions.Typed_Intersection(Typed_COR_Expressions.Typed_IdentityRelation(expression.type()[0], expression.type()[1]), A))
-										if isinstance(rhs5, Typed_COR_Expressions.Typed_Converse):
-											arg = rhs5.argument
-											if P==arg.type()[0]:
-												if P==arg.type()[1]:
-													B = arg
-													return ("((A[P*P]) ∩ ((B[P*P])⁻¹))⁻¹ = ((A[P*P])⁻¹) ∩ (B[P*P])", Typed_COR_Expressions.Typed_Intersection(Typed_COR_Expressions.Typed_Converse(A), B))
-								if isinstance(lhs5, Typed_COR_Expressions.Typed_Converse):
-									arg = lhs5.argument
-									if P==arg.type()[0]:
-										if P==arg.type()[1]:
-											A = arg
-											if P==rhs5.type()[0]:
-												if P==rhs5.type()[1]:
-													B = rhs5
-													return ("(((A[P*P])⁻¹) ∩ (B[P*P]))⁻¹ = ((B[P*P])⁻¹) ∩ (A[P*P])", Typed_COR_Expressions.Typed_Intersection(Typed_COR_Expressions.Typed_Converse(B), A))
 								if isinstance(lhs5, Typed_COR_Expressions.Typed_IdentityRelation):
 									if P==rhs5.type()[0]:
 										if P==rhs5.type()[1]:
@@ -1867,42 +1993,10 @@ def simplify(expression):
 							if P==arg.type()[1]:
 								if isinstance(arg, Typed_COR_Expressions.Typed_IdentityRelation):
 									return ("((𝟏[P*P])⁻)⁻¹ = (𝟏[P*P])⁻", Typed_COR_Expressions.Typed_Complement(Typed_COR_Expressions.Typed_IdentityRelation(expression.type()[0], expression.type()[1])))
-		if isinstance(expression, Typed_COR_Expressions.Typed_Composition):
-			lhs2, rhs2 = expression.argument1, expression.argument2
-			if P==lhs2.type()[0]:
-				Q = lhs2.type()[1]
-				if isinstance(lhs2, Typed_COR_Expressions.Typed_Converse):
-					arg = lhs2.argument
-					if Q==arg.type()[0]:
-						if P==arg.type()[1]:
-							A = arg
-							if Q==rhs2.type()[0]:
-								if P==rhs2.type()[1]:
-									if isinstance(rhs2, Typed_COR_Expressions.Typed_Converse):
-										arg = rhs2.argument
-										if P==arg.type()[0]:
-											if Q==arg.type()[1]:
-												B = arg
-												return ("((A[Q*P])⁻¹) ∘ ((B[P*Q])⁻¹) = ((B[P*Q]) ∘ (A[Q*P]))⁻¹", Typed_COR_Expressions.Typed_Converse(Typed_COR_Expressions.Typed_Composition(B, A)))
 		if isinstance(expression, Typed_COR_Expressions.Typed_Intersection):
 			lhs2, rhs2 = expression.argument1, expression.argument2
 			if P==lhs2.type()[0]:
 				if P==lhs2.type()[1]:
-					if isinstance(lhs2, Typed_COR_Expressions.Typed_Converse):
-						arg = lhs2.argument
-						if P==arg.type()[0]:
-							if P==arg.type()[1]:
-								A = arg
-								if P==rhs2.type()[0]:
-									if P==rhs2.type()[1]:
-										if isinstance(rhs2, Typed_COR_Expressions.Typed_Converse):
-											arg = rhs2.argument
-											if P==arg.type()[0]:
-												if P==arg.type()[1]:
-													B = arg
-													return ("((A[P*P])⁻¹) ∩ ((B[P*P])⁻¹) = ((A[P*P]) ∩ (B[P*P]))⁻¹", Typed_COR_Expressions.Typed_Converse(Typed_COR_Expressions.Typed_Intersection(A, B)))
-										if isinstance(rhs2, Typed_COR_Expressions.Typed_IdentityRelation):
-											return ("((A[P*P])⁻¹) ∩ (𝟏[P*P]) = (A[P*P]) ∩ (𝟏[P*P])", Typed_COR_Expressions.Typed_Intersection(A, Typed_COR_Expressions.Typed_IdentityRelation(expression.type()[0], expression.type()[1])))
 					if isinstance(lhs2, Typed_COR_Expressions.Typed_IdentityRelation):
 						if P==rhs2.type()[0]:
 							if P==rhs2.type()[1]:
@@ -1912,10 +2006,6 @@ def simplify(expression):
 										if P==arg.type()[1]:
 											A = arg
 											return ("(𝟏[P*P]) ∩ ((A[P*P])⁻¹) = (A[P*P]) ∩ (𝟏[P*P])", Typed_COR_Expressions.Typed_Intersection(A, Typed_COR_Expressions.Typed_IdentityRelation(expression.type()[0], expression.type()[1])))
-		if isinstance(expression, Typed_COR_Expressions.Typed_Dagger):
-			lhs2, rhs2 = expression.argument1, expression.argument2
-			if P==lhs2.type()[0]:
-				if P==lhs2.type()[1]:
 					if isinstance(lhs2, Typed_COR_Expressions.Typed_Converse):
 						arg = lhs2.argument
 						if P==arg.type()[0]:
@@ -1923,56 +2013,7 @@ def simplify(expression):
 								A = arg
 								if P==rhs2.type()[0]:
 									if P==rhs2.type()[1]:
-										if isinstance(rhs2, Typed_COR_Expressions.Typed_Converse):
-											arg = rhs2.argument
-											if P==arg.type()[0]:
-												if P==arg.type()[1]:
-													B = arg
-													return ("((A[P*P])⁻¹) † ((B[P*P])⁻¹) = ((B[P*P]) † (A[P*P]))⁻¹", Typed_COR_Expressions.Typed_Converse(Typed_COR_Expressions.Typed_Dagger(B, A)))
-				Q = lhs2.type()[1]
-				if isinstance(lhs2, Typed_COR_Expressions.Typed_Converse):
-					arg = lhs2.argument
-					if Q==arg.type()[0]:
-						if P==arg.type()[1]:
-							A = arg
-							if Q==rhs2.type()[0]:
-								if P==rhs2.type()[1]:
-									if isinstance(rhs2, Typed_COR_Expressions.Typed_Converse):
-										arg = rhs2.argument
-										if P==arg.type()[0]:
-											if Q==arg.type()[1]:
-												B = arg
-												return ("((A[Q*P])⁻¹) † ((B[P*Q])⁻¹) = ((B[P*Q]) † (A[Q*P]))⁻¹", Typed_COR_Expressions.Typed_Converse(Typed_COR_Expressions.Typed_Dagger(B, A)))
-		if isinstance(expression, Typed_COR_Expressions.Typed_Complement):
-			arg = expression.argument
-			if P==arg.type()[0]:
-				if P==arg.type()[1]:
-					if isinstance(arg, Typed_COR_Expressions.Typed_Converse):
-						arg = arg.argument
-						if P==arg.type()[0]:
-							if P==arg.type()[1]:
-								if isinstance(arg, Typed_COR_Expressions.Typed_Complement):
-									arg = arg.argument
-									if P==arg.type()[0]:
-										if P==arg.type()[1]:
-											A = arg
-											return ("(((A[P*P])⁻)⁻¹)⁻ = (A[P*P])⁻¹", Typed_COR_Expressions.Typed_Converse(A))
-		if isinstance(expression, Typed_COR_Expressions.Typed_Union):
-			lhs2, rhs2 = expression.argument1, expression.argument2
-			if P==lhs2.type()[0]:
-				if P==lhs2.type()[1]:
-					if isinstance(lhs2, Typed_COR_Expressions.Typed_Converse):
-						arg = lhs2.argument
-						if P==arg.type()[0]:
-							if P==arg.type()[1]:
-								A = arg
-								if P==rhs2.type()[0]:
-									if P==rhs2.type()[1]:
-										if isinstance(rhs2, Typed_COR_Expressions.Typed_Converse):
-											arg = rhs2.argument
-											if P==arg.type()[0]:
-												if P==arg.type()[1]:
-													B = arg
-													return ("((A[P*P])⁻¹) ∪ ((B[P*P])⁻¹) = ((A[P*P]) ∪ (B[P*P]))⁻¹", Typed_COR_Expressions.Typed_Converse(Typed_COR_Expressions.Typed_Union(A, B)))
+										if isinstance(rhs2, Typed_COR_Expressions.Typed_IdentityRelation):
+											return ("((A[P*P])⁻¹) ∩ (𝟏[P*P]) = (A[P*P]) ∩ (𝟏[P*P])", Typed_COR_Expressions.Typed_Intersection(A, Typed_COR_Expressions.Typed_IdentityRelation(expression.type()[0], expression.type()[1])))
 
 	return (None, expression) # The given expression was unable to be simplified

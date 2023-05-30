@@ -57,6 +57,9 @@ class Typed_IdentityRelation:
     def __init__(self, s1, s2):
         self.set1 = s1
         self.set2 = s2
+        if s1 != s2:  # Type checking
+            raise Exception(f'ERROR: Identity type mismatch! Type 1 is:{s1} and Type 2 is:{s2}')
+        
 
     def __str__(self) -> str:
         return f'𝟏[{self.set1}*{self.set2}]'
