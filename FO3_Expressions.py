@@ -51,7 +51,7 @@ class Negation(Term):
 
     def free_variables(self) -> list:
         return self.argument.free_variables()
-    
+
     def size(self) -> int:
         return 1 + self.argument.size()
 
@@ -79,7 +79,7 @@ class ForAll(Term):
 
     def free_variables(self) -> list:
         return list_difference(self.argument.free_variables(), [self.variable])
-    
+
     def size(self) -> int:
         return 1 + self.argument.size()
 
@@ -107,7 +107,7 @@ class ThereExists(Term):
 
     def free_variables(self) -> list:
         return list_difference(self.argument.free_variables(), [self.variable])
-    
+
     def size(self) -> int:
         return 1 + self.argument.size()
 
@@ -138,7 +138,7 @@ class AND(Term):
 
     def free_variables(self) -> list:
         return list_union(self.argument1.free_variables(), self.argument2.free_variables())
-    
+
     def size(self) -> int:
         return 1 + self.argument1.size() + self.argument2.size()
 
@@ -169,7 +169,7 @@ class OR(Term):
 
     def free_variables(self) -> list:
         return list_union(self.argument1.free_variables(), self.argument2.free_variables())
-    
+
     def size(self) -> int:
         return 1 + self.argument1.size() + self.argument2.size()
 
@@ -196,7 +196,7 @@ class Equals(Term):
 
     def free_variables(self) -> list:
         return [self.argument1, self.argument2] if self.argument1 != self.argument2 else [self.argument1]
-    
+
     def size(self) -> int:
         return 1
 
@@ -221,7 +221,7 @@ class tt(Term):
 
     def free_variables(self) -> list:
         return []
-    
+
     def size(self) -> int:
         return 1
 
@@ -246,7 +246,7 @@ class ff(Term):
 
     def free_variables(self) -> list:
         return []
-    
+
     def size(self) -> int:
         return 1
 
@@ -273,7 +273,7 @@ class Predicate(Term):
 
     def free_variables(self) -> list:
         return [self.argument1, self.argument2] if self.argument1 != self.argument2 else [self.argument1]
-    
+
     def size(self) -> int:
         return 1
 
@@ -339,7 +339,8 @@ if __name__ == "__main__":
                 AND(Predicate("A", "x", "y"), AND(Equals('y', 'z'), Predicate('B', 'y', 'z'))))))))
 
     print("Original Expression: ", test_expression)  # Original expression
-    print("Negation Normal Form:", negation_normal(test_expression))  # Negation Normal Form
+    print("Negation Normal Form:", negation_normal(
+        test_expression))  # Negation Normal Form
 
     print()
     x = Typed_Variable('x', 'Q')
@@ -351,4 +352,5 @@ if __name__ == "__main__":
                 AND(Predicate("A", x, y), AND(Equals(y, z), Predicate('B', y, z))))))))
 
     print("Original Expression: ", test_expression)  # Original expression
-    print("Negation Normal Form:", negation_normal(test_expression))  # Negation Normal Form
+    print("Negation Normal Form:", negation_normal(
+        test_expression))  # Negation Normal Form

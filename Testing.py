@@ -6,7 +6,7 @@ import random
 
 from timeit import default_timer
 import z3  # pip install z3-solver
-import pickle # save/load python objects from a file
+import pickle  # save/load python objects from a file
 
 from FO3_Translation_Methods import *
 import Search_For_Simplification_Rules
@@ -22,18 +22,18 @@ def asZ3(expression, sort=SortForEverything):
         case ff():
             return False
         case ForAll(argument=arg, variable=var):
-            return z3.ForAll([z3.Const(var, sort)], asZ3(arg,sort))
+            return z3.ForAll([z3.Const(var, sort)], asZ3(arg, sort))
         case ThereExists(argument=arg, variable=var):
-            return z3.Exists([z3.Const(var, sort)], asZ3(arg,sort))
+            return z3.Exists([z3.Const(var, sort)], asZ3(arg, sort))
         case AND(argument1=arg1, argument2=arg2):
-            return z3.And(asZ3(arg1,sort), asZ3(arg2,sort))
+            return z3.And(asZ3(arg1, sort), asZ3(arg2, sort))
         case OR(argument1=arg1, argument2=arg2):
-            return z3.Or(asZ3(arg1,sort), asZ3(arg2,sort))
+            return z3.Or(asZ3(arg1, sort), asZ3(arg2, sort))
         case Predicate(letter=a, argument1=arg1, argument2=arg2):
             return z3.Function(a, sort, sort, z3.BoolSort())(
                 z3.Const(arg1, sort), z3.Const(arg2, sort))
         case Negation(argument=arg):
-            return z3.Not(asZ3(arg,sort))
+            return z3.Not(asZ3(arg, sort))
         case Equals(argument1=arg1, argument2=arg2):
             return z3.Const(arg1, sort) == z3.Const(arg2, sort)
 
@@ -54,11 +54,13 @@ def generate_random_FO3(size):
         case 1:
             return ff()
         case 2:
-            var1, var2 = ['x', 'y', 'z'][random.randint(0, 2)], ['x', 'y', 'z'][random.randint(0, 2)]
+            var1, var2 = ['x', 'y', 'z'][random.randint(
+                0, 2)], ['x', 'y', 'z'][random.randint(0, 2)]
             return Equals(var1, var2)
         case 3:
             letter_choice = ['A', 'B', 'C'][random.randint(0, 2)]
-            var1, var2 = ['x', 'y', 'z'][random.randint(0, 2)], ['x', 'y', 'z'][random.randint(0, 2)]
+            var1, var2 = ['x', 'y', 'z'][random.randint(
+                0, 2)], ['x', 'y', 'z'][random.randint(0, 2)]
             return Predicate(letter_choice, var1, var2)
         case 4:
             var = ['x', 'y', 'z'][random.randint(0, 2)]
@@ -69,19 +71,21 @@ def generate_random_FO3(size):
         case 6:
             return Negation(generate_random_FO3(size - 1))
         case 7:
-            size_other = random.randint(1, size - 2) # endpoint is included
+            size_other = random.randint(1, size - 2)  # endpoint is included
             return OR(generate_random_FO3(size_other),
                       generate_random_FO3(size-1 - size_other))
         case 8:
-            size_other = random.randint(1, size - 2) # endpoint is included
+            size_other = random.randint(1, size - 2)  # endpoint is included
             return AND(generate_random_FO3(size_other),
                        generate_random_FO3(size-1 - size_other))
 
 
 def is_normal_enough(formula):
     v = formula.depends_on()
-    if 'y' in v and 'x' not in v: return False
-    if 'z' in v and 'y' not in v: return False
+    if 'y' in v and 'x' not in v:
+        return False
+    if 'z' in v and 'y' not in v:
+        return False
     return True
 
 
@@ -130,12 +134,12 @@ def generate_all_FO3_formulas(size):
                 for formula in generate_all_FO3_formulas(size - 1):
                     yield Negation(formula)
             case 7:
-                for size_other in range(1, size-1): # endpoint is excluded
+                for size_other in range(1, size-1):  # endpoint is excluded
                     for formula in generate_all_FO3_formulas(size_other):
                         for formula2 in generate_all_FO3_formulas(size-1 - size_other):
                             yield OR(formula, formula2)
             case 8:
-                for size_other in range(1, size-1): # endpoint is excluded
+                for size_other in range(1, size-1):  # endpoint is excluded
                     for formula in generate_all_FO3_formulas(size_other):
                         for formula2 in generate_all_FO3_formulas(size-1 - size_other):
                             yield AND(formula, formula2)
@@ -168,22 +172,22 @@ def generate_all_COR_formulas(size):
                 for formula in generate_all_COR_formulas(size - 1):
                     yield Converse(formula)
             case 6:
-                for size_other in range(0, size): # endpoint is excluded
+                for size_other in range(0, size):  # endpoint is excluded
                     for formula in generate_all_COR_formulas(size_other):
                         for formula2 in generate_all_COR_formulas(size-1 - size_other):
                             yield Dagger(formula, formula2)
             case 7:
-                for size_other in range(0, size): # endpoint is excluded
+                for size_other in range(0, size):  # endpoint is excluded
                     for formula in generate_all_COR_formulas(size_other):
                         for formula2 in generate_all_COR_formulas(size-1 - size_other):
                             yield Composition(formula, formula2)
             case 8:
-                for size_other in range(0, size): # endpoint is excluded
+                for size_other in range(0, size):  # endpoint is excluded
                     for formula in generate_all_COR_formulas(size_other):
                         for formula2 in generate_all_COR_formulas(size-1 - size_other):
                             yield Union(formula, formula2)
             case 9:
-                for size_other in range(0, size): # endpoint is excluded
+                for size_other in range(0, size):  # endpoint is excluded
                     for formula in generate_all_COR_formulas(size_other):
                         for formula2 in generate_all_COR_formulas(size-1 - size_other):
                             yield Intersection(formula, formula2)
@@ -248,16 +252,19 @@ def test_with_z3(fo3_expression) -> int:
         print("\nZ3 constraint: ", z3.Not(asZ3(fo3_expression) == asZ3(back)))
         return -1
     elif z3result == z3.unsat:
-        print("\nZ3 proved that the round-trip returned something equivalent (this is good!)")
+        print(
+            "\nZ3 proved that the round-trip returned something equivalent (this is good!)")
         return 1
     else:
-        q=('Stuck at: ' + str(fo3_expression) + ' = ' + str(back))
+        q = ('Stuck at: ' + str(fo3_expression) + ' = ' + str(back))
         print('reverting to enum univ')
         s.set("timeout", 6000)
 
-        fallback_enum,(_,_,_,_) = z3.EnumSort('univ',['SA','SB','SC','SD'])
+        fallback_enum, (_, _, _, _) = z3.EnumSort(
+            'univ', ['SA', 'SB', 'SC', 'SD'])
         assert isinstance(fallback_enum, z3.SortRef)
-        z3result = s.check(z3.Not(asZ3(fo3_expression,fallback_enum) == asZ3(back,fallback_enum)))
+        z3result = s.check(
+            z3.Not(asZ3(fo3_expression, fallback_enum) == asZ3(back, fallback_enum)))
         if z3result == z3.unsat:
             print(q+'\nGoing into slow mode...')
             s = z3.Solver()
@@ -272,15 +279,15 @@ def test_with_z3(fo3_expression) -> int:
             else:
                 raise Exception("Z3 does not know the answer!\n"+q)
         elif z3result == z3.sat:
-            return -1 # counter example found for a small universe, this happens quite a lot
+            return -1  # counter example found for a small universe, this happens quite a lot
         else:
-            q=('Stuck at: ' + str(fo3_expression) + ' = ' + str(back))
+            q = ('Stuck at: ' + str(fo3_expression) + ' = ' + str(back))
             raise Exception("Z3 times out even in the finite case!\n"+q)
 
 
 def translation_speed_test(number, size, generate_new_terms=False):
     results = open("translation_speed_test_results.txt", "w+", encoding="utf8")
-    
+
     # Generate random FO3 terms and save them to a file
     if generate_new_terms:
         list = []
@@ -288,15 +295,17 @@ def translation_speed_test(number, size, generate_new_terms=False):
             list.append(make_FO3_expression_closed(generate_random_FO3(size)))
         with open('size_20_fo3_formulas.pickle', 'wb') as file:
             pickle.dump(list, file, protocol=pickle.HIGHEST_PROTOCOL)
-    
+
     # Read FO3 terms from a file and translate them
     with open('size_20_fo3_formulas.pickle', 'rb') as file:
         formulas = pickle.load(file)
     start = default_timer()  # Time how long this takes
     for formula in formulas:
-        translation = final_translation(T_Nice(T_Good_Dash(T_Nice(negation_normal(formula)))), 'x', 'y')
+        translation = final_translation(
+            T_Nice(T_Good_Dash(T_Nice(negation_normal(formula)))), 'x', 'y')
         results.write(str(formula) + " -> " + str(translation) + "\n")
-    results.write(f"\nFinished translation {number} random size={size} FO3 formulas in {default_timer() - start} seconds!")
+    results.write(
+        f"\nFinished translation {number} random size={size} FO3 formulas in {default_timer() - start} seconds!")
 
 
 if __name__ == "__main__":

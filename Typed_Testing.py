@@ -33,15 +33,18 @@ def generate_random_typed_FO3(size, allowed_variables):
             return Equals(var1, var2)
         case 3:  # Predicate
             letter_choice = ['A', 'B', 'C'][random.randint(0, 2)]
-            var1, var2 = allowed_variables[random.randint(0, 2)], allowed_variables[random.randint(0, 2)]
+            var1, var2 = allowed_variables[random.randint(
+                0, 2)], allowed_variables[random.randint(0, 2)]
             return Predicate(letter_choice, var1, var2)
         case 4:  # ForAll
-            var = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], ['P', 'Q', 'R', 'S'][random.randint(0, 3)])
+            var = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], [
+                                 'P', 'Q', 'R', 'S'][random.randint(0, 3)])
             new_allowed_variables = allowed_variables.copy()
             new_allowed_variables[random.randint(0, 2)] = var
             return ForAll(var, generate_random_typed_FO3(size - 1, new_allowed_variables))
         case 5:  # ThereExists
-            var = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], ['P', 'Q', 'R', 'S'][random.randint(0, 3)])
+            var = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], [
+                                 'P', 'Q', 'R', 'S'][random.randint(0, 3)])
             new_allowed_variables = allowed_variables.copy()
             new_allowed_variables[random.randint(0, 2)] = var
             return ThereExists(var, generate_random_typed_FO3(size - 1, new_allowed_variables))
@@ -65,11 +68,15 @@ def random_typed_FO3_tester(attempts, size):
     successes = 0
     for attempt in range(attempts):
         # Generate 3 random variables
-        x = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], ['P', 'Q', 'R', 'S'][random.randint(0, 3)])
-        y = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], ['P', 'Q', 'R', 'S'][random.randint(0, 3)])
-        z = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], ['P', 'Q', 'R', 'S'][random.randint(0, 3)])
+        x = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], [
+                           'P', 'Q', 'R', 'S'][random.randint(0, 3)])
+        y = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], [
+                           'P', 'Q', 'R', 'S'][random.randint(0, 3)])
+        z = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], [
+                           'P', 'Q', 'R', 'S'][random.randint(0, 3)])
 
-        test = make_typed_FO3_expression_closed(generate_random_typed_FO3(size, [x, y, z]))
+        test = make_typed_FO3_expression_closed(
+            generate_random_typed_FO3(size, [x, y, z]))
         return_value = test_typed_with_z3(test)
         if return_value < 0:
             print('WARNING: TEST FAILED!')
@@ -118,11 +125,13 @@ def test_typed_with_z3(fo3_expression) -> int:
     print("Good FO3 Translation:  ", good)  # Good FO3 Term
     nice = FO3_Translation_Methods.T_Nice(good)
     print("Nice FO3 Translation:  ", nice)  # Nice FO3 Term
-    final = typed_final_translation(nice, Typed_Variable('x', "Left"), Typed_Variable('y', "Right"))
+    final = typed_final_translation(nice, Typed_Variable(
+        'x', "Left"), Typed_Variable('y', "Right"))
     print("\nFinal Translation:   ", final)
     simplified = Search_For_Simplification_Rules.fully_simplify(final, True)
     print("Simplified:          ", simplified)
-    back = FO3_Translation_Methods.T_Nice(ForAll(Typed_Variable('a', 'A'), ForAll(Typed_Variable('b', 'B'), simplified.translate('a', 'b'))))
+    back = FO3_Translation_Methods.T_Nice(ForAll(Typed_Variable('a', 'A'), ForAll(
+        Typed_Variable('b', 'B'), simplified.translate('a', 'b'))))
     print("Something that should be equivalent to the original:", back)
     s = z3.Solver()
     s.add(z3.Not(typed_asZ3(fo3_expression) == typed_asZ3(back)))
@@ -133,10 +142,12 @@ def test_typed_with_z3(fo3_expression) -> int:
         print(s.model())
         print("\nZ3 lhs: ", typed_asZ3(fo3_expression))
         print("\nZ3 rhs: ", typed_asZ3(back))
-        print("\nZ3 constraint: ", z3.Not(typed_asZ3(fo3_expression) == typed_asZ3(back)))
+        print("\nZ3 constraint: ", z3.Not(
+            typed_asZ3(fo3_expression) == typed_asZ3(back)))
         return -1
     elif z3result == z3.unsat:
-        print("\nZ3 proved that the round-trip returned something equivalent (this is good!)")
+        print(
+            "\nZ3 proved that the round-trip returned something equivalent (this is good!)")
         return 1
     else:
         print("\nZ3 timed out and returned ", z3result)
