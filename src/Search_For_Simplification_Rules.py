@@ -86,7 +86,7 @@ def alphabetical_order_check(string):
 
 def is_already_simplifiable(formula, typed=False) -> bool:
     """ If a formula is already simplifiable, then we don't need to consider it again. """
-    return (not (str(simplify(formula)) == str(formula))) if not typed else (not (str(simplify_typed(formula)) == str(formula)))
+    return (str(simplify(formula)) != str(formula)) if not typed else (str(simplify_typed(formula)) != str(formula))
 
 
 def simplify(expression):
