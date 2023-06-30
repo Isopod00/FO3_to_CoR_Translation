@@ -1,8 +1,10 @@
 # Authors: Sebastiaan J. C. Joosten, Anthony Brogni
 # Last Changed: March 2023
-""" This file contains everything you need to build object representations of FO3 formulas in Python """
 
-from List_Methods import *
+""" This file contains everything you need to build
+object representations of FO3 formulas in Python """
+
+from utils.List_Methods import *
 
 
 class Term:

@@ -1,6 +1,8 @@
 # Author: Anthony Brogni
 # Last Changed: May 2023
-""" The code in this file is for finding all possible COR simplification rules up to a specified size. We utilize multiprocessing across multiple cores to make the search faster. """
+
+""" The code in this file is for finding all possible COR simplification rules up to a specified size.
+We utilize multiprocessing across multiple cores to make the search faster. """
 
 from tqdm import tqdm
 import multiprocessing

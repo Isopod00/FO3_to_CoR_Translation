@@ -1,6 +1,8 @@
 # Authors: Sebastiaan J. C. Joosten, Anthony Brogni
 # Last Changed: May 2023
-""" This file is for the random generation of (untyped) FO3 expressions and for automated testing of our translation process using z3! """
+
+""" This file is for the random generation of (untyped) FO3 expressions
+and for automated testing of our translation process using z3! """
 
 import random
 

@@ -1,6 +1,8 @@
 # Author: Anthony Brogni
 # Last Changed: May 2023
-""" This file is for creating typed simplification rules from the untyped rules we have found with Search_For_Simplification_Rules.py. """
+
+""" This file is for creating typed simplification rules from the untyped rules
+we have found with Search_For_Simplification_Rules.py. """
 
 import pickle
 import z3  # pip install z3-solver
