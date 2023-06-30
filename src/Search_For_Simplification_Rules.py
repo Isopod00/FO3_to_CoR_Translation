@@ -66,7 +66,7 @@ def look_for_simplification_rules(size, cpu_cores1, timeout=3600):
         cor_dict[l] = r
 
     # Save the rule dictionary to file
-    with open('cor_dict.pickle', 'wb') as file:
+    with open('src/cor_dict.pickle', 'wb') as file:
         pickle.dump(cor_dict, file, protocol=pickle.HIGHEST_PROTOCOL)
 
     print(
@@ -447,7 +447,7 @@ def delete_generalizable_rules():
             raise Exception("rule_applied should not be None. lhs =", lhs)
 
     # Save the new typed rule dictionary to file
-    with open('cor_dict.pickle', 'wb') as file:
+    with open('src/cor_dict.pickle', 'wb') as file:
         pickle.dump(new_dict, file, protocol=pickle.HIGHEST_PROTOCOL)
     cor_dict = new_dict
 
@@ -455,11 +455,11 @@ def delete_generalizable_rules():
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
     try:
-        with open('cor_dict.pickle', 'rb') as file:
+        with open('src/cor_dict.pickle', 'rb') as file:
             cor_dict = pickle.load(file)
     except FileNotFoundError:
         cor_dict = {}
-        print("No cor_dict.pickle file found. Using an empty dictionary (and probably creating one later)...")
+        print("No src/cor_dict.pickle file found. Using an empty dictionary (and probably creating one later)...")
 
     delete_generalizable_rules()
 

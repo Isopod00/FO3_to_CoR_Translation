@@ -64,7 +64,7 @@ def give_type(formula, type):
 
 def make_rules_typed():
     # Load the rule dictionary from file
-    with open('cor_dict.pickle', 'rb') as file:
+    with open('src/cor_dict.pickle', 'rb') as file:
         cor_dict = pickle.load(file)
 
     typed_rules_dict = dict()
