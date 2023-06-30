@@ -444,7 +444,7 @@ def delete_generalizable_rules():
                 print("Deleted Rule:", str(lhs) + " = " + str(cor_dict[lhs]))
                 print("Rule Used Instead Was:", rule_applied)
         else:
-            raise Exception("rule_applied should not be None. lhs =", lhs)
+            raise Exception(f"rule_applied should not be None. lhs = {str(lhs)}")
 
     # Save the new typed rule dictionary to file
     with open('src/cor_dict.pickle', 'wb') as file:
