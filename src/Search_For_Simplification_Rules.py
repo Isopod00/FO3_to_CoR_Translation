@@ -90,7 +90,7 @@ def is_already_simplifiable(formula, typed=False) -> bool:
 
 
 def simplify(expression):
-    """ Simplify a COR expression using the code we have generated in Simplify.py """
+    """ Simplify a COR expression using the code we have generated in src/Simplify.py """
     match expression:
         case COR_Expressions.Complement(argument=arg):
             return Simplify.simplify(COR_Expressions.Complement(simplify(arg)))[1]
@@ -109,7 +109,7 @@ def simplify(expression):
 
 
 def simplify_typed(expression):
-    """ Simplify a typed COR expression using the code we have generated in Typed_Simplify.py """
+    """ Simplify a typed COR expression using the code we have generated in src/Typed_Simplify.py """
     match expression:
         case Typed_COR_Expressions.Typed_Complement(argument=arg):
             return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Complement(simplify_typed(arg)))[1]
@@ -402,7 +402,7 @@ def write_grouped_code(python_code, groups):
 
 
 def generate_code_from_cor_rules(cor_dict, filename, typed, reverse=False):
-    """ Generates Python code in the file Simplify.py from a dictionary of simplification rules """
+    """ Generates Python code in the file src/Simplify.py from a dictionary of simplification rules """
     # Create a new .py file to write to
     python_code = open(filename, "w+", encoding="utf_8")
     code = []
@@ -467,5 +467,5 @@ if __name__ == "__main__":
     # look_for_simplification_rules(2, 6)
     # look_for_simplification_rules(3, 6)
 
-    print_rule_dictionary(cor_dict, "COR_Rules.txt")
-    generate_code_from_cor_rules(cor_dict, "Simplify.py", False)
+    print_rule_dictionary(cor_dict, "src/COR_Rules.txt")
+    generate_code_from_cor_rules(cor_dict, "src/Simplify.py", False)
