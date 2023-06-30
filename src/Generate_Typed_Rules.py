@@ -1,6 +1,8 @@
 # Author: Anthony Brogni
 # Last Changed: May 2023
-""" This file is for creating typed simplification rules from the untyped rules we have found with Search_For_Simplification_Rules.py. """
+
+""" This file is for creating typed simplification rules from the untyped rules
+we have found with Search_For_Simplification_Rules.py. """
 
 import pickle
 import z3  # pip install z3-solver
@@ -62,7 +64,7 @@ def give_type(formula, type):
 
 def make_rules_typed():
     # Load the rule dictionary from file
-    with open('cor_dict.pickle', 'rb') as file:
+    with open('src/cor_dict.pickle', 'rb') as file:
         cor_dict = pickle.load(file)
 
     typed_rules_dict = dict()
@@ -115,7 +117,7 @@ def make_rules_typed():
                             "Z3 times out even in the finite case!\n"+q)
 
     # Save the new typed rule dictionary to file
-    with open('typed_cor_dict.pickle', 'wb') as file:
+    with open('src/typed_cor_dict.pickle', 'wb') as file:
         pickle.dump(typed_rules_dict, file, protocol=pickle.HIGHEST_PROTOCOL)
 
 
@@ -123,7 +125,7 @@ def delete_generalizable_rules():
     new_dict = dict()
 
     # Load the rule dictionary from file
-    with open('typed_cor_dict.pickle', 'rb') as file:
+    with open('src/typed_cor_dict.pickle', 'rb') as file:
         typed_cor_dict = pickle.load(file)
 
     for lhs in typed_cor_dict:
@@ -140,7 +142,7 @@ def delete_generalizable_rules():
             raise Exception("rule_applied should not be None. lhs =", lhs)
 
     # Save the new typed rule dictionary to file
-    with open('typed_cor_dict.pickle', 'wb') as file:
+    with open('src/typed_cor_dict.pickle', 'wb') as file:
         pickle.dump(new_dict, file, protocol=pickle.HIGHEST_PROTOCOL)
 
 
@@ -151,23 +153,23 @@ if __name__ == "__main__":
 
     # Delete all generalizable rules
     delete_generalizable_rules()
-    with open('typed_cor_dict.pickle', 'rb') as file:
+    with open('src/typed_cor_dict.pickle', 'rb') as file:
         typed_cor_dict = pickle.load(file)
     Search_For_Simplification_Rules.print_rule_dictionary(
-        typed_cor_dict, "Typed_COR_Rules.txt")
+        typed_cor_dict, "src/Typed_COR_Rules.txt")
     Search_For_Simplification_Rules.generate_code_from_cor_rules(
-        typed_cor_dict, "Typed_Simplify.py", True)
+        typed_cor_dict, "src/Typed_Simplify.py", True)
     delete_generalizable_rules()
-    with open('typed_cor_dict.pickle', 'rb') as file:
+    with open('src/typed_cor_dict.pickle', 'rb') as file:
         typed_cor_dict = pickle.load(file)
     Search_For_Simplification_Rules.print_rule_dictionary(
-        typed_cor_dict, "Typed_COR_Rules.txt")
+        typed_cor_dict, "src/Typed_COR_Rules.txt")
     Search_For_Simplification_Rules.generate_code_from_cor_rules(
-        typed_cor_dict, "Typed_Simplify.py", True, True)
+        typed_cor_dict, "src/Typed_Simplify.py", True, True)
     delete_generalizable_rules()
-    with open('typed_cor_dict.pickle', 'rb') as file:
+    with open('src/typed_cor_dict.pickle', 'rb') as file:
         typed_cor_dict = pickle.load(file)
     Search_For_Simplification_Rules.print_rule_dictionary(
-        typed_cor_dict, "Typed_COR_Rules.txt")
+        typed_cor_dict, "src/Typed_COR_Rules.txt")
     Search_For_Simplification_Rules.generate_code_from_cor_rules(
-        typed_cor_dict, "Typed_Simplify.py", True)
+        typed_cor_dict, "src/Typed_Simplify.py", True)

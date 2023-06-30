@@ -1,6 +1,8 @@
 # Authors: Anthony Brogni, Sebastiaan J. C. Joosten
 # Last Changed: January 2023
-""" This file stores the final_translation method for translating heterogeneous/typed FO3 expressions into COR. """
+
+""" This file stores the final_translation method for
+translating heterogeneous/typed FO3 expressions into COR. """
 
 import FO3_Translation_Methods
 

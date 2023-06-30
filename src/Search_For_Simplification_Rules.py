@@ -1,6 +1,8 @@
 # Author: Anthony Brogni
 # Last Changed: May 2023
-""" The code in this file is for finding all possible COR simplification rules up to a specified size. We utilize multiprocessing across multiple cores to make the search faster. """
+
+""" The code in this file is for finding all possible COR simplification rules up to a specified size.
+We utilize multiprocessing across multiple cores to make the search faster. """
 
 from tqdm import tqdm
 import multiprocessing
@@ -64,7 +66,7 @@ def look_for_simplification_rules(size, cpu_cores1, timeout=3600):
         cor_dict[l] = r
 
     # Save the rule dictionary to file
-    with open('cor_dict.pickle', 'wb') as file:
+    with open('src/cor_dict.pickle', 'wb') as file:
         pickle.dump(cor_dict, file, protocol=pickle.HIGHEST_PROTOCOL)
 
     print(
@@ -84,11 +86,11 @@ def alphabetical_order_check(string):
 
 def is_already_simplifiable(formula, typed=False) -> bool:
     """ If a formula is already simplifiable, then we don't need to consider it again. """
-    return (not (str(simplify(formula)) == str(formula))) if not typed else (not (str(simplify_typed(formula)) == str(formula)))
+    return (str(simplify(formula)) != str(formula)) if not typed else (str(simplify_typed(formula)) != str(formula))
 
 
 def simplify(expression):
-    """ Simplify a COR expression using the code we have generated in Simplify.py """
+    """ Simplify a COR expression using the code we have generated in src/Simplify.py """
     match expression:
         case COR_Expressions.Complement(argument=arg):
             return Simplify.simplify(COR_Expressions.Complement(simplify(arg)))[1]
@@ -107,7 +109,7 @@ def simplify(expression):
 
 
 def simplify_typed(expression):
-    """ Simplify a typed COR expression using the code we have generated in Typed_Simplify.py """
+    """ Simplify a typed COR expression using the code we have generated in src/Typed_Simplify.py """
     match expression:
         case Typed_COR_Expressions.Typed_Complement(argument=arg):
             return Typed_Simplify.simplify(Typed_COR_Expressions.Typed_Complement(simplify_typed(arg)))[1]
@@ -400,7 +402,7 @@ def write_grouped_code(python_code, groups):
 
 
 def generate_code_from_cor_rules(cor_dict, filename, typed, reverse=False):
-    """ Generates Python code in the file Simplify.py from a dictionary of simplification rules """
+    """ Generates Python code in the file src/Simplify.py from a dictionary of simplification rules """
     # Create a new .py file to write to
     python_code = open(filename, "w+", encoding="utf_8")
     code = []
@@ -442,10 +444,10 @@ def delete_generalizable_rules():
                 print("Deleted Rule:", str(lhs) + " = " + str(cor_dict[lhs]))
                 print("Rule Used Instead Was:", rule_applied)
         else:
-            raise Exception("rule_applied should not be None. lhs =", lhs)
+            raise Exception(f"rule_applied should not be None. lhs = {str(lhs)}")
 
     # Save the new typed rule dictionary to file
-    with open('cor_dict.pickle', 'wb') as file:
+    with open('src/cor_dict.pickle', 'wb') as file:
         pickle.dump(new_dict, file, protocol=pickle.HIGHEST_PROTOCOL)
     cor_dict = new_dict
 
@@ -453,11 +455,11 @@ def delete_generalizable_rules():
 # This code only runs if this file is run directly (it doesn't run when imported as a library)
 if __name__ == "__main__":
     try:
-        with open('cor_dict.pickle', 'rb') as file:
+        with open('src/cor_dict.pickle', 'rb') as file:
             cor_dict = pickle.load(file)
     except FileNotFoundError:
         cor_dict = {}
-        print("No cor_dict.pickle file found. Using an empty dictionary (and probably creating one later)...")
+        print("No src/cor_dict.pickle file found. Using an empty dictionary (and probably creating one later)...")
 
     delete_generalizable_rules()
 
@@ -465,5 +467,5 @@ if __name__ == "__main__":
     # look_for_simplification_rules(2, 6)
     # look_for_simplification_rules(3, 6)
 
-    print_rule_dictionary(cor_dict, "COR_Rules.txt")
-    generate_code_from_cor_rules(cor_dict, "Simplify.py", False)
+    print_rule_dictionary(cor_dict, "src/COR_Rules.txt")
+    generate_code_from_cor_rules(cor_dict, "src/Simplify.py", False)

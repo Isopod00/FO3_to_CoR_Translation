@@ -1,6 +1,8 @@
 # Authors: Sebastiaan J. C. Joosten, Anthony Brogni
 # Last Changed: March 2023
-""" This file contains everything you need to build object representations of heterogeneous/typed COR formulas in Python! """
+
+""" This file contains everything you need to build
+object representations of heterogeneous/typed COR formulas in Python! """
 
 from FO3_Expressions import *
 
