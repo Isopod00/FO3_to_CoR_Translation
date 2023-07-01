@@ -8,7 +8,7 @@ import random
 
 import z3  # pip install z3-solver
 
-from Typed_FO3_Translation import *
+from utils.Typed_FO3_Translation import *
 import Search_For_Simplification_Rules
 
 
@@ -68,7 +68,7 @@ def random_typed_FO3_tester(attempts, size):
     specified size and then beginning our forwards and backwards translation processes,
     using z3 to verify the equivalence of the original FO3 term and the result. """
     successes = 0
-    for attempt in range(attempts):
+    for _ in range(attempts):
         # Generate 3 random variables
         x = Typed_Variable(['x', 'y', 'z'][random.randint(0, 2)], [
                            'P', 'Q', 'R', 'S'][random.randint(0, 3)])

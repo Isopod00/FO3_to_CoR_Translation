@@ -4,8 +4,9 @@
 """ This file stores the final_translation method for
 translating heterogeneous/typed FO3 expressions into COR. """
 
-import FO3_Translation_Methods
-
+import sys
+sys.path.append("src")
+import utils.FO3_Translation_Methods as FO3_Translation_Methods
 from Typed_COR_Expressions import *
 
 

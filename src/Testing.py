@@ -10,7 +10,7 @@ from timeit import default_timer
 import z3  # pip install z3-solver
 import pickle  # save/load python objects from a file
 
-from FO3_Translation_Methods import *
+from utils.FO3_Translation_Methods import *
 import Search_For_Simplification_Rules
 
 SortForEverything = z3.DeclareSort('SomeSort')

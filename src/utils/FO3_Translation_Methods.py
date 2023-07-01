@@ -5,6 +5,8 @@
 The same 'good' and 'nice' methods can be used for both heterogeneous/typed and homogeneous/untype FO3 expressions,
 but for heterogeneous/typed FO3 expressions a seperate final_translation method is provided in its own file (Typed_FO3_Translation.py) """
 
+import sys
+sys.path.append("src")
 from COR_Expressions import *
 from FO3_Expressions import *
 from utils.List_Methods import *
