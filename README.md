@@ -6,15 +6,15 @@ Contributors: Anthony Brogni (brogn002@umn.edu) and Sebastiaan J. C. Joosten (sj
 
 ## This tool currently supports:
 
--Object representation of FO3 Expressions (including predicates with repeated arguments and formulas with typed arguments)
+- Object representation of FO3 Expressions (including predicates with repeated arguments and formulas with typed arguments)
 
--Object representation of CoR Expressions (both homogeneous/untyped and heterogeneous/typed)
+- Object representation of CoR Expressions (both homogeneous/untyped and heterogeneous/typed)
 
--Generation of random formulas and automated testing with the z3-solver Python library
+- Generation of random formulas and automated testing with the z3-solver Python library
 
--Discovery of simplification rules with the help of Z3
+- Discovery of simplification rules with the help of Z3
 
--Simplification of CoR formulas (both homogeneous/untyped and heterogeneous/typed)
+- Simplification of CoR formulas (both homogeneous/untyped and heterogeneous/typed)
 
 ## Installation Instructions
 
@@ -36,26 +36,26 @@ pip3 install -r requirements.txt
 
 ## Summary of each File
 
--**FO3_Expressions.py**: Definitions of FO3 objects
+- **FO3_Expressions.py**: Definitions of FO3 objects
 
--**COR_Expressions.py**: Definitions of CoR objects (homogeneous/untyped)
+- **COR_Expressions.py**: Definitions of CoR objects (homogeneous/untyped)
 
--**Typed_COR_Expressions.py**: Definitions of heterogeneous/typed CoR objects
+- **Typed_COR_Expressions.py**: Definitions of heterogeneous/typed CoR objects
 
--**FO3_Translation_Methods.py**: Methods for applying the Good, Nice, and Final translation steps
+- **FO3_Translation_Methods.py**: Methods for applying the Good, Nice, and Final translation steps
 
--**Typed_FO3_Translation.py**: Contains the modified Final translation step for heterogeneous/typed formulas
+- **Typed_FO3_Translation.py**: Contains the modified Final translation step for heterogeneous/typed formulas
 
--**Testing.py**: Random formula generation and automated testing with the z-3 solver module
+- **Testing.py**: Random formula generation and automated testing with the z-3 solver module
 
--**Typed_Testing.py**: A modified version of Testing.py for heterogeneous/typed formulas
+- **Typed_Testing.py**: A modified version of Testing.py for heterogeneous/typed formulas
 
--**Search_For_Simplification_Rules.py**: Code for finding all possible simplification rules of a given size
+- **Search_For_Simplification_Rules.py**: Code for finding all possible simplification rules of a given size
 
--**Generate_Typed_Rules.py**: Code for taking our dictionary of homogeneous rules and producing a dictionary of heterogeneous rules
+- **Generate_Typed_Rules.py**: Code for taking our dictionary of homogeneous rules and producing a dictionary of heterogeneous rules
 
--**Simplify.py**: Python code generated from the rules in **COR_Rules.txt** for simplifying homogeneous CoR expressions
+- **Simplify.py**: Python code generated from the rules in **COR_Rules.txt** for simplifying homogeneous CoR expressions
 
--**Typed_Simplify.py**: Python code generated from the rules in **Typed_COR_Rules.txt** for simplifying heterogeneous CoR expressions
+- **Typed_Simplify.py**: Python code generated from the rules in **Typed_COR_Rules.txt** for simplifying heterogeneous CoR expressions
 
--**List_Methods.py**: Helper methods for treating lists as if they were sets
+- **List_Methods.py**: Helper methods for treating lists as if they were sets
