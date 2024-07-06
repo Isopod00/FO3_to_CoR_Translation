@@ -32,7 +32,7 @@ git clone https://github.com/Isopod00/FO3_to_CoR_Translation.git
 pip3 install -r requirements.txt
 ```
 
-4. Unfortunately, no user-friendly frontend has been developed for this tool yet, so for now you will need to interact with the code directly. Please refer to the main.py file for example usage. The "Summary of each File" section below describes what you can expect to find in each file of this project, and thus is also a useful resource.
+4. Unfortunately, no user-friendly frontend has been developed for this tool yet, so for now you will need to interact with the code directly. Please refer to the main.py file for example usage. The "Summary of each File" section below describes what you can expect to find in each file of this project, and thus is also a useful resource. The examples in the included main.py file can be modified to suit the desired usage of the user.
 
 ## Summary of each File
 
