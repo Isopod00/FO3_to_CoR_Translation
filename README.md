@@ -1,5 +1,7 @@
 # FO3 to CoR Translation
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.12674073.svg)](https://doi.org/10.5281/zenodo.12674073)
+
 This project aims to translate First-Order 3-variable (FO3) predicate logic into the Calculus of Relations (CoR).
 
 Contributors: Anthony Brogni (brogn002@umn.edu) and Sebastiaan J. C. Joosten (sjoosten@umn.edu)
