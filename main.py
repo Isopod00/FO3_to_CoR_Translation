@@ -44,14 +44,14 @@ def main_heterogeneous(typed_fo3_expression):
 
 if __name__ == "__main__":
     # fo3_expression must be a closed expression (no unbound variables)
-    fo3_expression = ForAll("x", ForAll("y", ThereExists("z", AND(Negation(AND(Predicate("A", "x", "z"), Predicate("B", "z", "x"))), Predicate("C", "x", "y")))))
+    fo3_expression = Negation(ForAll("x", ForAll("y", OR(Negation(Predicate("A", "x", "x")), Negation(Predicate("A", "y", "y"))))))
     main_homogeneous(fo3_expression)
     
     print() # New line
     
-    x = Typed_Variable('x', 'A')
-    y = Typed_Variable('y', 'B')
-    z = Typed_Variable('z', 'B')
+    x = Typed_Variable('x', 'P')
+    y = Typed_Variable('y', 'Q')
+    z = Typed_Variable('z', 'R')
 
     # typed_fo3_expression must be a closed expression (no unbound variables)
     typed_fo3_expression = ForAll(x, ForAll(y, ThereExists(z, AND(Negation(AND(Predicate("A", x, z), Predicate("B", z, x))), Predicate("C", x, y)))))
