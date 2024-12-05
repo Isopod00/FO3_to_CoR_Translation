@@ -152,15 +152,13 @@ def final_translation(expression, var1, var2):
             return Complement(final_translation(arg, var1, var2))
         case ThereExists(argument=arg, variable=v):
             and_list = arg.getAsAndList()
-            lhs = [term for term in and_list if var1 in term.free_variables()
-                   ] if var1 != v else []
+            lhs = [term for term in and_list if var1 in term.free_variables()] if var1 != v else []
             rhs = [term for term in and_list if term not in lhs]
             return Composition(final_translation(n_ary_AND(lhs), var1, v),
                                final_translation(n_ary_AND(rhs), v, var2))
         case ForAll(argument=arg, variable=v):
             or_list = arg.getAsOrList()
-            lhs = [term for term in or_list if var1 in term.free_variables()
-                   ] if var1 != v else []
+            lhs = [term for term in or_list if var1 in term.free_variables()] if var1 != v else []
             rhs = [term for term in or_list if term not in lhs]
             return Dagger(final_translation(n_ary_OR(lhs), var1, v),
                           final_translation(n_ary_OR(rhs), v, var2))
